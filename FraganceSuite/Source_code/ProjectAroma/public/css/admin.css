@@ -1,0 +1,103 @@
+:root{
+      --aroma-black:#000000;
+      --aroma-black-soft:#0d0d0d;
+      --aroma-text:#ffffff;
+      --aroma-muted:#bfbfbf;
+      --aroma-border:rgba(255,255,255,.15);
+    }
+
+    body{
+      background:#f6f2f0;
+    }
+
+    /* Header negro */
+    .topbar{
+      background:var(--aroma-black);
+      border-bottom:1px solid var(--aroma-border);
+    }
+
+    /* Sidebar negro */
+    .aroma-offcanvas{
+      background:linear-gradient(180deg,var(--aroma-black),var(--aroma-black-soft));
+      color:var(--aroma-text);
+      border-right:1px solid var(--aroma-border);
+    }
+
+    .sidebar-logo{
+      display:flex;
+      align-items:center;
+      gap:.75rem;
+      padding:.9rem 1rem;
+      border-bottom:1px solid var(--aroma-border);
+    }
+    .sidebar-logo .title{
+      font-weight:800;
+      letter-spacing:.08em;
+      color:var(--aroma-text);
+      margin:0;
+      line-height:1;
+    }
+    .sidebar-logo .subtitle{
+      margin:0;
+      color:var(--aroma-muted);
+      font-size:.85rem;
+    }
+
+    .nav-link{
+      color:var(--aroma-text);
+      border-radius:12px;
+      padding:.6rem .8rem;
+    }
+    .nav-link:hover{
+      background:rgba(255,255,255,.08);
+      color:var(--aroma-text);
+    }
+    .nav-link.active{
+      background:rgba(255,255,255,.15);
+      border:1px solid rgba(255,255,255,.25);
+      color:var(--aroma-text);
+    }
+
+    .nav .submenu .nav-link{
+      padding-left:2.25rem;
+      color:var(--aroma-muted);
+    }
+    .nav .submenu .nav-link:hover{
+      color:var(--aroma-text);
+    }
+
+    .icon{
+      width:18px;
+      height:18px;
+      margin-right:.6rem;
+      vertical-align:-3px;
+      opacity:.95;
+    }
+
+    /* Layout */
+    .content-wrap{
+      padding:1.25rem;
+    }
+
+    /* Desktop: sidebar fijo + contenido al lado */
+    @media (min-width: 992px){
+      .layout{
+        display:grid;
+        grid-template-columns:300px 1fr;
+        min-height:100vh;
+      }
+      .aroma-offcanvas{
+        position:static !important;
+        transform:none !important;
+        visibility:visible !important;
+        width:300px;
+      }
+      .only-mobile{
+        display:none !important;
+      }
+      .topbar{
+        position:sticky;
+        top:0;
+        z-index:1020;
+      }
+    }
