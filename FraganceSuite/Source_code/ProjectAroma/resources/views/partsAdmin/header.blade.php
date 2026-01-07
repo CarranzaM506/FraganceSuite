@@ -24,7 +24,7 @@
                 ☰
             </button>
 
-            <div class="fw-bold">AROMA</div>
+            <div class="fw-bold">@yield('title')</div>
 
             <div class="d-flex align-items-center gap-2">
                 <span class="small d-none d-sm-inline">Admin</span>
@@ -79,10 +79,10 @@
                     </a>
 
                     <div class="collapse submenu" id="submenuProductos">
-                        <a class="nav-link" href="{{ url('/product') }}">Crear</a>
-                        <a class="nav-link" href="{{ url('/productos') }}">Ver</a>
-                        <a class="nav-link" href="{{ url('/productos/editar') }}">Editar</a>
-                        <a class="nav-link" href="{{ url('/productos/eliminar') }}">Eliminar</a>
+                        <a class="nav-link" href="{{ route('product.create') }}">Crear</a>
+                        <a class="nav-link" href="{{ url('productos') }}">Ver</a>
+                        <a class="nav-link" href="{{ url('productoseditar') }}">Editar</a>
+                        <a class="nav-link" href="{{ url('productoseliminar') }}">Eliminar</a>
                     </div>
 
                     <hr class="border-light opacity-25 my-3" />
@@ -104,6 +104,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    @yield('scripts')
 </body>
 
 </html>
