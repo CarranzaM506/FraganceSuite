@@ -9,6 +9,7 @@
     <title>AROMA | Dashboard</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
 
 </head>
@@ -80,9 +81,7 @@
 
                     <div class="collapse submenu" id="submenuProductos">
                         <a class="nav-link" href="{{ route('product.create') }}">Crear</a>
-                        <a class="nav-link" href="{{ url('productos') }}">Ver</a>
-                        <a class="nav-link" href="{{ url('productoseditar') }}">Editar</a>
-                        <a class="nav-link" href="{{ url('productoseliminar') }}">Eliminar</a>
+                        <a class="nav-link" href="{{ route('product.index') }}">Ver</a>
                     </div>
 
                     <hr class="border-light opacity-25 my-3" />

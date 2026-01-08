@@ -16,9 +16,9 @@ class ProductsImport implements ToModel, WithHeadingRow
             'category'         => $row['categories'] ?? $row['category'] ?? null,
             'pathimg'          => $row['images'] ?? $row['pathimg'] ?? null,
             'price'            => isset($row['price']) ? (float) $row['price'] : 0,
-            'stock'            => isset($row['stock']) ? (int) $row['stock'] : 0,
+            'stock'            => isset($row['inventory_bodega_san_jose']) ? (int) $row['inventory_bodega_san_jose'] : 0,
             'description'      => $row['description'] ?? null,
-            'shortDescription' => $row['short_description'] ?? ($row['short description'] ?? null),
+            'shortDescription' => $row['short_description'] ?? ($row['short_description'] ?? null),
             'active'           => $this->toBool($row['status'] ?? true),
             'decant'           => $this->toBool($row['decant'] ?? false),
         ]);
