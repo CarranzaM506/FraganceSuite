@@ -86,6 +86,25 @@
 
                     <hr class="border-light opacity-25 my-3" />
 
+                    <!-- Promociones -->
+                    <a class="nav-link d-flex align-items-center justify-content-between {{ request()->is('discount') ? 'active' : '' }}" data-bs-toggle="collapse"
+                        href="#submenuPromociones" role="button" aria-expanded="false" aria-controls="submenuPromociones">
+                        <span>
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 12h-8" />
+                                <path d="M12 4v8" />
+                                <path d="M4 20h16" />
+                            </svg>
+                            Promociones
+                        </span>
+                        <span class="ms-2" aria-hidden="true">▾</span>
+                    </a>
+
+                    <div class="collapse submenu" id="submenuPromociones">
+                        <a class="nav-link" href="{{ route('discount.create') }}">Crear</a>
+                        <a class="nav-link" href="{{ route('discount.index') }}">Ver</a>
+                    </div>
+
                     <a class="nav-link" href="#">
                         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M10 17l5-5-5-5" />
