@@ -22,4 +22,10 @@ class Product extends Model
         'active',
         'decant',
     ];
+
+    public function discount()
+    {
+        return $this->belongsTo(Discount::class, 'iddiscount', 'iddiscount');
+    }
+
 }
