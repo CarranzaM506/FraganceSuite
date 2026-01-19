@@ -66,7 +66,7 @@
                     </a>
 
                     <!-- Productos -->
-                    <a class="nav-link d-flex align-items-center justify-content-between {{ request()->is('product') ? 'active' : '' }}" data-bs-toggle="collapse"
+                    <a class="nav-link d-flex align-items-center justify-content-between {{ request()->is('product*') ? 'active' : '' }}" data-bs-toggle="collapse"
                         href="#submenuProductos" role="button" aria-expanded="false" aria-controls="submenuProductos">
                         <span>
                             <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -83,6 +83,16 @@
                         <a class="nav-link" href="{{ route('product.create') }}">Crear</a>
                         <a class="nav-link" href="{{ route('product.index') }}">Ver</a>
                     </div>
+
+                    <!-- Slider Principal -->
+                    <a class="nav-link {{ request()->is('slider*') ? 'active' : '' }}" href="{{ route('slider.index') }}">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="3" y1="9" x2="21" y2="9"/>
+                            <line x1="9" y1="21" x2="9" y2="9"/>
+                        </svg>
+                        Slider Principal
+                    </a>
 
                     <hr class="border-light opacity-25 my-3" />
 
