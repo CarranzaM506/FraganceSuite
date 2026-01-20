@@ -6,6 +6,7 @@ use App\Http\Controllers\ControllerProduct;
 use App\Http\Controllers\ControllerDiscount;
 use App\Http\Controllers\SliderController;
 use App\Http\Controllers\MainPageController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 // RUTA PRINCIPAL
@@ -17,8 +18,8 @@ Route::get('/catalogo', [CatalogController::class, 'index'])->name('catalog');
 
 // RUTAS DE ADMINISTRACIÓN
 Route::get('/dashboard', function () {
-    return view('dashboard.main');
-})->name('dashboard');
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::post('/import', [ControllerImportProducts::class,'import'])->name('product.import');
 
@@ -29,3 +30,12 @@ Route::resource('slider', SliderController::class);
 Route::resource('discount', ControllerDiscount::class);
 Route::get('discount/{id}/products', [ControllerDiscount::class, 'products'])->name('discount.products');
 Route::get('products/search', [ControllerDiscount::class, 'searchProducts'])->name('products.search');
+
+//Perfil
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+require __DIR__.'/auth.php';
