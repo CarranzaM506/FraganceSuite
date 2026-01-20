@@ -18,8 +18,8 @@ Route::get('/catalogo', [CatalogController::class, 'index'])->name('catalog');
 
 // RUTAS DE ADMINISTRACIÓN
 Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+    return view('partsAdmin.header');
+})->middleware('auth')->name('dashboard');
 
 Route::post('/import', [ControllerImportProducts::class,'import'])->name('product.import');
 
