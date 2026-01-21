@@ -17,19 +17,21 @@ Route::get('/catalog', [CatalogController::class, 'index'])->name('catalog.index
 Route::get('/catalogo', [CatalogController::class, 'index'])->name('catalog');
 
 // RUTAS DE ADMINISTRACIÓN
-Route::get('/dashboard', function () {
-    return view('partsAdmin.header');
-})->middleware('auth')->name('dashboard');
+Route::middleware(['auth', 'admin'])->group(function () {
 
-Route::post('/import', [ControllerImportProducts::class,'import'])->name('product.import');
+    Route::get('/dashboard', function () { return view('dashboard.main');})->name('dashboard');
 
-Route::resource('product', ControllerProduct::class);
-Route::resource('slider', SliderController::class);
+    Route::post('/import', [ControllerImportProducts::class, 'import'])->name('product.import');
 
-// PROMOCIONES / DESCUENTOS
-Route::resource('discount', ControllerDiscount::class);
-Route::get('discount/{id}/products', [ControllerDiscount::class, 'products'])->name('discount.products');
-Route::get('products/search', [ControllerDiscount::class, 'searchProducts'])->name('products.search');
+    //PRODCUTOS
+    Route::resource('product', ControllerProduct::class);
+    Route::resource('slider', SliderController::class);
+
+    // PROMOCIONES / DESCUENTOS
+    Route::resource('discount', ControllerDiscount::class);
+    Route::get('discount/{id}/products', [ControllerDiscount::class, 'products'])->name('discount.products');
+    Route::get('products/search', [ControllerDiscount::class, 'searchProducts'])->name('products.search');
+});
 
 //Perfil
 Route::middleware('auth')->group(function () {
@@ -38,4 +40,4 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
