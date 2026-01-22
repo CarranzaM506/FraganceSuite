@@ -12,7 +12,17 @@
         <a href="{{ route('mainPage') }}" class="logo">AROMA</a>
 
         <div class="user-icons">
-            <span class="icon"><i class="far fa-user"></i></span>
+            @auth
+                <a href="{{ route('profile.index') }}">
+                    <span class="icon"><i class="far fa-user"></i></span>
+                </a>
+            @endauth
+            @guest
+                <a href="{{ route('login') }}">
+                    <span class="icon"><i class="far fa-user"></i></span>
+                </a>
+            @endguest
+
             <span class="icon"><i class="far fa-heart"></i></span>
             <span class="icon">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -21,15 +31,18 @@
                     <line x1="3" y1="6" x2="21" y2="6"></line>
                     <path d="M16 10a4 4 0 0 1-8 0"></path>
                 </svg>
-                @if (Auth::check())
-                    <form method="POST" action="{{ route('logout') }}">
+            </span>
+            @auth
+                <form method="POST" action="{{ route('logout') }}" class="d-inline">
                     @csrf
-                    <button type="submit" class="btn btn-outline-danger">
-                        Cerrar sesión
+                    <button type="submit" class="btn p-0 border-0 bg-transparent">
+                        <span class="icon">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </span>
                     </button>
                 </form>
-                @endif
-            </span>
+            @endauth
+
         </div>
     </div>
 

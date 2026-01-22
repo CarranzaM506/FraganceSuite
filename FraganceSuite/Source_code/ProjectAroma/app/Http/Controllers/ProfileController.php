@@ -2,59 +2,52 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ProfileUpdateRequest;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
-    /**
-     * Display the user's profile form.
-     */
-    public function edit(Request $request): View
+
+    public function index()
     {
-        return view('profile.edit', [
-            'user' => $request->user(),
-        ]);
+        return view('profile.index');
     }
 
-    /**
-     * Update the user's profile information.
-     */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function create() {}
+
+
+    public function store(Request $request) {}
+
+    public function show(string $id) {}
+
+    public function edit(string $id)
     {
-        $request->user()->fill($request->validated());
-
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
-        }
-
-        $request->user()->save();
-
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        return view('profile.edit');
     }
 
-    /**
-     * Delete the user's account.
-     */
-    public function destroy(Request $request): RedirectResponse
+    public function update(Request $request, string $id)
     {
-        $request->validateWithBag('userDeletion', [
-            'password' => ['required', 'current_password'],
-        ]);
+        $request->validate(
+            [
+                'name' => 'required|string|max:255',
+                'lastname' => 'nullable|string|max:255',
+                'phone' => 'required|string|digits:8',
+            ],
+            [
+                'name.required' => 'El nombre es obligatorio.',
+                'phone.required' => 'El telefono es obligatorio.',
+                'phone.digits' => 'El telofono debe contener 8 numeros.'
+            ]
+        );
 
-        $user = $request->user();
+        $user = Auth::user();
+        $user->name = $request->input('name');
+        $user->lastname = $request->input('lastname');
+        $user->phone = $request->input('phone');
+        $user->save();
 
-        Auth::logout();
-
-        $user->delete();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return Redirect::to('/');
+        return redirect()->route('profile.index')->with('success', 'Perfil actualizado correctamente.');
     }
+
+    public function destroy(string $id) {}
 }

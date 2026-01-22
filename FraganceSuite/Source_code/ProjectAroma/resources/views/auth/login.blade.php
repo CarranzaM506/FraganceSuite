@@ -37,17 +37,35 @@
                         </div>
 
                         <hr>
-
-                        <div class="d-grid gap-2">
-                            <a href="{{ url('/auth/google/redirect') }}" class="btn btn-outline-danger">
-                                Continuar con Google
-                            </a>
-
-                            <a href="{{ url('/auth/facebook/redirect') }}" class="btn btn-outline-primary">
-                                Continuar con Facebook
+                        <div class="text-center mb-3">
+                            <a class="text-decoration-none" data-bs-toggle="collapse" href="#socialLogin">
+                                Continuar con redes sociales
                             </a>
                         </div>
 
+                        <div class="collapse" id="socialLogin">
+                            <div class="d-grid gap-2 mb-3">
+                                <a href="{{ url('/auth/google/redirect') }}" class="btn btn-outline-danger">
+                                    <i class="fab fa-google me-2"></i> Continuar con Google
+                                </a>
+
+                                <a href="{{ url('/auth/facebook/redirect') }}" class="btn btn-outline-primary">
+                                    <i class="fab fa-facebook-f me-2"></i> Continuar con Facebook
+                                </a>
+                            </div>
+                        </div>
+
+
+                        <hr>
+
+                        <div class="text-center">
+                            <p class="mb-2">¿No tienes cuenta?</p>
+                            <a href="{{ route('register') }}" class="btn btn-outline-dark w-100">
+                                Crear cuenta
+                            </a>
+                        </div>
+
+                        <hr>
 
                         <div class="text-center">
                             <a href="{{ route('password.request') }}">¿Olvidaste tu contraseña?</a>
