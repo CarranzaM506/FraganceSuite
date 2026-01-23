@@ -28,12 +28,12 @@
                 <span>Favoritos</span>
             </a>
 
-            <a href="#" class="profile-action">
+            <a href="{{route('location.index')}}" class="profile-action">
                 <i class="fas fa-location-dot"></i>
                 <span>Direcciones</span>
             </a>
 
-            <a href="{{route('profile.edit',Auth::user()->id)}}" class="profile-action">
+            <a href="{{route('profile.edit')}}" class="profile-action">
                 <i class="fas fa-gear"></i>
                 <span>Editar Perfil</span>
             </a>

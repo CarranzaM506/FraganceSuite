@@ -26,8 +26,8 @@
                     </ul>
                 </div>
             @endif
-            
-            <form method="POST" action="{{ route('profile.update', Auth::user()->id) }}" class="profile-form">
+
+            <form method="POST" action="{{ route('profile.update') }}" class="profile-form">
                 @csrf
                 @method('PUT')
                 <div class="form-group">
@@ -51,6 +51,11 @@
                 <button type="submit" class="profile-save-btn">
                     Guardar cambios
                 </button>
+
+                <a href="{{ route('profile.index') }}" class="profile-back-btn">
+                    ← Volver
+                </a>
+
             </form>
 
         </div>

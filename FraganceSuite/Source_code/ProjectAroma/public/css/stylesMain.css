@@ -1269,9 +1269,48 @@ footer {
     transform: translateY(-2px);
 }
 
+.profile-back-btn {
+    display: block;
+    width: 100%;
+    margin-top: 12px;
+    padding: 14px;
+    text-align: center;
+    text-decoration: none;
+    border: 1px solid #927a1b;
+    background: transparent;
+    color: #927a1b;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+}
+
+.profile-back-btn:hover {
+    background: linear-gradient(135deg, #927a1b, #b89c2e);
+    color: white;
+    transform: translateY(-2px);
+}
+
+
 /* Responsive */
 @media (max-width: 480px) {
     .profile-form {
         padding: 25px 20px;
     }
+}
+
+.address-card {
+    border: 1px solid #eee;
+    border-radius: 14px;
+    background: #fff;
+    transition: all .25s ease;
+}
+
+.address-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(0,0,0,.08);
+}
+
+.address-card-body {
+    padding: 20px;
 }

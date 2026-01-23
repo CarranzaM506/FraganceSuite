@@ -4,6 +4,7 @@ use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\ControllerImportProducts;
 use App\Http\Controllers\ControllerProduct;
 use App\Http\Controllers\ControllerDiscount;
+use App\Http\Controllers\LocationController;
 use App\Http\Controllers\SliderController;
 use App\Http\Controllers\MainPageController;
 use App\Http\Controllers\ProfileController;
@@ -35,7 +36,13 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
 //Perfil
 Route::middleware('auth')->group(function () {
-    Route::resource('/profile',ProfileController::class);
+    Route::get('/profile',[ProfileController::class,'index'])->name('profile.index');
+    Route::get('profile/edit',[ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('profile/update',[ProfileController::class,'update'])->name('profile.update');
+    Route::get('/location', [LocationController::class, 'index'])->name('location.index');
+    Route::post('/location/store', [LocationController::class, 'store'])->name('location.store');
+    Route::put('location/{id}/update',[LocationController::class,'update'])->name('location.update');
+    Route::delete('/location/{id}/delete',[LocationController::class,'destroy'])->name('location.destroy');
 });
 
 require __DIR__ . '/auth.php';

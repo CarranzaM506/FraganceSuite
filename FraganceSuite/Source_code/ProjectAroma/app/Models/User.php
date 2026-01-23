@@ -31,6 +31,12 @@ class User extends Authenticatable
         'provider_id',
     ];
 
+    public function locations()
+    {
+        return $this->hasMany(Location::class, 'iduser','id');
+    }
+
+
     /**
      * The attributes that should be hidden for serialization.
      *
