@@ -1097,4 +1097,220 @@ footer {
 
 
 
+/* ========== PERFIL ========== */
+.profile-body {
+    padding-top: 140px;
+    background-color: #f8f8f8;
+}
 
+.profile-container {
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px 80px;
+}
+
+.profile-card {
+    background: white;
+    width: 100%;
+    max-width: 420px;
+    border-radius: 0;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+    overflow: hidden;
+    animation: fadeUp 0.6s ease;
+}
+
+/* Header */
+.profile-header {
+    text-align: center;
+    padding: 40px 30px;
+    border-bottom: 1px solid #eee;
+}
+
+.profile-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #927a1b, #b89c2e);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    color: white;
+    font-size: 32px;
+}
+
+.profile-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.profile-email {
+    font-size: 14px;
+    color: #777;
+}
+
+/* Acciones */
+.profile-actions {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.profile-action {
+    padding: 30px 20px;
+    text-align: center;
+    text-decoration: none;
+    color: #333;
+    border-top: 1px solid #eee;
+    border-right: 1px solid #eee;
+    transition: all 0.3s ease;
+}
+
+.profile-action:nth-child(2n) {
+    border-right: none;
+}
+
+.profile-action i {
+    font-size: 20px;
+    margin-bottom: 10px;
+    display: block;
+    color: #927a1b;
+}
+
+.profile-action span {
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+.profile-action:hover {
+    background-color: rgba(146, 122, 27, 0.08);
+}
+
+/* Animación */
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(25px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .profile-card {
+        max-width: 100%;
+    }
+
+    .profile-name {
+        font-size: 22px;
+    }
+
+    .profile-action {
+        padding: 25px 15px;
+    }
+}
+/* ========== FIN PERFIL ========== */
+
+
+/* ========== FORM PERFIL ========== */
+.profile-form {
+    padding: 30px;
+}
+
+.form-group {
+    margin-bottom: 22px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.form-input {
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid #ddd;
+    padding: 10px 4px;
+    font-size: 15px;
+    background: transparent;
+    transition: border-color 0.3s ease;
+}
+
+.form-input:focus {
+    outline: none;
+    border-bottom-color: #927a1b;
+}
+
+.profile-save-btn {
+    width: 100%;
+    margin-top: 15px;
+    padding: 14px;
+    border: none;
+    background: linear-gradient(135deg, #927a1b, #b89c2e);
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.profile-save-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+}
+
+.profile-back-btn {
+    display: block;
+    width: 100%;
+    margin-top: 12px;
+    padding: 14px;
+    text-align: center;
+    text-decoration: none;
+    border: 1px solid #927a1b;
+    background: transparent;
+    color: #927a1b;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+}
+
+.profile-back-btn:hover {
+    background: linear-gradient(135deg, #927a1b, #b89c2e);
+    color: white;
+    transform: translateY(-2px);
+}
+
+
+/* Responsive */
+@media (max-width: 480px) {
+    .profile-form {
+        padding: 25px 20px;
+    }
+}
+
+.address-card {
+    border: 1px solid #eee;
+    border-radius: 14px;
+    background: #fff;
+    transition: all .25s ease;
+}
+
+.address-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(0,0,0,.08);
+}
+
+.address-card-body {
+    padding: 20px;
+}

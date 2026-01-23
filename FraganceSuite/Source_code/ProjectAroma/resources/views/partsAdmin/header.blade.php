@@ -66,8 +66,9 @@
                     </a>
 
                     <!-- Productos -->
-                    <a class="nav-link d-flex align-items-center justify-content-between {{ request()->is('product*') ? 'active' : '' }}" data-bs-toggle="collapse"
-                        href="#submenuProductos" role="button" aria-expanded="false" aria-controls="submenuProductos">
+                    <a class="nav-link d-flex align-items-center justify-content-between {{ request()->is('product*') ? 'active' : '' }}"
+                        data-bs-toggle="collapse" href="#submenuProductos" role="button" aria-expanded="false"
+                        aria-controls="submenuProductos">
                         <span>
                             <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                 stroke-width="2">
@@ -85,11 +86,12 @@
                     </div>
 
                     <!-- Slider Principal -->
-                    <a class="nav-link {{ request()->is('slider*') ? 'active' : '' }}" href="{{ route('slider.index') }}">
+                    <a class="nav-link {{ request()->is('slider*') ? 'active' : '' }}"
+                        href="{{ route('slider.index') }}">
                         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                            <line x1="3" y1="9" x2="21" y2="9"/>
-                            <line x1="9" y1="21" x2="9" y2="9"/>
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                            <line x1="3" y1="9" x2="21" y2="9" />
+                            <line x1="9" y1="21" x2="9" y2="9" />
                         </svg>
                         Slider Principal
                     </a>
@@ -97,10 +99,12 @@
                     <hr class="border-light opacity-25 my-3" />
 
                     <!-- Promociones -->
-                    <a class="nav-link d-flex align-items-center justify-content-between {{ request()->is('discount') ? 'active' : '' }}" data-bs-toggle="collapse"
-                        href="#submenuPromociones" role="button" aria-expanded="false" aria-controls="submenuPromociones">
+                    <a class="nav-link d-flex align-items-center justify-content-between {{ request()->is('discount') ? 'active' : '' }}"
+                        data-bs-toggle="collapse" href="#submenuPromociones" role="button" aria-expanded="false"
+                        aria-controls="submenuPromociones">
                         <span>
-                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
                                 <path d="M20 12h-8" />
                                 <path d="M12 4v8" />
                                 <path d="M4 20h16" />
@@ -115,13 +119,22 @@
                         <a class="nav-link" href="{{ route('discount.index') }}">Ver</a>
                     </div>
 
-                    <a class="nav-link" href="#">
-                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M10 17l5-5-5-5" />
-                            <path d="M4 4h7a4 4 0 0 1 4 4v8a4 4 0 0 1-4 4H4" />
-                        </svg>
-                        Cerrar sesión
-                    </a>
+                    @if (Auth::check())
+                        <a class="nav-link" href="{{ route('logout') }}"
+                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M10 17l5-5-5-5" />
+                                <path d="M4 4h7a4 4 0 0 1 4 4v8a4 4 0 0 1-4 4H4" />
+                            </svg>
+                            Cerrar sesión
+                        </a>
+
+                        <form id="logout-form" method="POST" action="{{ route('logout') }}" class="d-none">
+                            @csrf
+                        </form>
+                    @endif
+
 
                 </nav>
             </div>
