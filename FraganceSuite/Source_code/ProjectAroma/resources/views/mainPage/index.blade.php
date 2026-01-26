@@ -51,14 +51,15 @@
                     <i class="fas fa-wine-bottle"></i>
                 @endif
                 <div class="product-hover">
-                    <span class="wishlist-icon"><i class="far fa-heart"></i></span>
-                    <span class="add-cart-icon"><i class="fas fa-plus"></i></span>
+                    <span class="wishlist-icon" data-product="{{ $product->idproduct }}"><i class="far fa-heart"></i></span>
+                    <span class="add-cart-icon" data-product="{{ $product->idproduct }}"><i class="fas fa-plus"></i></span>
                 </div>
             </div>
             <div class="product-info">
                 <h3 class="product-name">{{ $product->name }}</h3>
                 <p class="product-brand">{{ $product->brand }}</p>
-                <p class="product-price">@${{ number_format($product->price, 2) }}</p>
+                <p class="product-category" style="display: none;">{{ $product->category }}</p>
+                <p class="product-price">₡{{ number_format($product->price, 2) }}</p>
                 
             </div>
         </div>
@@ -79,14 +80,15 @@
                     <i class="fas fa-wine-bottle"></i>
                 @endif
                 <div class="product-hover">
-                    <span class="wishlist-icon"><i class="far fa-heart"></i></span>
-                    <span class="add-cart-icon"><i class="fas fa-plus"></i></span>
+                    <span class="wishlist-icon" data-product="{{ $product->idproduct }}"><i class="far fa-heart"></i></span>
+                    <span class="add-cart-icon" data-product="{{ $product->idproduct }}"><i class="fas fa-plus"></i></span>
                 </div>
             </div>
             <div class="product-info">
                 <h3 class="product-name">{{ $product->name }}</h3>
                 <p class="product-brand">{{ $product->brand }}</p>
-                <p class="product-price">@${{ number_format($product->price, 2) }}</p>
+                <p class="product-category" style="display: none;">{{ $product->category }}</p>
+                <p class="product-price">₡{{ number_format($product->price, 2) }}</p>
             </div>
         </div>
         @endforeach
@@ -149,6 +151,7 @@
         });
         
         // Simulación de añadir al carrito
+        
         const cartIcons = document.querySelectorAll('.fa-shopping-cart');
         cartIcons.forEach(icon => {
             icon.addEventListener('click', function() {
@@ -156,6 +159,9 @@
             });
         });
         
+
+
+
         // Simulación de añadir a favoritos
         const heartIcons = document.querySelectorAll('.fa-heart');
         heartIcons.forEach(icon => {
