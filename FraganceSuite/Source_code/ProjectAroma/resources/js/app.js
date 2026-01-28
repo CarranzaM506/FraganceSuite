@@ -1,2 +1,2 @@
 import './bootstrap';
-import './cart';
+import './cart';import './cart-preview';

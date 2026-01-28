@@ -47,5 +47,20 @@ class CartController extends Controller
             'stock' => $product->stock,
         ]);
     }
+
+    /**
+     * Obtener preview del carrito con los productos actuales
+     * Devuelve HTML con los productos en miniatura
+     */
+    public function getCartPreview(Request $request): JsonResponse
+    {
+        // Los datos del carrito vienen del localStorage en el cliente (JavaScript)
+        // Este endpoint sirve para cualquier lógica del servidor si es necesaria
+        // Por ahora devolvemos un mensaje de éxito simple
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Preview cargado'
+        ]);
+    }
 }
 

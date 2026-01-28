@@ -24,16 +24,37 @@
             @endguest
 
             <span class="icon"><i class="far fa-heart"></i></span>
-            <a href="{{ route('cart.index') }}" style="text-decoration: none; color: inherit;">
-                <span class="icon">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                        <line x1="3" y1="6" x2="21" y2="6"></line>
-                        <path d="M16 10a4 4 0 0 1-8 0"></path>
-                    </svg>
-                </span>
-            </a>
+            <div id="cartIconContainer" style="position: relative;" class="cart-dropdown-container">
+                <a href="{{ route('cart.index') }}" style="text-decoration: none; color: inherit;">
+                    <span class="icon" id="cartIcon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <path d="M16 10a4 4 0 0 1-8 0"></path>
+                        </svg>
+                    </span>
+                </a>
+
+                <!-- Dropdown Preview del Carrito -->
+                <div id="cartPreview" class="cart-preview-dropdown" style="display: none;">
+                    <div class="cart-preview-content">
+                        <div class="cart-preview-header">
+                            <h3>Tu Carrito</h3>
+                        </div>
+                        <div id="cartPreviewItems" class="cart-preview-items">
+                            <!-- Los items se cargarán aquí con AJAX -->
+                        </div>
+                        <div class="cart-preview-footer">
+                            <div class="cart-total">
+                                <strong>Total:</strong>
+                                <span id="cartPreviewTotal">₡0</span>
+                            </div>
+                            <a href="{{ route('cart.index') }}" class="btn-view-cart">Ver Carrito</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
             @auth
                 <form method="POST" action="{{ route('logout') }}" class="d-inline">
                     @csrf

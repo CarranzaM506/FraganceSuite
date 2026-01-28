@@ -162,13 +162,15 @@
 
 
 
-        // Simulación de añadir a favoritos
+        // Añadir a favoritos
         const heartIcons = document.querySelectorAll('.fa-heart');
         heartIcons.forEach(icon => {
             icon.addEventListener('click', function() {
                 this.classList.toggle('fas');
                 this.classList.toggle('far');
-                alert('Producto añadido a favoritos');
+                if (window.cartManager) {
+                    cartManager.showNotification('Producto añadido a favoritos');
+                }
             });
         });
     });
@@ -373,15 +375,6 @@ document.addEventListener('DOMContentLoaded', function() {
             heartIcon.classList.toggle('far');
             heartIcon.classList.toggle('fas');
             this.classList.toggle('active');
-        });
-    });
-    
-    const addCartIcons = document.querySelectorAll('.add-cart-icon');
-    addCartIcons.forEach(icon => {
-        icon.addEventListener('click', function(e) {
-            e.stopPropagation();
-            // Lógica para añadir al carrito
-            console.log('Producto añadido al carrito');
         });
     });
 });

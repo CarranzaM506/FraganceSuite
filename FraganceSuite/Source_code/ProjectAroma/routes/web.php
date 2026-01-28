@@ -23,6 +23,7 @@ Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 
 // API PARA CARRITO
 Route::get('/api/product/{id}', [CartController::class, 'getProductData']);
+Route::get('/api/cart/preview', [CartController::class, 'getCartPreview'])->name('cart.preview');
 
 // RUTAS DE ADMINISTRACIÓN
 Route::middleware(['auth', 'admin'])->group(function () {
