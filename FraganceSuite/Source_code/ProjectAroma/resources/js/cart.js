@@ -12,15 +12,12 @@ class CartManager {
 
     // Inicializar event listeners
     init() {
-        // Ejecutar tanto en DOMContentLoaded como en window.load para asegurar que funciona
+        // Ejecutar solo una vez cuando el DOM esté listo
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => this.attachAddToCartListeners());
         } else {
             this.attachAddToCartListeners();
         }
-        
-        // También ejecutar cuando todo cargue
-        window.addEventListener('load', () => this.attachAddToCartListeners());
     }
 
     // Obtener carrito desde localStorage
