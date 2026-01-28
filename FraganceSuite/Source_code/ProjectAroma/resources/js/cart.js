@@ -134,7 +134,7 @@ class CartManager {
                     );
 
                     // Mostrar notificación
-                    this.showNotification(`Producto añadido al carrito`);
+                    //this.showNotification(`Producto añadido al carrito`);
 
                     // Animación visual
                     this.animateAddToCart(button);
