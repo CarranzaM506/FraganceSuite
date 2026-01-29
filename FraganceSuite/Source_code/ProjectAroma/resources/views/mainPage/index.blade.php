@@ -51,14 +51,15 @@
                     <i class="fas fa-wine-bottle"></i>
                 @endif
                 <div class="product-hover">
-                    <span class="wishlist-icon"><i class="far fa-heart"></i></span>
-                    <span class="add-cart-icon"><i class="fas fa-plus"></i></span>
+                    <span class="wishlist-icon" data-product="{{ $product->idproduct }}"><i class="far fa-heart"></i></span>
+                    <span class="add-cart-icon" data-product="{{ $product->idproduct }}"><i class="fas fa-plus"></i></span>
                 </div>
             </div>
             <div class="product-info">
                 <h3 class="product-name">{{ $product->name }}</h3>
                 <p class="product-brand">{{ $product->brand }}</p>
-                <p class="product-price">@${{ number_format($product->price, 2) }}</p>
+                <p class="product-category" style="display: none;">{{ $product->category }}</p>
+                <p class="product-price">₡{{ number_format($product->price, 2) }}</p>
                 
             </div>
         </div>
@@ -79,14 +80,15 @@
                     <i class="fas fa-wine-bottle"></i>
                 @endif
                 <div class="product-hover">
-                    <span class="wishlist-icon"><i class="far fa-heart"></i></span>
-                    <span class="add-cart-icon"><i class="fas fa-plus"></i></span>
+                    <span class="wishlist-icon" data-product="{{ $product->idproduct }}"><i class="far fa-heart"></i></span>
+                    <span class="add-cart-icon" data-product="{{ $product->idproduct }}"><i class="fas fa-plus"></i></span>
                 </div>
             </div>
             <div class="product-info">
                 <h3 class="product-name">{{ $product->name }}</h3>
                 <p class="product-brand">{{ $product->brand }}</p>
-                <p class="product-price">@${{ number_format($product->price, 2) }}</p>
+                <p class="product-category" style="display: none;">{{ $product->category }}</p>
+                <p class="product-price">₡{{ number_format($product->price, 2) }}</p>
             </div>
         </div>
         @endforeach
@@ -149,6 +151,7 @@
         });
         
         // Simulación de añadir al carrito
+        
         const cartIcons = document.querySelectorAll('.fa-shopping-cart');
         cartIcons.forEach(icon => {
             icon.addEventListener('click', function() {
@@ -156,13 +159,18 @@
             });
         });
         
-        // Simulación de añadir a favoritos
+
+
+
+        // Añadir a favoritos
         const heartIcons = document.querySelectorAll('.fa-heart');
         heartIcons.forEach(icon => {
             icon.addEventListener('click', function() {
                 this.classList.toggle('fas');
                 this.classList.toggle('far');
-                alert('Producto añadido a favoritos');
+                if (window.cartManager) {
+                    cartManager.showNotification('Producto añadido a favoritos');
+                }
             });
         });
     });
@@ -367,15 +375,6 @@ document.addEventListener('DOMContentLoaded', function() {
             heartIcon.classList.toggle('far');
             heartIcon.classList.toggle('fas');
             this.classList.toggle('active');
-        });
-    });
-    
-    const addCartIcons = document.querySelectorAll('.add-cart-icon');
-    addCartIcons.forEach(icon => {
-        icon.addEventListener('click', function(e) {
-            e.stopPropagation();
-            // Lógica para añadir al carrito
-            console.log('Producto añadido al carrito');
         });
     });
 });

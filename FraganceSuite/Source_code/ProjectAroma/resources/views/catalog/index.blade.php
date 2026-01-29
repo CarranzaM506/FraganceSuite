@@ -222,6 +222,7 @@
                     <div class="product-info">
                         <h3 class="product-name">{{ $product->name }}</h3>
                         <p class="product-brand">{{ $product->brand }}</p>
+                        <p class="product-category" style="display: none;">{{ $product->category }}</p>
                         <span class="product-price">₡{{ number_format($product->price, 2) }}</span>                    </div>
                 </div>
                 @endforeach

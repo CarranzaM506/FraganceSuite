@@ -8,6 +8,7 @@ use App\Http\Controllers\LocationController;
 use App\Http\Controllers\SliderController;
 use App\Http\Controllers\MainPageController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\CartController;
 use Illuminate\Support\Facades\Route;
 
 // RUTA PRINCIPAL
@@ -16,6 +17,13 @@ Route::get('/', [MainPageController::class, 'index'])->name('mainPage');
 // CATÁLOGO
 Route::get('/catalog', [CatalogController::class, 'index'])->name('catalog.index');
 Route::get('/catalogo', [CatalogController::class, 'index'])->name('catalog');
+
+// CARRITO
+Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+
+// API PARA CARRITO
+Route::get('/api/product/{id}', [CartController::class, 'getProductData']);
+Route::get('/api/cart/preview', [CartController::class, 'getCartPreview'])->name('cart.preview');
 
 // RUTAS DE ADMINISTRACIÓN
 Route::middleware(['auth', 'admin'])->group(function () {
