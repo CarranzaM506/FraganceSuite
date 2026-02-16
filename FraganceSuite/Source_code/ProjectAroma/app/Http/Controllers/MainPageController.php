@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
-use App\Models\Slider;
+use App\Models\Hero; // CAMBIADO de Slider a Hero
 use App\Models\Discount;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -12,19 +12,21 @@ class MainPageController extends Controller
 {
     public function index()
     {
-        // Obtener sliders activos
-        $sliderProducts = Slider::where('active', true)
-            ->orderBy('order')
-            ->limit(4)
-            ->get();
+        // OBTENER HERO ACTIVO - SOLO 1 IMAGEN
+        $heroImage = Hero::where('active', true)->first();
 
-        // Si no hay sliders, usar productos como respaldo
-        if ($sliderProducts->isEmpty()) {
-            $sliderProducts = Product::where('active', true)
+        // Si NO hay hero activo, usar un producto como respaldo
+        if (!$heroImage) {
+            $product = Product::where('active', true)
                 ->where('decant', true)
                 ->inRandomOrder()
-                ->limit(4)
-                ->get();
+                ->first();
+                
+            // Crear objeto hero virtual con la imagen del producto
+            $heroImage = (object)[
+                'image' => $product ? str_replace('public/storage/', '', $product->pathimg) : null,
+                'title' => 'AROMA'
+            ];
         }
 
         // Obtener productos para MUJER
@@ -47,13 +49,13 @@ class MainPageController extends Controller
             ->limit(4)
             ->get();
 
-        // Obtener promoción activa (una promoción que esté en fecha)
+        // Obtener promoción activa
         $activePromotion = Discount::where('startdate', '<=', now())
             ->where('enddate', '>=', now())
-            ->orderBy('enddate', 'asc') // Mostrar primero las que van a expirar
+            ->orderBy('enddate', 'asc')
             ->first();
 
-        // Si hay promoción activa, obtener un producto de esa promoción
+        // Producto de la promoción
         $promotionProduct = null;
         if ($activePromotion) {
             $promotionProduct = Product::where('iddiscount', $activePromotion->iddiscount)
@@ -61,14 +63,13 @@ class MainPageController extends Controller
                 ->inRandomOrder()
                 ->first();
             
-            // Si la promoción no tiene productos activos, no mostrar nada
             if (!$promotionProduct) {
                 $activePromotion = null;
             }
         }
 
         return view('mainPage.index', compact(
-            'sliderProducts',
+            'heroImage', // CAMBIADO de sliderProducts a heroImage
             'productsForWomen',
             'productsForMen',
             'activePromotion',
