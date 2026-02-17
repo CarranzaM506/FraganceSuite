@@ -85,15 +85,15 @@
                         <a class="nav-link" href="{{ route('product.index') }}">Ver</a>
                     </div>
 
-                    <!-- Slider Principal -->
-                    <a class="nav-link {{ request()->is('slider*') ? 'active' : '' }}"
-                        href="{{ route('slider.index') }}">
+                    <!-- === HERO PRINCIPAL (REEMPLAZA SLIDER) === -->
+                    <a class="nav-link {{ request()->is('hero*') ? 'active' : '' }}"
+                        href="{{ route('hero.index') }}">
                         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-                            <line x1="3" y1="9" x2="21" y2="9" />
-                            <line x1="9" y1="21" x2="9" y2="9" />
+                            <rect x="2" y="2" width="20" height="20" rx="2.18" />
+                            <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor" />
+                            <path d="m21 15-5-4-3 3-5-4-6 5" />
                         </svg>
-                        Slider Principal
+                        Hero Principal
                     </a>
 
                     <hr class="border-light opacity-25 my-3" />
@@ -134,7 +134,6 @@
                             @csrf
                         </form>
                     @endif
-
 
                 </nav>
             </div>

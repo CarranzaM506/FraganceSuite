@@ -1,43 +1,16 @@
 @extends('layouts.app')
 
 @section('content')
-<!-- Slider Minimalista -->
-@if($sliderProducts->isNotEmpty())
-<section class="slider-container">
-    <button class="slider-arrow arrow-left" id="prevBtn">
-        <i class="fas fa-chevron-left"></i>
-    </button>
-    
-    <div class="slider" id="slider">
-        @foreach($sliderProducts as $index => $item)
-        <div class="slide slide-{{ $index + 1 }}">
-            @if(isset($item->image_url))
-                <img src="{{ asset($item->image_url) }}" alt="{{ $item->title ?? 'Slider image' }}" class="slide-image">
-            @elseif(isset($item->pathimg))
-                <img src="{{ $item->pathimg }}" alt="{{ $item->name }}" class="slide-image">
-            @endif
-            
-            @if(isset($item->title) && $item->title)
-                <h1 class="slide-title">{{ strtoupper($item->title) }}</h1>
-            @elseif(isset($item->name))
-                <h1 class="slide-title">{{ strtoupper($item->name) }}</h1>
-            @endif
-        </div>
-        @endforeach
-    </div>
-    
-    <button class="slider-arrow arrow-right" id="nextBtn">
-        <i class="fas fa-chevron-right"></i>
-    </button>
-    
-    <div class="slider-nav" id="sliderNav">
-        @foreach($sliderProducts as $index => $item)
-        <div class="nav-dot {{ $index === 0 ? 'active' : '' }}" data-slide="{{ $index }}"></div>
-        @endforeach
+<!-- HERO ESTÁTICO - SOLO IMAGEN -->
+@if(isset($heroImage) && $heroImage->image)
+<section class="hero-static">
+    <div class="hero-image-wrapper">
+        <img src="/storage/{{ $heroImage->image }}" 
+             alt="Hero AROMA" 
+             class="hero-image">
     </div>
 </section>
 @endif
-
 <!-- Productos para Mujer -->
 <section class="store-section">
     <h2 class="section-title">PARA MUJER</h2>

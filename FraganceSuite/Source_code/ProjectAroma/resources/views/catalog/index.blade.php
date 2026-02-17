@@ -177,7 +177,7 @@
             @endif
             
             @if(request('category') || request('brand') || request('price') || request('search') || (request('sort') && request('sort') != 'newest'))
-                <button onclick="clearAllFilters()" style="background: none; border: none; color: #927a1b; cursor: pointer; font-size: 14px; margin-left: 10px;">
+                <button onclick="clearAllFilters()" style="background: none; border: none; color: #666; cursor: pointer; font-size: 14px; margin-left: 10px;">
                     <i class="fas fa-times"></i> Limpiar todos
                 </button>
             @endif

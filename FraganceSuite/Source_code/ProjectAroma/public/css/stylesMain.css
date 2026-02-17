@@ -86,7 +86,8 @@ header.hidden {
     color: transparent;
     text-transform: uppercase;
     position: relative;
-    
+    text-decoration: none;
+
 }
 
 .icon svg {
@@ -162,159 +163,19 @@ header.hidden {
 .category:hover::after {
     width: 100%;
 }
-/* ========== SLIDER ========== */
-.slider-container {
-    position: relative;
-    width: 100%;
-    height: 350px;
-    overflow: hidden;
-    margin: 20px 0;
-}
 
-.slider {
-    display: flex;
-    transition: transform 0.5s ease-in-out;
-    height: 100%;
-    width: 100%;
-}
-
-.slide {
-    min-width: 100%;
-    height: 100%;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 0 30px;
-    text-align: center;
-    position: relative;
-    flex-shrink: 0;
-    overflow: hidden;
-}
-
-/* Elimina los gradientes para que no interfieran con la imagen */
-.slide-1, .slide-2, .slide-3 {
-    background: transparent;
-}
-
-/* Fondo de respaldo por si falla la imagen */
-.slide.no-image {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-}
-
-.slide-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center center;
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 1;
-}
-
-/* Overlay para mejorar contraste del texto */
-.slide::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.3);
-    z-index: 1;
-}
-
-.slide-title, .slide-button {
-    position: relative;
-    z-index: 2;
-    color: white;
-    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
-}
-
-.slide-title {
-    font-size: 36px;
-    margin-bottom: 15px;
-    font-weight: 300;
-    letter-spacing: 1px;
-}
-
-.slider-nav {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 10px;
-    z-index: 4;
-}
-
-.nav-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background-color: rgba(255, 255, 255, 0.5);
-    cursor: pointer;
-    transition: all 0.3s;
-}
-
-.nav-dot.active {
-    background-color: #927a1b;
-    transform: scale(1.2);
-}
-
-.slider-arrow {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background-color: rgba(255, 255, 255, 0.7);
-    border: none;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 4;
-    transition: all 0.3s;
-    color: #333;
-    font-size: 18px;
-}
-
-.slider-arrow:hover {
-    background-color: #927a1b;
-    color: white;
-}
-
-.arrow-left {
-    left: 20px;
-}
-
-.arrow-right {
-    right: 20px;
-}
-
-.slider-arrow.disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    pointer-events: none;
-}
-
-/* ========== PROMOCIÓN SPLIT ========== */
+/* ========== PROMOCIÓN SPLIT - VERSIÓN MINIMALISTA ========== */
 .split-promo {
     display: flex;
     width: 100%;
-    height: 400px;
+    height: 380px;
     margin: 60px 0;
     background: #ffffff;
-    border-radius: 0px;
     overflow: hidden;
     position: relative;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+    border: 1px solid #f0f0f0;
     opacity: 0;
-    transform: translateY(50px);
+    transform: translateY(30px);
     transition: opacity 0.8s ease, transform 0.8s ease;
 }
 
@@ -325,7 +186,7 @@ header.hidden {
 
 .split-content {
     flex: 1;
-    padding: 50px;
+    padding: 40px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -334,164 +195,168 @@ header.hidden {
     z-index: 2;
 }
 
+/* Badge minimalista */
 .promo-badge {
-    background: linear-gradient(135deg, #927a1b, #b89c2e);
-    color: white;
-    padding: 8px 20px;
-    border-radius: 0px;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 1px;
+    background: transparent;
+    color: #666;
+    padding: 6px 0;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
     display: inline-block;
-    margin-bottom: 25px;
+    margin-bottom: 20px;
     width: fit-content;
-    box-shadow: 0 4px 12px rgba(146, 122, 27, 0.25);
+    border-bottom: 1px solid #000;
+    opacity: 0.7;
 }
 
+/* Títulos minimalistas */
 .promo-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 42px;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 32px;
     color: #000000;
-    margin-bottom: 15px;
-    font-weight: 800;
-    letter-spacing: -0.5px;
+    margin-bottom: 12px;
+    font-weight: 300;
+    letter-spacing: -1px;
     line-height: 1.1;
-    position: relative;
-}
-
-.promo-title::after {
-    content: '';
-    position: absolute;
-    bottom: -10px;
-    left: 0;
-    width: 60px;
-    height: 3px;
-    background: linear-gradient(to right, #927a1b, #ddd79a);
-    border-radius: 2px;
 }
 
 .promo-subtitle {
-    color: #666;
-    font-size: 18px;
+    color: #777;
+    font-size: 16px;
     margin-bottom: 20px;
-    font-weight: 500;
-    line-height: 1.5;
+    font-weight: 400;
+    line-height: 1.4;
     letter-spacing: 0.3px;
+    max-width: 400px;
 }
 
 .promo-description {
-    color: #777;
-    font-size: 16px;
-    line-height: 1.7;
-    margin-bottom: 30px;
-    max-width: 500px;
+    color: #888;
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 25px;
+    max-width: 400px;
+    font-weight: 300;
 }
 
+/* Características sutiles */
 .promo-features {
     display: flex;
-    gap: 20px;
-    margin-bottom: 30px;
+    gap: 15px;
+    margin-bottom: 25px;
     flex-wrap: wrap;
 }
 
 .feature {
     display: flex;
     align-items: center;
-    gap: 8px;
-    background: rgba(146, 122, 27, 0.08);
-    padding: 10px 18px;
-    border-radius: 8px;
-    color: #555;
-    font-size: 14px;
-    font-weight: 500;
+    gap: 6px;
+    background: transparent;
+    padding: 6px 12px;
+    color: #666;
+    font-size: 12px;
+    font-weight: 400;
+    border: 1px solid #eee;
+    transition: all 0.2s;
+}
+
+.feature:hover {
+    border-color: #000;
+    background: #fafafa;
 }
 
 .feature i {
-    color: #927a1b;
-    font-size: 14px;
+    color: #666;
+    font-size: 12px;
+    opacity: 0.6;
 }
 
+/* Precios minimalistas */
 .promo-price {
     display: flex;
-    align-items: center;
+    align-items: baseline;
     gap: 15px;
-    margin-bottom: 35px;
+    margin-bottom: 30px;
+    align-items: center;
 }
 
 .old-price {
     color: #999;
-    font-size: 20px;
+    font-size: 16px;
     text-decoration: line-through;
-    font-weight: 500;
+    font-weight: 300;
 }
 
 .new-price {
-    color: #927a1b;
-    font-size: 32px;
-    font-weight: 800;
+    color: #000;
+    font-size: 28px;
+    font-weight: 300;
+    letter-spacing: -0.5px;
 }
 
 .discount {
-    background: linear-gradient(135deg, #927a1b, #b89c2e);
-    color: white;
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 14px;
-    font-weight: 700;
+    background: #f5f5f5;
+    color: #666;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 500;
     letter-spacing: 0.5px;
+    border: 1px solid #eee;
 }
 
+/* Botón minimalista */
 .promo-button {
-    background: linear-gradient(135deg, #927a1b 0%, #b89c2e 100%);
+    background: #252524;
     color: white;
-    border: none;
-    padding: 16px 40px;
-    border-radius: 0px;
-    font-size: 15px;
-    font-weight: 600;
+    border: 1px solid #000;
+    padding: 14px 35px;
+    font-size: 13px;
+    font-weight: 500;
     cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: all 0.3s;
     display: inline-flex;
     align-items: center;
-    gap: 12px;
-    letter-spacing: 0.8px;
+    gap: 10px;
+    letter-spacing: 1px;
     width: fit-content;
+    text-transform: uppercase;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 8px 25px rgba(146, 122, 27, 0.25);
 }
 
-.promo-button::before {
+.promo-button::after {
     content: '';
     position: absolute;
     top: 0;
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: left 0.7s;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 0.6s;
 }
 
 .promo-button:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 30px rgba(146, 122, 27, 0.35);
-    background: linear-gradient(135deg, #b89c2e 0%, #927a1b 100%);
+    background: #222;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
-.promo-button:hover::before {
+.promo-button:hover::after {
     left: 100%;
 }
 
+.promo-button:hover i {
+    transform: translateX(3px);
+}
+
 .promo-button i {
-    font-size: 16px;
+    font-size: 14px;
     transition: transform 0.3s;
 }
 
-.promo-button:hover i {
-    transform: translateX(5px);
-}
-
+/* Imagen minimalista */
 .split-image {
     flex: 1;
     display: flex;
@@ -500,10 +365,11 @@ header.hidden {
     overflow: hidden;
     height: 100%;
     position: relative;
-    transform: translateX(100px);
+    transform: translateX(50px);
     opacity: 0;
-    transition: transform 1.2s ease, opacity 1.2s ease;
-    transition-delay: 0.3s; 
+    transition: transform 1s ease, opacity 1s ease;
+    transition-delay: 0.2s;
+    border-left: 1px solid #f0f0f0;
 }
 
 .split-promo.visible .split-image {
@@ -517,20 +383,24 @@ header.hidden {
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(45deg, rgba(146, 122, 27, 0.05) 0%, transparent 100%);
+    background: linear-gradient(to right, rgba(255,255,255,0.3), transparent);
     z-index: 1;
+    pointer-events: none;
 }
 
 .split-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 1s ease;
+    transition: transform 1.2s ease;
+    filter: grayscale(0.1);
 }
 
 .split-promo:hover .split-image img {
-    transform: scale(1.05);
+    transform: scale(1.03);
 }
+
+
 
 /* Responsive */
 @media (max-width: 992px) {
@@ -546,21 +416,38 @@ header.hidden {
     }
     
     .split-content {
-        padding: 40px 30px;
+        padding: 30px;
+        order: 2;
     }
     
     .split-image {
-        height: 300px;
-        order: -1;
+        height: 250px;
+        order: 1;
+        border-left: none;
+        border-bottom: 1px solid #f0f0f0;
+        transform: translateY(30px);
+    }
+    
+    .split-promo.visible .split-image {
+        transform: translateY(0);
     }
     
     .promo-title {
-        font-size: 36px;
+        font-size: 28px;
     }
     
     .promo-features {
-        justify-content: center;
+        justify-content: flex-start;
     }
+}
+
+/* Efecto hover general para toda la promo */
+.split-promo {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.split-promo:hover {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
 }
 
 /*PRODUCTOS*/
@@ -838,7 +725,6 @@ header.hidden {
     .product-card:nth-child(3) { transition-delay: 0.15s; }
     .product-card:nth-child(4) { transition-delay: 0.2s; }
 }
-/* ========== FOOTER ========== */
 footer {
     background-color: #000000;
     color: white;
@@ -862,22 +748,36 @@ footer {
     font-size: 13px;
     margin-bottom: 15px;
     color: #cfcccc;
+    /* Añade estas líneas para alinear mejor */
+    margin-left: 0;
+    padding-left: 0;
+    text-align: left;
+    width: 100%;
+    display: block;
 }
 
 .footer-links {
     list-style: none;
     font-size: 13px;
-
+    /* Añade estas líneas para alinear con el título */
+    margin: 0;
+    padding: 0;
+    padding-left: 0;
 }
 
 .footer-links li {
     margin-bottom: 5px;
+    /* Alinea los puntos de la lista */
+    padding-left: 0;
+    margin-left: 0;
 }
 
 .footer-links a {
     color: #cfcccc;
     text-decoration: none;
     transition: color 0.3s;
+    display: inline-block;
+    width: 100%;
 }
 
 .footer-links a:hover {
@@ -1313,4 +1213,61 @@ footer {
 
 .address-card-body {
     padding: 20px;
+}
+
+/* ========== HERO ESTÁTICO - SOLO IMAGEN ========== */
+.hero-static {
+    width: 100%;
+    height: 500px; /* Altura perfecta */
+    margin: 0 0 40px 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-image-wrapper {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.hero-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 30%;
+    display: block;
+}
+
+/* SIN OVERLAY, SIN TEXTO, SIN BOTONES */
+.hero-overlay {
+    display: none;
+}
+
+.hero-content {
+    display: none;
+}
+
+.hero-title {
+    display: none;
+}
+
+.hero-subtitle {
+    display: none;
+}
+
+.hero-btn {
+    display: none;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+    .hero-static {
+        height: 300px;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-static {
+        height: 250px;
+    }
 }

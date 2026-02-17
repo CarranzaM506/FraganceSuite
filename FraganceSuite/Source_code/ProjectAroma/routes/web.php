@@ -5,7 +5,7 @@ use App\Http\Controllers\ControllerImportProducts;
 use App\Http\Controllers\ControllerProduct;
 use App\Http\Controllers\ControllerDiscount;
 use App\Http\Controllers\LocationController;
-use App\Http\Controllers\SliderController;
+use App\Http\Controllers\HeroController; // CAMBIADO de SliderController
 use App\Http\Controllers\MainPageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CartController;
@@ -32,9 +32,11 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     Route::post('/import', [ControllerImportProducts::class, 'import'])->name('product.import');
 
-    //PRODCUTOS
+    // PRODUCTOS
     Route::resource('product', ControllerProduct::class);
-    Route::resource('slider', SliderController::class);
+    
+    // HERO - Reemplaza completamente a slider
+    Route::resource('hero', HeroController::class)->except(['show']);
 
     // PROMOCIONES / DESCUENTOS
     Route::resource('discount', ControllerDiscount::class);
@@ -42,7 +44,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('products/search', [ControllerDiscount::class, 'searchProducts'])->name('products.search');
 });
 
-//Perfil
+// Perfil
 Route::middleware('auth')->group(function () {
     Route::get('/profile',[ProfileController::class,'index'])->name('profile.index');
     Route::get('profile/edit',[ProfileController::class, 'edit'])->name('profile.edit');

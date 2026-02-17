@@ -28,14 +28,22 @@
             <h3 class="footer-title">SIGUENOS</h3>
             <ul class="footer-links">
                 <li>
-                    <a href="#" class="social-icon" title="Instagram">
-                        <i class="fab fa-instagram"></i>
-                    </a>
+                    <a href="https://www.instagram.com/aromaperfumeriacr?igsh=MnY4MnZpdWU4aTVy" 
+               target="_blank" 
+               rel="noopener noreferrer"
+               class="social-icon" 
+               title="Instagram">
+                <i class="fab fa-instagram"></i>
+            </a>
                 </li>
                 <li>
-                    <a href="#" class="social-icon" title="TikTok">
-                        <i class="fab fa-tiktok"></i>
-                    </a>
+                    <a href="https://www.tiktok.com/@aromaperfumeriacr?_r=1&_t=ZS-93oWDxsF3kS" 
+               target="_blank" 
+               rel="noopener noreferrer"
+               class="social-icon" 
+               title="TikTok">
+                <i class="fab fa-tiktok"></i>
+            </a>
                 </li>
             </ul>
         </div>
