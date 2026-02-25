@@ -17,11 +17,25 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
+
+    public $timestamps = false;
+
     protected $fillable = [
         'name',
+        'lastname',
         'email',
         'password',
+        'phone',
+        'type',
+        'provider',
+        'provider_id',
     ];
+
+    public function locations()
+    {
+        return $this->hasMany(Location::class, 'iduser','id');
+    }
+
 
     /**
      * The attributes that should be hidden for serialization.
