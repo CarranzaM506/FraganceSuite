@@ -69,3 +69,11 @@ Route::get('/auth/{provider}/callback', [SocialAuthController::class, 'callback'
     ->whereIn('provider', ['google', 'facebook']);
 
 //Empezando a trabajar
+
+Route::get('/privacy', function () {
+    return response('Privacy policy placeholder', 200);
+});
+
+Route::get('/data-deletion', function () {
+    return response('User data deletion instructions placeholder', 200);
+});
