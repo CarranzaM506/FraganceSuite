@@ -67,3 +67,5 @@ Route::get('/auth/{provider}/redirect', [SocialAuthController::class, 'redirect'
 
 Route::get('/auth/{provider}/callback', [SocialAuthController::class, 'callback'])
     ->whereIn('provider', ['google', 'facebook']);
+
+//Empezando a trabajar
