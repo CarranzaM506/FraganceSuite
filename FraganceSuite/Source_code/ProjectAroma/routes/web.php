@@ -5,9 +5,10 @@ use App\Http\Controllers\ControllerImportProducts;
 use App\Http\Controllers\ControllerProduct;
 use App\Http\Controllers\ControllerDiscount;
 use App\Http\Controllers\LocationController;
-use App\Http\Controllers\HeroController; // CAMBIADO de SliderController
+use App\Http\Controllers\HeroController; 
 use App\Http\Controllers\MainPageController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ProductDetailController;
 use App\Http\Controllers\CartController;
 use Illuminate\Support\Facades\Route;
 
@@ -17,6 +18,11 @@ Route::get('/', [MainPageController::class, 'index'])->name('mainPage');
 // CATÁLOGO
 Route::get('/catalog', [CatalogController::class, 'index'])->name('catalog.index');
 Route::get('/catalogo', [CatalogController::class, 'index'])->name('catalog');
+
+// DETALLE DE PRODUCTO - NUEVA RUTA
+Route::get('/producto/{id}', [ProductDetailController::class, 'show'])->name('product.show');
+Route::get('/product', [ControllerProduct::class, 'index'])->name('product');
+
 
 // CARRITO
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
@@ -35,7 +41,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     // PRODUCTOS
     Route::resource('product', ControllerProduct::class);
     
-    // HERO - Reemplaza completamente a slider
+    // HERO
     Route::resource('hero', HeroController::class)->except(['show']);
 
     // PROMOCIONES / DESCUENTOS
