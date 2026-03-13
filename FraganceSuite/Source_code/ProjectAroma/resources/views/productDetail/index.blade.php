@@ -118,36 +118,38 @@
     }
 
     // Función para añadir al carrito
-    function addToCart(productId) {
-        // Aquí implementarías la lógica para añadir al carrito
-        // Por ahora mostraremos una notificación
-        showNotification('Producto añadido al carrito', 'success');
-        
-        // Aquí puedes hacer una petición AJAX para añadir al carrito
-        console.log('Añadiendo al carrito:', productId, 'Cantidad:', currentQuantity);
-        
-        // Ejemplo de petición fetch:
-        /*
-        fetch('/api/cart/add', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            body: JSON.stringify({
-                product_id: productId,
-                quantity: currentQuantity
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                showNotification('Producto añadido al carrito', 'success');
-                // Actualizar contador del carrito
-                updateCartCount();
+    async function addToCart(productId) {
+        try {
+            const csrfTokenElement = document.querySelector('meta[name="csrf-token"]');
+            if (!csrfTokenElement) {
+                showNotification('Error: CSRF token no encontrado. Recarga la página.', 'error');
+                return;
             }
-        });
-        */
+
+            const response = await fetch('/api/cart/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfTokenElement.getAttribute('content')
+                },
+                body: JSON.stringify({ productId, quantity: currentQuantity })
+            });
+            if (response.ok) {
+                showNotification('Producto añadido al carrito', 'success');
+                // Actualizar el preview del carrito si está disponible
+                if (window.cartPreview) {
+                    setTimeout(() => {
+                        window.cartPreview.updatePreview();
+                    }, 100);
+                }
+            } else {
+                const errorData = await response.json();
+                showNotification(`Error: ${errorData.error || 'Error al añadir al carrito'}`, 'error');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showNotification('Error al añadir al carrito', 'error');
+        }
     }
 
     // Función para toggle favoritos
@@ -172,30 +174,73 @@
     // Función para mostrar notificaciones
     function showNotification(message, type = 'success') {
         // Eliminar notificaciones existentes
-        const existingNotification = document.querySelector('.notification');
+        const existingNotification = document.querySelector('.product-notification');
         if (existingNotification) {
             existingNotification.remove();
         }
 
         // Crear nueva notificación
         const notification = document.createElement('div');
-        notification.className = 'notification';
+        notification.className = 'product-notification';
         
         // Color según tipo
         const colors = {
-            success: '#1a1a1a',
-            error: '#ff4444',
+            success: '#000',
+            error: '#cc0000',
             info: '#927a1b'
         };
         
-        notification.style.backgroundColor = colors[type] || colors.success;
         notification.textContent = message;
+        notification.style.cssText = `
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            background: ${colors[type] || colors.success};
+            color: white;
+            padding: 15px 25px;
+            border-radius: 0px;
+            z-index: 9999;
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            animation: slideInUp 0.3s ease;
+        `;
         
         document.body.appendChild(notification);
         
+        // Agregar estilos de animación si no existen
+        if (!document.querySelector('style[data-notification-styles]')) {
+            const style = document.createElement('style');
+            style.setAttribute('data-notification-styles', 'true');
+            style.textContent = `
+                @keyframes slideInUp {
+                    from {
+                        transform: translateY(100px);
+                        opacity: 0;
+                    }
+                    to {
+                        transform: translateY(0);
+                        opacity: 1;
+                    }
+                }
+                @keyframes slideOutDown {
+                    from {
+                        transform: translateY(0);
+                        opacity: 1;
+                    }
+                    to {
+                        transform: translateY(100px);
+                        opacity: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
         // Eliminar después de 3 segundos
         setTimeout(() => {
-            notification.style.animation = 'slideIn 0.3s ease reverse';
+            notification.style.animation = 'slideOutDown 0.3s ease';
             setTimeout(() => {
                 if (notification.parentNode) {
                     notification.remove();

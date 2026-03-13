@@ -44,21 +44,35 @@ class CartManager {
     // Agregar producto al carrito
     async addToCart(productId, productName, productBrand, productCategory, productPrice, productImage, discount = 0) {
         try {
+            const csrfTokenElement = document.querySelector('meta[name="csrf-token"]');
+            if (!csrfTokenElement) {
+                this.showNotification('Error: CSRF token no encontrado. Recarga la página.', 'error');
+                console.error('CSRF token meta tag not found');
+                return;
+            }
+
             const response = await fetch('/api/cart/add', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    'X-CSRF-TOKEN': csrfTokenElement.getAttribute('content')
                 },
                 body: JSON.stringify({ productId, quantity: 1 })
             });
-            if (response.ok) {
-                return true;
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to add to cart');
+            }
+            
+            // Actualizar el preview si está disponible
+            if (window.cartPreview) {
+                window.cartPreview.updatePreview();
             }
         } catch (error) {
             console.error('Error adding to cart:', error);
+            this.showNotification(`Error al añadir al carrito: ${error.message}`, 'error');
         }
-        return false;
     }
 
     // Remover producto del carrito
@@ -143,7 +157,7 @@ class CartManager {
                     const discount = productData?.discount || 0;
 
                     // Agregar directamente al carrito
-                    this.addToCart(
+                    await this.addToCart(
                         productId,
                         productName,
                         productBrand,
@@ -154,7 +168,7 @@ class CartManager {
                     );
 
                     // Mostrar notificación
-                    //this.showNotification(`Producto añadido al carrito`);
+                    this.showNotification(`Producto añadido al carrito`);
 
                     // Animación visual
                     this.animateAddToCart(button);
@@ -187,7 +201,7 @@ class CartManager {
     }
 
     // Mostrar notificación
-    showNotification(message) {
+    showNotification(message, type = 'success') {
         // Crear notificación si no existe
         let notification = document.getElementById('cartNotification');
         if (!notification) {

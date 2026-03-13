@@ -138,16 +138,22 @@ class CartPreview {
     // Aumentar cantidad
     async increaseQuantity(productId) {
         try {
+            const csrfTokenElement = document.querySelector('meta[name="csrf-token"]');
+            if (!csrfTokenElement) {
+                console.error('CSRF token not found');
+                return;
+            }
+            
             const response = await fetch('/api/cart/add', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    'X-CSRF-TOKEN': csrfTokenElement.getAttribute('content')
                 },
                 body: JSON.stringify({ productId, quantity: 1 })
             });
             if (response.ok) {
-                this.updatePreview();
+                await this.updatePreview();
             }
         } catch (error) {
             console.error('Error increasing quantity:', error);
@@ -162,16 +168,22 @@ class CartPreview {
             await this.deleteProduct(productId);
         } else {
             try {
+                const csrfTokenElement = document.querySelector('meta[name="csrf-token"]');
+                if (!csrfTokenElement) {
+                    console.error('CSRF token not found');
+                    return;
+                }
+                
                 const response = await fetch('/api/cart/update', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        'X-CSRF-TOKEN': csrfTokenElement.getAttribute('content')
                     },
                     body: JSON.stringify({ productId, quantity: current - 1 })
                 });
                 if (response.ok) {
-                    this.updatePreview();
+                    await this.updatePreview();
                 }
             } catch (error) {
                 console.error('Error decreasing quantity:', error);
@@ -182,11 +194,17 @@ class CartPreview {
     // Eliminar producto
     async deleteProduct(productId) {
         try {
+            const csrfTokenElement = document.querySelector('meta[name="csrf-token"]');
+            if (!csrfTokenElement) {
+                console.error('CSRF token not found');
+                return;
+            }
+            
             const response = await fetch('/api/cart/remove', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    'X-CSRF-TOKEN': csrfTokenElement.getAttribute('content')
                 },
                 body: JSON.stringify({ productId })
             });
