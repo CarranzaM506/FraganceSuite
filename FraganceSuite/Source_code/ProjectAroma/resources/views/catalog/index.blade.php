@@ -198,34 +198,35 @@
             </div>
         @else
             <div class="product-grid catalog-grid">
-                @foreach($products as $product)
-                <div class="product-card catalog-card">
-                    <div class="product-image">
-                        @if($product->pathimg)
-                            <img src="{{ $product->pathimg }}" alt="{{ $product->name }}" class="product-img">
-                        @else
-                            <div class="product-img-placeholder">
-                                <i class="fas fa-wine-bottle"></i>
-                            </div>
-                        @endif
-                        
-                        <div class="product-hover">
-                            <span class="wishlist-icon" data-product="{{ $product->idproduct }}">
-                                <i class="far fa-heart"></i>
-                            </span>
-                            <span class="add-cart-icon" data-product="{{ $product->idproduct }}">
-                                <i class="fas fa-plus"></i>
-                            </span>
-                        </div>
-                    </div>
-                    
-                    <div class="product-info">
-                        <h3 class="product-name">{{ $product->name }}</h3>
-                        <p class="product-brand">{{ $product->brand }}</p>
-                        <p class="product-category" style="display: none;">{{ $product->category }}</p>
-                        <span class="product-price">₡{{ number_format($product->price, 2) }}</span>                    </div>
-                </div>
-                @endforeach
+               <!-- En el grid de productos, modifica el div del producto para que sea un enlace -->
+@foreach($products as $product)
+<a href="{{ route('product.show', $product->idproduct) }}" class="product-card catalog-card" style="text-decoration: none; color: inherit;">
+    <div class="product-image">
+        @if($product->pathimg)
+            <img src="{{ $product->pathimg }}" alt="{{ $product->name }}" class="product-img">
+        @else
+            <div class="product-img-placeholder">
+                <i class="fas fa-wine-bottle"></i>
+            </div>
+        @endif
+        
+        <div class="product-hover">
+            <span class="wishlist-icon" onclick="event.preventDefault(); event.stopPropagation();" data-product="{{ $product->idproduct }}">
+                <i class="far fa-heart"></i>
+            </span>
+            <span class="add-cart-icon" onclick="event.preventDefault(); event.stopPropagation();" data-product="{{ $product->idproduct }}">
+                <i class="fas fa-plus"></i>
+            </span>
+        </div>
+    </div>
+    
+    <div class="product-info">
+        <h3 class="product-name">{{ $product->name }}</h3>
+        <p class="product-brand">{{ $product->brand }}</p>
+        <p class="product-price">₡{{ number_format($product->price, 2) }}</p>
+    </div>
+</a>
+@endforeach
             </div>
             
             <!-- Flechas de paginación -->
