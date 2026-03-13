@@ -19,76 +19,100 @@ class CartManager {
         }
     }
 
-    // Obtener carrito desde localStorage
-    getCart() {
+    // Obtener carrito desde la API
+    async getCart() {
         try {
-            const cart = localStorage.getItem(this.storageKey);
-            return cart ? JSON.parse(cart) : {};
+            const response = await fetch('/api/cart');
+            if (response.ok) {
+                const data = await response.json();
+                return data.items.reduce((acc, item) => {
+                    acc[item.id] = item;
+                    return acc;
+                }, {});
+            }
         } catch (error) {
             console.error('Error al obtener carrito:', error);
-            return {};
         }
+        return {};
     }
 
-    // Guardar carrito en localStorage
+    // Guardar carrito (no necesario con DB)
     saveCart(cart) {
-        try {
-            localStorage.setItem(this.storageKey, JSON.stringify(cart));
-            console.log('Carrito guardado:', cart);
-        } catch (error) {
-            console.error('Error al guardar carrito:', error);
-        }
+        console.log('Carrito actualizado en DB');
     }
 
     // Agregar producto al carrito
     async addToCart(productId, productName, productBrand, productCategory, productPrice, productImage, discount = 0) {
-        const cart = this.getCart();
-
-        if (cart[productId]) {
-            // Si el producto ya está, aumentar la cantidad
-            cart[productId].quantity += 1;
-        } else {
-            // Si no está, agregarlo
-            cart[productId] = {
-                id: productId,
-                name: productName,
-                brand: productBrand,
-                category: productCategory,
-                price: parseFloat(productPrice),
-                image: productImage,
-                quantity: 1,
-                discount: discount
-            };
+        try {
+            const response = await fetch('/api/cart/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({ productId, quantity: 1 })
+            });
+            if (response.ok) {
+                return true;
+            }
+        } catch (error) {
+            console.error('Error adding to cart:', error);
         }
-
-        this.saveCart(cart);
-        return true;
+        return false;
     }
 
     // Remover producto del carrito
-    removeFromCart(productId) {
-        const cart = this.getCart();
-        delete cart[productId];
-        this.saveCart(cart);
+    async removeFromCart(productId) {
+        try {
+            const response = await fetch('/api/cart/remove', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({ productId })
+            });
+            if (response.ok) {
+                return true;
+            }
+        } catch (error) {
+            console.error('Error removing from cart:', error);
+        }
+        return false;
     }
 
     // Actualizar cantidad
-    updateQuantity(productId, quantity) {
-        const cart = this.getCart();
-        if (cart[productId]) {
-            if (quantity <= 0) {
-                delete cart[productId];
-            } else {
-                cart[productId].quantity = quantity;
+    async updateQuantity(productId, quantity) {
+        try {
+            const response = await fetch('/api/cart/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({ productId, quantity })
+            });
+            if (response.ok) {
+                return true;
             }
-            this.saveCart(cart);
+        } catch (error) {
+            console.error('Error updating quantity:', error);
         }
+        return false;
     }
 
     // Obtener cantidad de items en el carrito
-    getCartCount() {
-        const cart = this.getCart();
-        return Object.values(cart).reduce((total, item) => total + item.quantity, 0);
+    async getCartCount() {
+        try {
+            const response = await fetch('/api/cart');
+            if (response.ok) {
+                const data = await response.json();
+                return data.items.reduce((total, item) => total + item.quantity, 0);
+            }
+        } catch (error) {
+            console.error('Error getting cart count:', error);
+        }
+        return 0;
     }
 
     // Adjuntar listeners a botones de agregar al carrito

@@ -58,8 +58,8 @@ class CartPreview {
     }
 
     // Actualizar el contenido del preview
-    updatePreview() {
-        const cart = this.getCart();
+    async updatePreview() {
+        const cart = await this.getCart();
         
         if (Object.keys(cart).length === 0) {
             this.itemsContainer.innerHTML = '<p class="empty-cart">Tu carrito está vacío</p>';
@@ -136,138 +136,67 @@ class CartPreview {
     }
 
     // Aumentar cantidad
-    increaseQuantity(productId) {
-        const cart = this.getCart();
-        if (cart[productId]) {
-            cart[productId].quantity += 1;
-            this.saveCart(cart);
+    async increaseQuantity(productId) {
+        try {
+            const response = await fetch('/api/cart/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({ productId, quantity: 1 })
+            });
+            if (response.ok) {
+                this.updatePreview();
+            }
+        } catch (error) {
+            console.error('Error increasing quantity:', error);
         }
     }
 
     // Disminuir cantidad
     async decreaseQuantity(productId) {
-        const cart = this.getCart();
-        if (cart[productId]) {
-            if (cart[productId].quantity <= 1) {
-                // Si es la última unidad, pedir confirmación para eliminar
-                await this.deleteProduct(productId);
-            } else {
-                cart[productId].quantity -= 1;
-                this.saveCart(cart);
+        const cart = await this.getCart();
+        const current = cart[productId]?.quantity || 0;
+        if (current <= 1) {
+            await this.deleteProduct(productId);
+        } else {
+            try {
+                const response = await fetch('/api/cart/update', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({ productId, quantity: current - 1 })
+                });
+                if (response.ok) {
+                    this.updatePreview();
+                }
+            } catch (error) {
+                console.error('Error decreasing quantity:', error);
             }
         }
     }
 
-    // Eliminar producto con confirmación
+    // Eliminar producto
     async deleteProduct(productId) {
-        const cart = this.getCart();
-        if (cart[productId]) {
-            const productName = cart[productId].name;
-            const confirmed = await this.showDeleteConfirmationModal(productName);
-            
-            if (confirmed) {
-                delete cart[productId];
-                this.saveCart(cart);
-                this.showDeleteNotification(`${productName} eliminado del carrito`);
+        try {
+            const response = await fetch('/api/cart/remove', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({ productId })
+            });
+            if (response.ok) {
+                this.updatePreview();
+                this.showDeleteNotification('Producto eliminado del carrito');
             }
+        } catch (error) {
+            console.error('Error deleting product:', error);
         }
-    }
-
-    // Modal de confirmación para eliminar producto
-    showDeleteConfirmationModal(productName) {
-        return new Promise((resolve) => {
-            const modal = document.createElement('div');
-            modal.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: rgba(0, 0, 0, 0.6);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                z-index: 10000;
-                animation: fadeIn 0.3s ease-in-out;
-            `;
-
-            const modalContent = document.createElement('div');
-            modalContent.style.cssText = `
-                background: white;
-                padding: 30px;
-                border-radius: 0px;
-                max-width: 300px;
-                width: 90%;
-                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-                animation: slideUp 0.3s ease-in-out;
-                text-align: center;
-            `;
-
-            modalContent.innerHTML = `
-                <p style="margin: 0 0 25px 0; color: #666; font-size: 14px;">
-                    ¿Eliminar del carrito?
-                </p>
-                <div style="display: flex; gap: 10px; justify-content: center;">
-                    <button id="deleteCancel" style="
-                        padding: 10px 20px;
-                        background: #f5f5f5;
-                        color: #666;
-                        border: 1px solid #ddd;
-                        border-radius: 0px;
-                        font-size: 12px;
-                        font-weight: 600;
-                        cursor: pointer;
-                        letter-spacing: 0.5px;
-                        text-transform: uppercase;
-                        transition: all 0.2s;
-                    ">
-                        No
-                    </button>
-                    <button id="deleteConfirm" style="
-                        padding: 10px 20px;
-                        background: #cc0000;
-                        color: white;
-                        border: none;
-                        border-radius: 0px;
-                        font-size: 12px;
-                        font-weight: 600;
-                        cursor: pointer;
-                        letter-spacing: 0.5px;
-                        text-transform: uppercase;
-                        transition: all 0.2s;
-                    ">
-                        Sí, eliminar
-                    </button>
-                </div>
-            `;
-
-            modal.appendChild(modalContent);
-            document.body.appendChild(modal);
-
-            const confirmBtn = modal.querySelector('#deleteConfirm');
-            const cancelBtn = modal.querySelector('#deleteCancel');
-
-            const closeModal = (result) => {
-                modal.style.animation = 'fadeOut 0.3s ease-in-out';
-                setTimeout(() => {
-                    modal.remove();
-                    resolve(result);
-                }, 300);
-            };
-
-            confirmBtn.addEventListener('click', () => closeModal(true));
-            cancelBtn.addEventListener('click', () => closeModal(false));
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) closeModal(false);
-            });
-
-            confirmBtn.addEventListener('mouseenter', function() {
-                this.style.background = '#ff0000';
-            });
-            confirmBtn.addEventListener('mouseleave', function() {
-                this.style.background = '#cc0000';
-            });
-        });
     }
 
     // Mostrar notificación de eliminación
@@ -305,26 +234,27 @@ class CartPreview {
         }, 3000);
     }
 
-    // Obtener carrito desde localStorage
-    getCart() {
+    // Obtener carrito desde la API
+    async getCart() {
         try {
-            const cart = localStorage.getItem('aroma_cart');
-            return cart ? JSON.parse(cart) : {};
+            const response = await fetch('/api/cart');
+            if (response.ok) {
+                const data = await response.json();
+                return data.items.reduce((acc, item) => {
+                    acc[item.id] = item;
+                    return acc;
+                }, {});
+            }
         } catch (error) {
             console.error('Error al obtener carrito:', error);
-            return {};
         }
+        return {};
     }
 
-    // Guardar carrito en localStorage
+    // Guardar carrito (no necesario con DB)
     saveCart(cart) {
-        try {
-            localStorage.setItem('aroma_cart', JSON.stringify(cart));
-            // Disparar evento personalizado
-            window.dispatchEvent(new CustomEvent('cartUpdated'));
-        } catch (error) {
-            console.error('Error al guardar carrito:', error);
-        }
+        // Disparar evento personalizado
+        window.dispatchEvent(new CustomEvent('cartUpdated'));
     }
 }
 
@@ -660,6 +590,14 @@ style.textContent = `
 
     .cart-preview-items::-webkit-scrollbar-thumb:hover {
         background: #b0b0b0;
+    }
+
+    /* Responsive para móviles */
+    @media (max-width: 768px) {
+        .cart-preview-dropdown {
+            width: 90vw;
+            max-width: 350px;
+        }
     }
 `;
 document.head.appendChild(style);
