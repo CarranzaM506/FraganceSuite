@@ -9,7 +9,6 @@ class CartManager {
         this.pendingProduct = null;
         this.init();
     }
-
     // Inicializar event listeners
     init() {
         // Ejecutar solo una vez cuando el DOM esté listo
