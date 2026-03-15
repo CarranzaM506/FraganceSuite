@@ -29,14 +29,12 @@ class ControllerDiscount extends Controller
             'value' => 'required|numeric|min:0.01',
             'startdate' => 'required|date',
             'enddate' => 'required|date|after_or_equal:startdate',
-            'condition' => 'required|string|max:100',
             'products' => 'required|array|min:1',
             'products.*' => 'integer|exists:product,idproduct',
         ],[
             'value.required' => 'El valor del descuento es obligatorio.',
             'startdate.required' => 'La fecha de inicio es obligatoria.',
             'enddate.required' => 'La fecha límite es obligatoria.',
-            'condition.required' => 'La condición de la promoción es obligatoria.',
             'products.required' => 'Debes seleccionar al menos un producto para la promoción.',
         ]);
 
@@ -56,7 +54,7 @@ class ControllerDiscount extends Controller
             'value' => $request->value,
             'startdate' => $request->startdate,
             'enddate' => $request->enddate,
-            'condition' => $request->condition,
+            
         ]);
 
         // Assign products to this discount (overwrite previous if force_replace)
@@ -91,14 +89,12 @@ class ControllerDiscount extends Controller
             'value' => 'required|numeric|min:0.01',
             'startdate' => 'required|date',
             'enddate' => 'required|date|after_or_equal:startdate',
-            'condition' => 'required|string|max:100',
             'products' => 'required|array|min:1',
             'products.*' => 'integer|exists:product,idproduct',
         ],[
             'value.required' => 'El valor del descuento es obligatorio.',
             'startdate.required' => 'La fecha de inicio es obligatoria.',
             'enddate.required' => 'La fecha límite es obligatoria.',
-            'condition.required' => 'La condición de la promoción es obligatoria.',
             'products.required' => 'Debes seleccionar al menos un producto para la promoción.',
         ]);
 
@@ -106,7 +102,6 @@ class ControllerDiscount extends Controller
         $discount->value = $request->value;
         $discount->startdate = $request->startdate;
         $discount->enddate = $request->enddate;
-        $discount->condition = $request->condition;
         $discount->save();
 
         $selected = $request->products;

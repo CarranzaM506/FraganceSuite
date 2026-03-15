@@ -46,7 +46,6 @@
                                     <input type="hidden" name="value" value="{{ old('value', $discount->value) }}">
                                     <input type="hidden" name="startdate" value="{{ old('startdate', $discount->startdate) }}">
                                     <input type="hidden" name="enddate" value="{{ old('enddate', $discount->enddate) }}">
-                                    <input type="hidden" name="condition" value="{{ old('condition', $discount->condition) }}">
                                     @if(old('products'))
                                         @foreach(old('products') as $pid)
                                             <input type="hidden" name="products[]" value="{{ $pid }}">
@@ -77,11 +76,7 @@
                                     <input type="datetime-local" name="enddate" class="form-control" value="{{ old('enddate', \Carbon\Carbon::parse($discount->enddate)->format('Y-m-d\\TH:i')) }}" required>
                                 </div>
 
-                                <div class="col-12">
-                                    <label class="form-label">Condición</label>
-                                    <input type="text" name="condition" class="form-control" maxlength="100" value="{{ old('condition', $discount->condition) }}" required>
-                                </div>
-                            </div>
+                              
 
                             <hr class="my-4">
 
