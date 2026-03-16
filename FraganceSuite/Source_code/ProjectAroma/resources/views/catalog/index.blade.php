@@ -526,21 +526,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Carrito
-    document.querySelectorAll('.add-cart-icon').forEach(icon => {
-        icon.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            this.classList.add('adding');
-            setTimeout(() => {
-                this.classList.remove('adding');
-            }, 300);
-            
-            showToast('Producto añadido al carrito');
-        });
-    });
-    
     // Toast notifications
     function showToast(message) {
         const toast = document.createElement('div');

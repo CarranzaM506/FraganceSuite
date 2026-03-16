@@ -61,6 +61,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/location/store', [LocationController::class, 'store'])->name('location.store');
     Route::put('location/{id}/update',[LocationController::class,'update'])->name('location.update');
     Route::delete('/location/{id}/delete',[LocationController::class,'destroy'])->name('location.destroy');
+
+    // API CARRITO
+    Route::get('/api/cart', [CartController::class, 'get']);
+    Route::post('/api/cart/add', [CartController::class, 'add']);
+    Route::post('/api/cart/update', [CartController::class, 'update']);
+    Route::post('/api/cart/remove', [CartController::class, 'remove']);
 });
 
 require __DIR__ . '/auth.php';
