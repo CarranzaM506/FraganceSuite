@@ -86,8 +86,7 @@
                     </div>
 
                     <!-- === HERO PRINCIPAL (REEMPLAZA SLIDER) === -->
-                    <a class="nav-link {{ request()->is('hero*') ? 'active' : '' }}"
-                        href="{{ route('hero.index') }}">
+                    <a class="nav-link {{ request()->is('hero*') ? 'active' : '' }}" href="{{ route('hero.index') }}">
                         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <rect x="2" y="2" width="20" height="20" rx="2.18" />
                             <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor" />
@@ -95,8 +94,6 @@
                         </svg>
                         Hero Principal
                     </a>
-
-                    <hr class="border-light opacity-25 my-3" />
 
                     <!-- Promociones -->
                     <a class="nav-link d-flex align-items-center justify-content-between {{ request()->is('discount') ? 'active' : '' }}"
@@ -115,9 +112,16 @@
                     </a>
 
                     <div class="collapse submenu" id="submenuPromociones">
-                        <a class="nav-link" href="{{ route('discount.create') }}">Crear</a>
-                        <a class="nav-link" href="{{ route('discount.index') }}">Ver</a>
+                        <a class="nav-link" href="{{ route('discount.create') }}">Crear promoción</a>
+                        <a class="nav-link" href="{{ route('discount.index') }}">Ver promoción</a>
+
+                        <hr class="border-light opacity-25 my-3 mx-4" />
+
+                        <a class="nav-link" href="{{ route('promotionCode.create') }}">Crear código</a>
+
                     </div>
+
+                    <hr class="border-light opacity-25 my-3" />
 
                     @if (Auth::check())
                         <a class="nav-link" href="{{ route('logout') }}"
