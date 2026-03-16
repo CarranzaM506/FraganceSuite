@@ -10,6 +10,7 @@ use App\Http\Controllers\MainPageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProductDetailController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\CodePromotionController;
 use Illuminate\Support\Facades\Route;
 
 // RUTA PRINCIPAL
@@ -48,6 +49,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::resource('discount', ControllerDiscount::class);
     Route::get('discount/{id}/products', [ControllerDiscount::class, 'products'])->name('discount.products');
     Route::get('products/search', [ControllerDiscount::class, 'searchProducts'])->name('products.search');
+    Route::resource('promotionCode', CodePromotionController::class);
 });
 
 // Perfil
