@@ -280,50 +280,63 @@ class CartManager {
 // ============================================
 class CartPageManager {
     constructor() {
+        this.listenersAttached = false;
+        
+        // Siempre intentar inicializar en DOMContentLoaded
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => this.init());
+        } else {
+            // Si el DOM ya está listo cuando se carga el script
+            this.init();
+        }
+    }
+
+    init() {
+        // Re-obtener elementos cada vez que se inicializa
         this.container = document.getElementById('cartItemsContainer');
         this.emptyMessage = document.getElementById('emptyCartMessage');
         this.subtotalEl = document.getElementById('subtotalPrice');
         this.discountEl = document.getElementById('discountAmount');
         this.totalEl = document.getElementById('totalPrice');
         this.checkoutBtn = document.getElementById('checkoutBtn');
-        this.listenersAttached = false;
         
-        // Solo inicializar si estamos en la página del carrito
-        if (this.container) {
-            this.init();
+        // Solo proceder si estamos en la página del carrito
+        if (!this.container) {
+            console.log('[CartPageManager] No cart page detected - skipping initialization');
+            return;
         }
-    }
-
-    init() {
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => {
-                this.renderCart();
-                this.attachListeners();
-            });
-        } else {
-            this.renderCart();
-            this.attachListeners();
-        }
+        
+        console.log('[CartPageManager] Cart page detected - initializing');
+        console.log('[CartPageManager] Elements:', {
+            container: !!this.container,
+            subtotal: !!this.subtotalEl,
+            discount: !!this.discountEl,
+            total: !!this.totalEl,
+            checkout: !!this.checkoutBtn
+        });
+        this.renderCart();
+        this.attachListeners();
     }
 
     async renderCart() {
         if (!this.container) {
-            console.warn('Container not found');
+            console.log('[renderCart] Container not found, aborting');
             return;
         }
 
+        console.log('[renderCart] Starting to fetch cart data...');
         try {
             const response = await fetch('/api/cart');
-            if (!response.ok) {
-                console.error('API error:', response.status);
-                throw new Error('Error fetching cart');
-            }
+            console.log('[renderCart] Response status:', response.status, response.statusText);
             
             const data = await response.json();
-            console.log('Cart data:', data);
+            console.log('[renderCart] Cart API response:', data);
+            
             const items = data.items || [];
+            console.log('[renderCart] Number of items:', items.length);
 
             if (items.length === 0) {
+                console.log('[renderCart] Cart is empty, showing empty message');
                 this.container.innerHTML = `
                     <div class="empty-cart">
                         <i class="fas fa-shopping-bag"></i>
@@ -336,10 +349,27 @@ class CartPageManager {
                 return;
             }
 
+            console.log('[renderCart] Rendering', items.length, 'items');
             if (this.checkoutBtn) this.checkoutBtn.disabled = false;
-            this.container.innerHTML = '';
+            
+            // Crear tabla
+            let tableHTML = `
+                <table class="cart-table">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Marca</th>
+                            <th>Precio</th>
+                            <th>Descuento</th>
+                            <th>Cantidad</th>
+                            <th>Total</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
 
-            items.forEach(item => {
+            items.forEach((item, index) => {
                 const price = parseFloat(item.price);
                 const qty = parseInt(item.quantity);
                 const discount = parseFloat(item.discount || 0);
@@ -347,52 +377,74 @@ class CartPageManager {
                 const discountAmount = subtotal * (discount / 100);
                 const total = subtotal - discountAmount;
 
-                const cartItem = document.createElement('div');
-                cartItem.className = 'cart-item';
-                cartItem.setAttribute('data-product-id', item.id);
+                console.log(`[renderCart] Item ${index + 1}:`, {
+                    id: item.id,
+                    name: item.name,
+                    price,
+                    qty,
+                    discount
+                });
 
-                cartItem.innerHTML = `
-                    <div class="cart-item-image">
-                        ${item.image ? `<img src="${item.image}" alt="${item.name}">` : `<div class="placeholder"><i class="fas fa-wine-bottle"></i></div>`}
-                    </div>
-                    <div class="cart-item-details">
-                        <h3 class="item-name">${item.name}</h3>
-                        <p class="item-brand">${item.brand}</p>
-                        <p class="item-category">${item.category}</p>
-                        <div class="item-quantity">
-                            <button class="qty-btn minus-btn" data-product-id="${item.id}">
-                                <i class="fas fa-minus"></i>
-                            </button>
-                            <span class="qty-value">${qty}</span>
-                            <button class="qty-btn plus-btn" data-product-id="${item.id}">
-                                <i class="fas fa-plus"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="cart-item-price">
-                        ${discount > 0 ? `
-                            <div class="price-with-discount">
-                                <span class="original-price" style="text-decoration: line-through; color: #999; font-size: 0.9em;">₡${price.toFixed(2)}</span>
-                                <div class="final-price" style="color: #333; font-size: 1.2em; font-weight: bold;">₡${(price * (1 - discount / 100)).toFixed(2)}</div>
+                const finalPrice = discount > 0 ? price * (1 - discount / 100) : price;
+
+                tableHTML += `
+                    <tr class="cart-item" data-product-id="${item.id}">
+                        <td class="product-cell">
+                            <div class="product-wrapper">
+                                ${item.image ? `<img src="${item.image}" alt="${item.name}" class="product-image">` : `<div class="placeholder"><i class="fas fa-wine-bottle"></i></div>`}
+                                <div class="product-info">
+                                    <h4 class="item-name">${item.name}</h4>
+                                    <p class="item-category">${item.category || ''}</p>
+                                </div>
                             </div>
-                        ` : `
-                            <div class="regular-price" style="color: #333; font-size: 1.1em; font-weight: bold;">₡${price.toFixed(2)}</div>
-                        `}
-                        <div class="item-total" data-base-price="${price}" data-discount="${discount}" style="margin-top: 8px; font-size: 0.95em; color: #666;">Total: ₡${total.toFixed(2)}</div>
-                    </div>
-                    <div class="cart-item-actions">
-                        <button class="remove-btn" data-product-id="${item.id}">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
+                        </td>
+                        <td class="brand-cell">${item.brand || '-'}</td>
+                        <td class="price-cell">
+                            ${discount > 0 ? `
+                                <div class="price-wrapper">
+                                    <span class="original-price">₡${price.toFixed(2)}</span>
+                                    <span class="final-price">₡${finalPrice.toFixed(2)}</span>
+                                </div>
+                            ` : `
+                                <span class="final-price">₡${price.toFixed(2)}</span>
+                            `}
+                        </td>
+                        <td class="discount-cell">
+                            ${discount > 0 ? `<span class="discount-badge">${discount}%</span>` : '<span class="no-discount">-</span>'}
+                        </td>
+                        <td class="quantity-cell">
+                            <div class="item-quantity">
+                                <button class="qty-btn minus-btn" data-product-id="${item.id}" title="Disminuir cantidad">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <span class="qty-value">${qty}</span>
+                                <button class="qty-btn plus-btn" data-product-id="${item.id}" title="Aumentar cantidad">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </td>
+                        <td class="total-cell" data-base-price="${price}" data-discount="${discount}">
+                            <strong>₡${total.toFixed(2)}</strong>
+                        </td>
+                        <td class="actions-cell">
+                            <button class="remove-btn" data-product-id="${item.id}" title="Eliminar del carrito">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
                 `;
-
-                this.container.appendChild(cartItem);
             });
 
+            tableHTML += `
+                    </tbody>
+                </table>
+            `;
+
+            this.container.innerHTML = tableHTML;
+            console.log('[renderCart] All items rendered successfully');
             this.updateTotals();
         } catch (error) {
-            console.error('Error rendering cart:', error);
+            console.error('[renderCart] Error:', error);
             this.container.innerHTML = '<p style="color: red;">Error al cargar el carrito</p>';
         }
     }

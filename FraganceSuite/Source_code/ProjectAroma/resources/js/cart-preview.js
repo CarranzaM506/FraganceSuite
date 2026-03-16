@@ -6,29 +6,34 @@
 
 class CartPreview {
     constructor() {
-        this.container = document.getElementById('cartIconContainer');
-        this.preview = document.getElementById('cartPreview');
-        this.itemsContainer = document.getElementById('cartPreviewItems');
-        this.totalElement = document.getElementById('cartPreviewTotal');
-        this.hideTimeout = null;
         this.listenersAttached = false; // Bandera para evitar duplicados
         
-        if (this.container && this.preview) {
+        // Siempre intentar inicializar en DOMContentLoaded
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => this.init());
+        } else {
             this.init();
         }
     }
 
     // Inicializar event listeners
     init() {
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => {
-                this.attachListeners();
-                this.attachItemListeners(); // Agregar listeners una sola vez
-            });
-        } else {
-            this.attachListeners();
-            this.attachItemListeners(); // Agregar listeners una sola vez
+        // Re-obtener elementos cada vez que se inicializa
+        this.container = document.getElementById('cartIconContainer');
+        this.preview = document.getElementById('cartPreview');
+        this.itemsContainer = document.getElementById('cartPreviewItems');
+        this.totalElement = document.getElementById('cartPreviewTotal');
+        this.hideTimeout = null;
+        
+        // Solo proceder si existen los elementos necesarios
+        if (!this.container || !this.preview) {
+            console.warn('[CartPreview] Elements not found - not initializing preview');
+            return;
         }
+        
+        console.log('[CartPreview] Initializing with container:', this.container);
+        this.attachListeners();
+        this.attachItemListeners(); // Agregar listeners una sola vez
     }
 
     // Adjuntar listeners al contenedor del carrito
@@ -125,7 +130,14 @@ class CartPreview {
     attachItemListeners() {
         // Si ya se agregaron listeners, no hacer nada
         if (this.listenersAttached) return;
+        
+        if (!this.itemsContainer) {
+            console.log('[CartPreview] itemsContainer not found, skipping item listeners');
+            return;
+        }
+        
         this.listenersAttached = true;
+        console.log('[CartPreview] Attaching item listeners to container');
         
         // Usar un único listener con event delegation
         this.itemsContainer.addEventListener('click', (e) => {
@@ -133,14 +145,21 @@ class CartPreview {
             if (!btn) return;
 
             const productId = parseInt(btn.dataset.productId);
-            if (!productId) return;
+            if (!productId) {
+                console.log('[CartPreview] No product ID found on button');
+                return;
+            }
+
+            console.log('[CartPreview] Button clicked for product', productId, 'Class:', btn.className);
 
             // Botón de aumentar cantidad
             if (btn.classList.contains('qty-plus')) {
+                console.log('[CartPreview] Increasing quantity for product', productId);
                 this.increaseQuantity(productId);
             }
             // Botón de disminuir cantidad
             else if (btn.classList.contains('qty-minus')) {
+                console.log('[CartPreview] Decreasing quantity for product', productId);
                 this.decreaseQuantity(productId);
             }
             // Botón de eliminar
