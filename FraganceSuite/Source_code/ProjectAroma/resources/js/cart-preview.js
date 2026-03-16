@@ -173,17 +173,27 @@ class CartPreview {
     async increaseQuantity(productId) {
         try {
             // 1. Actualizar el DOM inmediatamente (feedback visual)
-            const item = document.querySelector(`[data-product-id="${productId}"]`);
+            const item = this.itemsContainer?.querySelector(`.cart-preview-item[data-product-id="${productId}"]`);
+            if (!item) {
+                console.warn('[CartPreview] Item not found for product', productId);
+                return;
+            }
             const qtySpan = item.querySelector('.item-quantity');
             const currentQty = parseInt(qtySpan.textContent);
             const newQty = currentQty + 1;
             
             qtySpan.textContent = newQty;
+            this.updatePreviewTotal();
             
             // Actualizar total del item
-            const itemPrice = parseFloat(item.querySelector('.item-price').textContent.replace('₡', '').replace(/\./g, ''));
-            const newTotal = itemPrice * newQty;
-            item.querySelector('.item-total').textContent = '₡' + newTotal.toLocaleString('es-CR', {minimumFractionDigits: 0});
+            const itemTotalEl = item.querySelector('.item-total');
+            const basePrice = parseFloat(itemTotalEl?.dataset.basePrice) || 0;
+            const discount = parseFloat(itemTotalEl?.dataset.discount) || 0;
+            const finalPrice = discount > 0 ? basePrice * (1 - discount / 100) : basePrice;
+            const newTotal = finalPrice * newQty;
+            if (itemTotalEl) {
+                itemTotalEl.textContent = '₡' + newTotal.toLocaleString('es-CR', {minimumFractionDigits: 0});
+            }
             
             // 2. Ahora actualizar la BD en background
             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
@@ -196,10 +206,16 @@ class CartPreview {
                 body: JSON.stringify({ productId, quantity: 1 })
             });
             
+            if (response.redirected || response.status === 401) {
+                window.location.href = response.url || '/login';
+                return;
+            }
             if (!response.ok) {
                 // Si falla, revertir el cambio en el DOM
                 qtySpan.textContent = currentQty;
-                item.querySelector('.item-total').textContent = '₡' + (itemPrice * currentQty).toLocaleString('es-CR', {minimumFractionDigits: 0});
+                if (itemTotalEl) {
+                    itemTotalEl.textContent = '₡' + (finalPrice * currentQty).toLocaleString('es-CR', {minimumFractionDigits: 0});
+                }
                 console.error('Error al agregar cantidad:', await response.json());
             } else {
                 // Actualizar total general
@@ -213,7 +229,11 @@ class CartPreview {
     // Disminuir cantidad - RÁPIDO Y RESPONSIVO
     async decreaseQuantity(productId) {
         try {
-            const item = document.querySelector(`[data-product-id="${productId}"]`);
+            const item = this.itemsContainer?.querySelector(`.cart-preview-item[data-product-id="${productId}"]`);
+            if (!item) {
+                console.warn('[CartPreview] Item not found for product', productId);
+                return;
+            }
             const qtySpan = item.querySelector('.item-quantity');
             const currentQty = parseInt(qtySpan.textContent);
             
@@ -226,11 +246,17 @@ class CartPreview {
             // 1. Actualizar el DOM inmediatamente
             const newQty = currentQty - 1;
             qtySpan.textContent = newQty;
+            this.updatePreviewTotal();
             
             // Actualizar total del item
-            const itemPrice = parseFloat(item.querySelector('.item-price').textContent.replace('₡', '').replace(/\./g, ''));
-            const newTotal = itemPrice * newQty;
-            item.querySelector('.item-total').textContent = '₡' + newTotal.toLocaleString('es-CR', {minimumFractionDigits: 0});
+            const itemTotalEl = item.querySelector('.item-total');
+            const basePrice = parseFloat(itemTotalEl?.dataset.basePrice) || 0;
+            const discount = parseFloat(itemTotalEl?.dataset.discount) || 0;
+            const finalPrice = discount > 0 ? basePrice * (1 - discount / 100) : basePrice;
+            const newTotal = finalPrice * newQty;
+            if (itemTotalEl) {
+                itemTotalEl.textContent = '₡' + newTotal.toLocaleString('es-CR', {minimumFractionDigits: 0});
+            }
             
             // 2. Actualizar la BD en background
             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
@@ -243,10 +269,16 @@ class CartPreview {
                 body: JSON.stringify({ productId, quantity: newQty })
             });
             
+            if (response.redirected || response.status === 401) {
+                window.location.href = response.url || '/login';
+                return;
+            }
             if (!response.ok) {
                 // Si falla, revertir
                 qtySpan.textContent = currentQty;
-                item.querySelector('.item-total').textContent = '₡' + (itemPrice * currentQty).toLocaleString('es-CR', {minimumFractionDigits: 0});
+                if (itemTotalEl) {
+                    itemTotalEl.textContent = '₡' + (finalPrice * currentQty).toLocaleString('es-CR', {minimumFractionDigits: 0});
+                }
                 console.error('Error:', await response.json());
             } else {
                 // Actualizar total general
@@ -261,7 +293,11 @@ class CartPreview {
     async deleteProduct(productId) {
         try {
             // 1. Eliminar del DOM inmediatamente
-            const item = document.querySelector(`[data-product-id="${productId}"]`);
+            const item = this.itemsContainer?.querySelector(`.cart-preview-item[data-product-id="${productId}"]`);
+            if (!item) {
+                console.warn('[CartPreview] Item not found for product', productId);
+                return;
+            }
             item.style.opacity = '0';
             item.style.transition = 'opacity 0.2s';
             
@@ -278,6 +314,10 @@ class CartPreview {
                 body: JSON.stringify({ productId })
             });
             
+            if (response.redirected || response.status === 401) {
+                window.location.href = response.url || '/login';
+                return;
+            }
             if (response.ok) {
                 this.showDeleteNotification('Producto eliminado');
                 this.updatePreviewTotal();
@@ -294,7 +334,8 @@ class CartPreview {
     // Actualizar solo el total sin re-renderizar todo
     updatePreviewTotal() {
         let total = 0;
-        document.querySelectorAll('.cart-preview-item').forEach(item => {
+        const items = this.itemsContainer ? this.itemsContainer.querySelectorAll('.cart-preview-item') : [];
+        items.forEach(item => {
             const basePrice = parseFloat(item.querySelector('.item-total').dataset.basePrice) || 0;
             const discount = parseFloat(item.querySelector('.item-total').dataset.discount) || 0;
             const quantity = parseInt(item.querySelector('.item-quantity').textContent) || 0;

@@ -91,7 +91,7 @@ class CartController extends Controller
 
                 $price = floatval($detail->product->price);
                 $discount = $detail->product->discount ? floatval($detail->product->discount->value) : 0;
-                $itemTotal = ($price - $discount) * $detail->quantity;
+                $itemTotal = $price * (1 - ($discount / 100)) * $detail->quantity;
                 $total += $itemTotal;
 
                 $items[] = [
@@ -230,4 +230,3 @@ class CartController extends Controller
         }
     }
 }
-

@@ -134,6 +134,10 @@
                 },
                 body: JSON.stringify({ productId, quantity: currentQuantity })
             });
+            if (response.redirected || response.status === 401) {
+                window.location.href = response.url || '/login';
+                return;
+            }
             if (response.ok) {
                 showNotification('Producto añadido al carrito', 'success');
                 // Actualizar el preview del carrito si está disponible

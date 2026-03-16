@@ -60,6 +60,10 @@ class CartManager {
                 body: JSON.stringify({ productId, quantity: 1 })
             });
             
+            if (response.redirected || response.status === 401) {
+                window.location.href = response.url || '/login';
+                return;
+            }
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.error || 'Failed to add to cart');
@@ -86,6 +90,10 @@ class CartManager {
                 },
                 body: JSON.stringify({ productId })
             });
+            if (response.redirected || response.status === 401) {
+                window.location.href = response.url || '/login';
+                return false;
+            }
             if (response.ok) {
                 return true;
             }
@@ -106,6 +114,10 @@ class CartManager {
                 },
                 body: JSON.stringify({ productId, quantity })
             });
+            if (response.redirected || response.status === 401) {
+                window.location.href = response.url || '/login';
+                return false;
+            }
             if (response.ok) {
                 return true;
             }
@@ -352,8 +364,7 @@ class CartPageManager {
             console.log('[renderCart] Rendering', items.length, 'items');
             if (this.checkoutBtn) this.checkoutBtn.disabled = false;
             
-            // Crear tabla
-            let tableHTML = `
+            let itemsHTML = `
                 <table class="cart-table">
                     <thead>
                         <tr>
@@ -373,10 +384,6 @@ class CartPageManager {
                 const price = parseFloat(item.price);
                 const qty = parseInt(item.quantity);
                 const discount = parseFloat(item.discount || 0);
-                const subtotal = price * qty;
-                const discountAmount = subtotal * (discount / 100);
-                const total = subtotal - discountAmount;
-
                 console.log(`[renderCart] Item ${index + 1}:`, {
                     id: item.id,
                     name: item.name,
@@ -386,8 +393,9 @@ class CartPageManager {
                 });
 
                 const finalPrice = discount > 0 ? price * (1 - discount / 100) : price;
+                const lineTotal = finalPrice * qty;
 
-                tableHTML += `
+                itemsHTML += `
                     <tr class="cart-item" data-product-id="${item.id}">
                         <td class="product-cell">
                             <div class="product-wrapper">
@@ -424,7 +432,7 @@ class CartPageManager {
                             </div>
                         </td>
                         <td class="total-cell" data-base-price="${price}" data-discount="${discount}">
-                            <strong>₡${total.toFixed(2)}</strong>
+                            <strong>₡${lineTotal.toFixed(2)}</strong>
                         </td>
                         <td class="actions-cell">
                             <button class="remove-btn" data-product-id="${item.id}" title="Eliminar del carrito">
@@ -435,12 +443,12 @@ class CartPageManager {
                 `;
             });
 
-            tableHTML += `
+            itemsHTML += `
                     </tbody>
                 </table>
             `;
 
-            this.container.innerHTML = tableHTML;
+            this.container.innerHTML = itemsHTML;
             console.log('[renderCart] All items rendered successfully');
             this.updateTotals();
         } catch (error) {
@@ -536,14 +544,23 @@ class CartPageManager {
     updateItemTotals(item) {
         const qtySpan = item.querySelector('.qty-value');
         const qty = parseInt(qtySpan.textContent);
-        const itemTotal = item.querySelector('.item-total');
+        const itemTotal = item.querySelector('.total-cell');
+        if (!itemTotal) {
+            return;
+        }
         const basePrice = parseFloat(itemTotal.getAttribute('data-base-price'));
         const discount = parseFloat(itemTotal.getAttribute('data-discount')) || 0;
         
         const finalPrice = discount > 0 ? basePrice * (1 - discount / 100) : basePrice;
         const total = finalPrice * qty;
         
-        itemTotal.textContent = `Total: ₡${total.toFixed(2)}`;
+        const totalText = `₡${total.toFixed(2)}`;
+        const totalStrong = itemTotal.querySelector('strong');
+        if (totalStrong) {
+            totalStrong.textContent = totalText;
+        } else {
+            itemTotal.textContent = totalText;
+        }
         
         if (discount > 0) {
             const finalPriceEl = item.querySelector('.final-price');
@@ -559,7 +576,10 @@ class CartPageManager {
 
         document.querySelectorAll('.cart-item').forEach(item => {
             const qty = parseInt(item.querySelector('.qty-value').textContent);
-            const itemTotal = item.querySelector('.item-total');
+            const itemTotal = item.querySelector('.total-cell');
+            if (!itemTotal) {
+                return;
+            }
             const basePrice = parseFloat(itemTotal.getAttribute('data-base-price'));
             const discount = parseFloat(itemTotal.getAttribute('data-discount')) || 0;
             
