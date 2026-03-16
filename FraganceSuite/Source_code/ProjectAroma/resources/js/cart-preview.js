@@ -134,7 +134,6 @@ class CartPreview {
             });
         });
     }
-
     // Aumentar cantidad
     async increaseQuantity(productId) {
         try {
