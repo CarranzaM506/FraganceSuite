@@ -26,27 +26,23 @@ class CartController extends Controller
      */
     public function getProductData($id)
     {
-        $product = Product::find($id);
+        $product = Product::with('discount')->find($id);
 
         if (!$product) {
             return response()->json(['error' => 'Producto no encontrado'], 404);
         }
 
-        // Obtener descuento si aplica
-        $discount = 0;
-        if ($product->discount) {
-            $discount = $product->discount->value;
-        }
+        $discount = $product->discount ? floatval($product->discount->value) : 0;
 
         return response()->json([
-            'id' => $product->idproduct,
+            'id' => (int)$product->idproduct,
             'name' => $product->name,
             'brand' => $product->brand,
             'category' => $product->category,
-            'price' => $product->price,
+            'price' => floatval($product->price),
             'image' => $product->pathimg,
             'discount' => $discount,
-            'stock' => $product->stock,
+            'stock' => (int)$product->stock,
         ]);
     }
 
@@ -68,67 +64,51 @@ class CartController extends Controller
     public function get()
     {
         try {
-            \Log::info('=== CART GET REQUEST ===');
-            
             $user = Auth::user();
             if (!$user) {
-                \Log::warning('User not authenticated');
                 return response()->json(['error' => 'Unauthorized', 'items' => [], 'total' => 0], 401);
             }
 
-            \Log::info('User authenticated', ['user_id' => $user->id]);
-
+            // Obtener carrito del usuario
             $cart = Cart::where('iduser', $user->id)->first();
             
             if (!$cart) {
-                \Log::info('No cart found for user', ['user_id' => $user->id]);
                 return response()->json(['items' => [], 'total' => 0]);
             }
 
-            \Log::info('Cart found', ['cart_id' => $cart->idcart]);
-
-            $cartDetails = CartDetail::where('idcart', $cart->idcart)->get();
-            \Log::info('CartDetails retrieved', ['count' => $cartDetails->count()]);
+            // Cargar cartDetails con eager loading (relaciones precargadas)
+            $cartDetails = CartDetail::where('idcart', $cart->idcart)
+                ->with('product.discount')
+                ->get();
 
             $items = [];
             $total = 0;
 
             foreach ($cartDetails as $detail) {
-                \Log::info('Processing CartDetail', ['detail_id' => $detail->idproduct]);
-                
-                $product = Product::find($detail->idproduct);
-                
-                if (!$product) {
-                    \Log::warning('Product not found', ['product_id' => $detail->idproduct]);
+                if (!$detail->product) {
                     continue;
                 }
 
-                $price = $product->price;
-                $discount = $product->discount ? $product->discount->value : 0;
+                $price = floatval($detail->product->price);
+                $discount = $detail->product->discount ? floatval($detail->product->discount->value) : 0;
                 $itemTotal = ($price - $discount) * $detail->quantity;
                 $total += $itemTotal;
 
                 $items[] = [
-                    'id' => $product->idproduct,
-                    'name' => $product->name,
-                    'brand' => $product->brand ?? '',
-                    'category' => $product->category ?? '',
-                    'price' => floatval($price),
-                    'image' => $product->pathimg,
-                    'quantity' => intval($detail->quantity),
-                    'discount' => floatval($discount),
+                    'id' => (int)$detail->product->idproduct,
+                    'name' => $detail->product->name,
+                    'brand' => $detail->product->brand ?? '',
+                    'category' => $detail->product->category ?? '',
+                    'price' => $price,
+                    'image' => $detail->product->pathimg,
+                    'quantity' => (int)$detail->quantity,
+                    'discount' => $discount,
                 ];
-
-                \Log::info('Item added to response', ['product_id' => $product->idproduct, 'quantity' => $detail->quantity]);
             }
 
-            \Log::info('=== CART GET SUCCESS ===', ['items_count' => count($items), 'total' => $total]);
             return response()->json(['items' => $items, 'total' => $total]);
         } catch (\Exception $e) {
-            \Log::error('=== CART GET ERROR ===', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
+            \Log::error('CART GET ERROR', ['error' => $e->getMessage()]);
             return response()->json(['error' => $e->getMessage(), 'items' => [], 'total' => 0], 500);
         }
     }
@@ -136,74 +116,45 @@ class CartController extends Controller
     public function add(Request $request)
     {
         try {
-            \Log::info('=== CART ADD REQUEST ===', ['request' => $request->all()]);
-            
             $user = Auth::user();
             if (!$user) {
-                \Log::warning('User not authenticated');
                 return response()->json(['error' => 'Unauthorized'], 401);
             }
-
-            \Log::info('User authenticated', ['user_id' => $user->id]);
 
             $request->validate([
                 'productId' => 'required|integer',
                 'quantity' => 'integer|min:1',
             ]);
 
-            $productId = $request->productId;
-            $quantity = $request->quantity ?? 1;
+            $productId = intval($request->productId);
+            $quantity = intval($request->quantity ?? 1);
 
-            \Log::info('Validated data', ['productId' => $productId, 'quantity' => $quantity]);
+            // Obtener o crear carrito
+            $cart = Cart::firstOrCreate(
+                ['iduser' => $user->id],
+                ['created_at' => now(), 'updated_at' => now()]
+            );
 
-            $product = Product::find($productId);
-            if (!$product) {
-                \Log::warning('Product not found', ['productId' => $productId]);
-                return response()->json(['error' => 'Product not found'], 404);
-            }
-
-            \Log::info('Product found', ['productId' => $productId, 'product_name' => $product->name]);
-
-            // Buscar o crear carrito (siguiendo el patrón del proyecto)
-            $cart = Cart::where('iduser', $user->id)->first();
-            if (!$cart) {
-                \Log::info('Creating new cart for user', ['user_id' => $user->id]);
-                $cart = new Cart();
-                $cart->iduser = $user->id;
-                $cart->save();
-                \Log::info('Cart created', ['cart_id' => $cart->idcart]);
-            } else {
-                \Log::info('Cart found', ['cart_id' => $cart->idcart]);
-            }
-
-            // Buscar o crear detalle
+            // Buscar detalle del carrito
             $cartDetail = CartDetail::where('idcart', $cart->idcart)
                 ->where('idproduct', $productId)
                 ->first();
 
             if ($cartDetail) {
-                \Log::info('CartDetail found, updating quantity', ['old_qty' => $cartDetail->quantity]);
-                $cartDetail->quantity += $quantity;
-                $cartDetail->save();
-                \Log::info('CartDetail updated', ['new_qty' => $cartDetail->quantity]);
+                // Si existe, sumar cantidad
+                $cartDetail->increment('quantity', $quantity);
             } else {
-                \Log::info('Creating new CartDetail');
-                $cartDetail = new CartDetail();
-                $cartDetail->idcart = $cart->idcart;
-                $cartDetail->idproduct = $productId;
-                $cartDetail->quantity = $quantity;
-                $cartDetail->save();
-                \Log::info('CartDetail created', ['cart_id' => $cart->idcart, 'product_id' => $productId, 'quantity' => $quantity]);
+                // Si no existe, crear
+                CartDetail::create([
+                    'idcart' => $cart->idcart,
+                    'idproduct' => $productId,
+                    'quantity' => $quantity
+                ]);
             }
 
-            \Log::info('=== CART ADD SUCCESS ===');
             return response()->json(['success' => true, 'cart_id' => $cart->idcart]);
-            
         } catch (\Exception $e) {
-            \Log::error('=== CART ADD ERROR ===', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
+            \Log::error('CART ADD ERROR', ['error' => $e->getMessage()]);
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
@@ -211,11 +162,8 @@ class CartController extends Controller
     public function update(Request $request)
     {
         try {
-            \Log::info('=== CART UPDATE REQUEST ===', ['request' => $request->all()]);
-            
             $user = Auth::user();
             if (!$user) {
-                \Log::warning('User not authenticated');
                 return response()->json(['error' => 'Unauthorized'], 401);
             }
 
@@ -224,42 +172,29 @@ class CartController extends Controller
                 'quantity' => 'required|integer|min:0',
             ]);
 
-            $productId = $request->productId;
-            $quantity = $request->quantity;
+            $productId = intval($request->productId);
+            $quantity = intval($request->quantity);
 
             $cart = Cart::where('iduser', $user->id)->first();
             if (!$cart) {
-                \Log::warning('Cart not found', ['user_id' => $user->id]);
                 return response()->json(['error' => 'Cart not found'], 404);
             }
 
             if ($quantity <= 0) {
-                CartDetail::where('idcart', $cart->idcart)->where('idproduct', $productId)->delete();
-                \Log::info('CartDetail deleted', ['cart_id' => $cart->idcart, 'product_id' => $productId]);
+                // Eliminar si cantidad es 0 o negativa
+                CartDetail::where('idcart', $cart->idcart)
+                    ->where('idproduct', $productId)
+                    ->delete();
             } else {
-                $cartDetail = CartDetail::where('idcart', $cart->idcart)->where('idproduct', $productId)->first();
-
-                if ($cartDetail) {
-                    $cartDetail->quantity = $quantity;
-                    $cartDetail->save();
-                    \Log::info('CartDetail updated', ['quantity' => $quantity]);
-                } else {
-                    $cartDetail = new CartDetail();
-                    $cartDetail->idcart = $cart->idcart;
-                    $cartDetail->idproduct = $productId;
-                    $cartDetail->quantity = $quantity;
-                    $cartDetail->save();
-                    \Log::info('CartDetail created', ['quantity' => $quantity]);
-                }
+                // Actualizar cantidad
+                CartDetail::where('idcart', $cart->idcart)
+                    ->where('idproduct', $productId)
+                    ->update(['quantity' => $quantity]);
             }
 
-            \Log::info('=== CART UPDATE SUCCESS ===');
             return response()->json(['success' => true]);
         } catch (\Exception $e) {
-            \Log::error('=== CART UPDATE ERROR ===', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
+            \Log::error('CART UPDATE ERROR', ['error' => $e->getMessage()]);
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
@@ -267,11 +202,8 @@ class CartController extends Controller
     public function remove(Request $request)
     {
         try {
-            \Log::info('=== CART REMOVE REQUEST ===', ['request' => $request->all()]);
-            
             $user = Auth::user();
             if (!$user) {
-                \Log::warning('User not authenticated');
                 return response()->json(['error' => 'Unauthorized'], 401);
             }
 
@@ -279,24 +211,21 @@ class CartController extends Controller
                 'productId' => 'required|integer',
             ]);
 
-            $productId = $request->productId;
+            $productId = intval($request->productId);
 
             $cart = Cart::where('iduser', $user->id)->first();
             if (!$cart) {
-                \Log::warning('Cart not found', ['user_id' => $user->id]);
                 return response()->json(['error' => 'Cart not found'], 404);
             }
 
-            CartDetail::where('idcart', $cart->idcart)->where('idproduct', $productId)->delete();
-            \Log::info('CartDetail deleted', ['cart_id' => $cart->idcart, 'product_id' => $productId]);
+            // Eliminar en una sola query
+            CartDetail::where('idcart', $cart->idcart)
+                ->where('idproduct', $productId)
+                ->delete();
 
-            \Log::info('=== CART REMOVE SUCCESS ===');
             return response()->json(['success' => true]);
         } catch (\Exception $e) {
-            \Log::error('=== CART REMOVE ERROR ===', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
+            \Log::error('CART REMOVE ERROR', ['error' => $e->getMessage()]);
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }

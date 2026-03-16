@@ -11,6 +11,7 @@ class CartPreview {
         this.itemsContainer = document.getElementById('cartPreviewItems');
         this.totalElement = document.getElementById('cartPreviewTotal');
         this.hideTimeout = null;
+        this.listenersAttached = false; // Bandera para evitar duplicados
         
         if (this.container && this.preview) {
             this.init();
@@ -20,9 +21,13 @@ class CartPreview {
     // Inicializar event listeners
     init() {
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => this.attachListeners());
+            document.addEventListener('DOMContentLoaded', () => {
+                this.attachListeners();
+                this.attachItemListeners(); // Agregar listeners una sola vez
+            });
         } else {
             this.attachListeners();
+            this.attachItemListeners(); // Agregar listeners una sola vez
         }
     }
 
@@ -72,7 +77,13 @@ class CartPreview {
         let total = 0;
 
         Object.entries(cart).forEach(([productId, item]) => {
-            const itemTotal = (item.price * item.quantity) - (item.discount || 0);
+            const price = item.price;
+            const qty = item.quantity;
+            const discountPercent = item.discount || 0;
+            
+            // Calcular precio con descuento
+            const finalPrice = discountPercent > 0 ? price * (1 - discountPercent / 100) : price;
+            const itemTotal = finalPrice * qty;
             total += itemTotal;
 
             html += `
@@ -83,15 +94,22 @@ class CartPreview {
                     <div class="item-details">
                         <div class="item-name">${item.name}</div>
                         <div class="item-brand">${item.brand}</div>
-                        <div class="item-price">₡${item.price.toLocaleString('es-CR', {minimumFractionDigits: 0})}</div>
+                        ${discountPercent > 0 ? `
+                            <div class="item-price" style="font-size: 0.85em;">
+                                <span style="text-decoration: line-through; color: #999;">₡${price.toLocaleString('es-CR', {minimumFractionDigits: 0})}</span>
+                            </div>
+                            <div class="item-final-price" style="color: #333; font-weight: bold; font-size: 1.05em;">₡${finalPrice.toLocaleString('es-CR', {minimumFractionDigits: 0})}</div>
+                        ` : `
+                            <div class="item-price">₡${price.toLocaleString('es-CR', {minimumFractionDigits: 0})}</div>
+                        `}
                         <div class="item-bottom">
                             <div class="item-controls">
                                 <button class="qty-btn qty-minus" data-product-id="${productId}">−</button>
-                                <span class="item-quantity">${item.quantity}</span>
+                                <span class="item-quantity">${qty}</span>
                                 <button class="qty-btn qty-plus" data-product-id="${productId}">+</button>
                                 <button class="btn-delete" data-product-id="${productId}" title="Eliminar"><i class="fas fa-trash-alt"></i></button>
                             </div>
-                            <div class="item-total">₡${(item.price * item.quantity).toLocaleString('es-CR', {minimumFractionDigits: 0})}</div>
+                            <div class="item-total" data-product-id="${productId}" data-base-price="${price}" data-discount="${discountPercent}">₡${itemTotal.toLocaleString('es-CR', {minimumFractionDigits: 0})}</div>
                         </div>
                     </div>
                 </div>
@@ -100,120 +118,177 @@ class CartPreview {
 
         this.itemsContainer.innerHTML = html;
         this.totalElement.textContent = '₡' + total.toLocaleString('es-CR', {minimumFractionDigits: 0});
-        
-        // Adjuntar listeners a los botones
-        this.attachItemListeners();
+        // Los listeners ya están agregados una sola vez en init()
     }
 
     // Adjuntar listeners a los botones de cantidad y eliminación
     attachItemListeners() {
-        // Botones de aumentar cantidad
-        this.itemsContainer.querySelectorAll('.qty-plus').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                const productId = btn.dataset.productId;
+        // Si ya se agregaron listeners, no hacer nada
+        if (this.listenersAttached) return;
+        this.listenersAttached = true;
+        
+        // Usar un único listener con event delegation
+        this.itemsContainer.addEventListener('click', (e) => {
+            const btn = e.target.closest('button');
+            if (!btn) return;
+
+            const productId = parseInt(btn.dataset.productId);
+            if (!productId) return;
+
+            // Botón de aumentar cantidad
+            if (btn.classList.contains('qty-plus')) {
                 this.increaseQuantity(productId);
-            });
-        });
-
-        // Botones de disminuir cantidad
-        this.itemsContainer.querySelectorAll('.qty-minus').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                const productId = btn.dataset.productId;
+            }
+            // Botón de disminuir cantidad
+            else if (btn.classList.contains('qty-minus')) {
                 this.decreaseQuantity(productId);
-            });
-        });
-
-        // Botones de eliminar
-        this.itemsContainer.querySelectorAll('.btn-delete').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                const productId = btn.dataset.productId;
+            }
+            // Botón de eliminar
+            else if (btn.classList.contains('btn-delete')) {
                 this.deleteProduct(productId);
-            });
+            }
         });
     }
-    // Aumentar cantidad
+
+    // Aumentar cantidad - RÁPIDO Y RESPONSIVO
     async increaseQuantity(productId) {
         try {
-            const csrfTokenElement = document.querySelector('meta[name="csrf-token"]');
-            if (!csrfTokenElement) {
-                console.error('CSRF token not found');
-                return;
-            }
+            // 1. Actualizar el DOM inmediatamente (feedback visual)
+            const item = document.querySelector(`[data-product-id="${productId}"]`);
+            const qtySpan = item.querySelector('.item-quantity');
+            const currentQty = parseInt(qtySpan.textContent);
+            const newQty = currentQty + 1;
             
+            qtySpan.textContent = newQty;
+            
+            // Actualizar total del item
+            const itemPrice = parseFloat(item.querySelector('.item-price').textContent.replace('₡', '').replace(/\./g, ''));
+            const newTotal = itemPrice * newQty;
+            item.querySelector('.item-total').textContent = '₡' + newTotal.toLocaleString('es-CR', {minimumFractionDigits: 0});
+            
+            // 2. Ahora actualizar la BD en background
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
             const response = await fetch('/api/cart/add', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfTokenElement.getAttribute('content')
+                    'X-CSRF-TOKEN': csrfToken
                 },
                 body: JSON.stringify({ productId, quantity: 1 })
             });
-            if (response.ok) {
-                await this.updatePreview();
+            
+            if (!response.ok) {
+                // Si falla, revertir el cambio en el DOM
+                qtySpan.textContent = currentQty;
+                item.querySelector('.item-total').textContent = '₡' + (itemPrice * currentQty).toLocaleString('es-CR', {minimumFractionDigits: 0});
+                console.error('Error al agregar cantidad:', await response.json());
+            } else {
+                // Actualizar total general
+                this.updatePreviewTotal();
             }
         } catch (error) {
-            console.error('Error increasing quantity:', error);
+            console.error('Error:', error);
         }
     }
 
-    // Disminuir cantidad
+    // Disminuir cantidad - RÁPIDO Y RESPONSIVO
     async decreaseQuantity(productId) {
-        const cart = await this.getCart();
-        const current = cart[productId]?.quantity || 0;
-        if (current <= 1) {
-            await this.deleteProduct(productId);
-        } else {
-            try {
-                const csrfTokenElement = document.querySelector('meta[name="csrf-token"]');
-                if (!csrfTokenElement) {
-                    console.error('CSRF token not found');
-                    return;
-                }
-                
-                const response = await fetch('/api/cart/update', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': csrfTokenElement.getAttribute('content')
-                    },
-                    body: JSON.stringify({ productId, quantity: current - 1 })
-                });
-                if (response.ok) {
-                    await this.updatePreview();
-                }
-            } catch (error) {
-                console.error('Error decreasing quantity:', error);
-            }
-        }
-    }
-
-    // Eliminar producto
-    async deleteProduct(productId) {
         try {
-            const csrfTokenElement = document.querySelector('meta[name="csrf-token"]');
-            if (!csrfTokenElement) {
-                console.error('CSRF token not found');
+            const item = document.querySelector(`[data-product-id="${productId}"]`);
+            const qtySpan = item.querySelector('.item-quantity');
+            const currentQty = parseInt(qtySpan.textContent);
+            
+            if (currentQty <= 1) {
+                // Si es 1, eliminar
+                await this.deleteProduct(productId);
                 return;
             }
             
+            // 1. Actualizar el DOM inmediatamente
+            const newQty = currentQty - 1;
+            qtySpan.textContent = newQty;
+            
+            // Actualizar total del item
+            const itemPrice = parseFloat(item.querySelector('.item-price').textContent.replace('₡', '').replace(/\./g, ''));
+            const newTotal = itemPrice * newQty;
+            item.querySelector('.item-total').textContent = '₡' + newTotal.toLocaleString('es-CR', {minimumFractionDigits: 0});
+            
+            // 2. Actualizar la BD en background
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            const response = await fetch('/api/cart/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
+                },
+                body: JSON.stringify({ productId, quantity: newQty })
+            });
+            
+            if (!response.ok) {
+                // Si falla, revertir
+                qtySpan.textContent = currentQty;
+                item.querySelector('.item-total').textContent = '₡' + (itemPrice * currentQty).toLocaleString('es-CR', {minimumFractionDigits: 0});
+                console.error('Error:', await response.json());
+            } else {
+                // Actualizar total general
+                this.updatePreviewTotal();
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    // Eliminar producto - RÁPIDO Y RESPONSIVO
+    async deleteProduct(productId) {
+        try {
+            // 1. Eliminar del DOM inmediatamente
+            const item = document.querySelector(`[data-product-id="${productId}"]`);
+            item.style.opacity = '0';
+            item.style.transition = 'opacity 0.2s';
+            
+            setTimeout(() => item.remove(), 200);
+            
+            // 2. Actualizar la BD
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
             const response = await fetch('/api/cart/remove', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfTokenElement.getAttribute('content')
+                    'X-CSRF-TOKEN': csrfToken
                 },
                 body: JSON.stringify({ productId })
             });
+            
             if (response.ok) {
-                this.updatePreview();
-                this.showDeleteNotification('Producto eliminado del carrito');
+                this.showDeleteNotification('Producto eliminado');
+                this.updatePreviewTotal();
+            } else {
+                // Si falla, volver a mostrar el item
+                item.style.opacity = '1';
+                console.error('Error:', await response.json());
             }
         } catch (error) {
-            console.error('Error deleting product:', error);
+            console.error('Error:', error);
         }
+    }
+
+    // Actualizar solo el total sin re-renderizar todo
+    updatePreviewTotal() {
+        let total = 0;
+        document.querySelectorAll('.cart-preview-item').forEach(item => {
+            const basePrice = parseFloat(item.querySelector('.item-total').dataset.basePrice) || 0;
+            const discount = parseFloat(item.querySelector('.item-total').dataset.discount) || 0;
+            const quantity = parseInt(item.querySelector('.item-quantity').textContent) || 0;
+            
+            const finalPrice = discount > 0 ? basePrice * (1 - discount / 100) : basePrice;
+            const itemTotal = finalPrice * quantity;
+            
+            // Update the item total display
+            item.querySelector('.item-total').textContent = `₡${itemTotal.toLocaleString('es-CR', {minimumFractionDigits: 0})}`;
+            
+            total += itemTotal;
+        });
+        this.totalElement.textContent = '₡' + total.toLocaleString('es-CR', {minimumFractionDigits: 0});
     }
 
     // Mostrar notificación de eliminación
