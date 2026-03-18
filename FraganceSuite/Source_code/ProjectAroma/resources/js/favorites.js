@@ -1,5 +1,5 @@
 // public/js/favorites.js
-console.log('✅ FAVORITOS: Archivo cargado correctamente');
+console.log('FAVORITOS: Archivo cargado correctamente');
 
 (function() {
     'use strict';
@@ -100,7 +100,7 @@ console.log('✅ FAVORITOS: Archivo cargado correctamente');
             }
         } catch (error) {
             console.error('FAVORITOS: Error:', error);
-            showNotification('Error al procesar la solicitud', 'error');
+            showNotification('Debes iniciar sesión para guardar favoritos', 'error');
             restoreIconState(icon, productId);
         } finally {
             setTimeout(() => {
@@ -162,7 +162,7 @@ console.log('✅ FAVORITOS: Archivo cargado correctamente');
             }
         } catch (error) {
             console.error('FAVORITOS: Error:', error);
-            showNotification('Error al procesar la solicitud', 'error');
+            showNotification('Debes iniciar sesión para guardar favoritos', 'error');
         } finally {
             btn.disabled = false;
         }
