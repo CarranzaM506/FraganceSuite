@@ -89,12 +89,12 @@
                     </button>
                 @endif
                 
-                <button class="btn-secondary" id="wishlistBtn" onclick="toggleWishlist({{ $product->idproduct }})">
-                    Favoritos
+                <button class="btn-secondary" id="wishlistBtn" data-product="{{ $product->idproduct }}">
+                    <i class="far fa-heart"></i> Favoritos
                 </button>
             </div>
-
-          
+        </div>
+    </div>
 @endsection
 
 @push('scripts')
@@ -134,13 +134,14 @@
                 },
                 body: JSON.stringify({ productId, quantity: currentQuantity })
             });
+            
             if (response.redirected || response.status === 401) {
                 window.location.href = response.url || '/login';
                 return;
             }
+            
             if (response.ok) {
                 showNotification('Producto añadido al carrito', 'success');
-                // Actualizar el preview del carrito si está disponible
                 if (window.cartPreview) {
                     setTimeout(() => {
                         window.cartPreview.updatePreview();
@@ -156,23 +157,50 @@
         }
     }
 
-    // Función para toggle favoritos
+    // Función para toggle favoritos - Versión corregida con mensaje de login
     function toggleWishlist(productId) {
         const wishlistBtn = document.getElementById('wishlistBtn');
         const heartIcon = wishlistBtn.querySelector('i');
         
-        heartIcon.classList.toggle('far');
-        heartIcon.classList.toggle('fas');
-        wishlistBtn.classList.toggle('active');
-        
-        if (heartIcon.classList.contains('fas')) {
-            showNotification('Añadido a favoritos', 'success');
-        } else {
-            showNotification('Eliminado de favoritos', 'info');
-        }
-        
-        // Aquí puedes hacer una petición AJAX para guardar en favoritos
-        console.log('Toggle wishlist:', productId);
+        // Hacer petición AJAX al servidor
+        fetch('/favorites/toggle', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({ productId: productId })
+        })
+        .then(response => {
+            if (response.status === 401) {
+                // Mostrar mensaje de que debe iniciar sesión
+                showNotification('Debes iniciar sesión para guardar favoritos', 'info');
+                setTimeout(() => {
+                    window.location.href = '/login';
+                }, 2000);
+                return;
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data) {
+                if (data.status === 'added') {
+                    heartIcon.classList.remove('far');
+                    heartIcon.classList.add('fas');
+                    wishlistBtn.classList.add('active');
+                    showNotification('Añadido a favoritos', 'success');
+                } else {
+                    heartIcon.classList.remove('fas');
+                    heartIcon.classList.add('far');
+                    wishlistBtn.classList.remove('active');
+                    showNotification('Eliminado de favoritos', 'info');
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('Error al procesar la solicitud', 'error');
+        });
     }
 
     // Función para mostrar notificaciones
@@ -253,50 +281,51 @@
         }, 3000);
     }
 
-    // Función para actualizar contador del carrito (si existe)
-    function updateCartCount() {
-        // Aquí implementarías la lógica para actualizar el contador del carrito en el header
-        console.log('Actualizando contador del carrito');
+    // Función para cargar estado inicial de favoritos
+    function loadFavoriteStatus() {
+        const productId = {{ $product->idproduct }};
+        fetch(`/favorites/check/${productId}`)
+            .then(response => response.json())
+            .then(data => {
+                const wishlistBtn = document.getElementById('wishlistBtn');
+                const heartIcon = wishlistBtn.querySelector('i');
+                if (data.isFavorite) {
+                    heartIcon.classList.remove('far');
+                    heartIcon.classList.add('fas');
+                    wishlistBtn.classList.add('active');
+                }
+            })
+            .catch(error => console.error('Error loading favorite status:', error));
     }
 
     // Inicializar al cargar la página
     document.addEventListener('DOMContentLoaded', function() {
-        // Verificar si el producto está en favoritos
-        // Esto sería una petición para verificar el estado
-        const wishlistBtn = document.getElementById('wishlistBtn');
-        if (wishlistBtn) {
-            // Ejemplo: verificar si está en favoritos
-            const isInWishlist = false; // Esto vendría de una API
-            if (isInWishlist) {
-                const heartIcon = wishlistBtn.querySelector('i');
-                heartIcon.classList.remove('far');
-                heartIcon.classList.add('fas');
-                wishlistBtn.classList.add('active');
-            }
-        }
+        // Cargar estado de favoritos
+        loadFavoriteStatus();
 
         // Inicializar botones de cantidad
         if (maxStock > 0) {
             document.getElementById('decrementQty').disabled = true;
         }
+
+        // Agregar event listener al botón de favoritos
+        const wishlistBtn = document.getElementById('wishlistBtn');
+        if (wishlistBtn) {
+            wishlistBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                toggleWishlist({{ $product->idproduct }});
+            });
+        }
     });
 
-    // Manejar zoom de imagen (opcional)
-    const mainImage = document.getElementById('mainProductImage');
-    if (mainImage) {
-        mainImage.addEventListener('mousemove', function(e) {
-            // Aquí puedes implementar efecto zoom
-        });
-    }
-
     // Efecto de scroll en la imagen
-window.addEventListener('scroll', function() {
-    const mainImage = document.querySelector('.main-image img');
-    if (mainImage) {
-        const scrollPosition = window.scrollY;
-        const scale = 1 + (scrollPosition * 0.0005); // Efecto muy sutil
-        mainImage.style.transform = `scale(${Math.min(scale, 1.03)})`;
-    }
-});
+    window.addEventListener('scroll', function() {
+        const mainImage = document.querySelector('.main-image img');
+        if (mainImage) {
+            const scrollPosition = window.scrollY;
+            const scale = 1 + (scrollPosition * 0.0005);
+            mainImage.style.transform = `scale(${Math.min(scale, 1.03)})`;
+        }
+    });
 </script>
 @endpush

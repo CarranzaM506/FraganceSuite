@@ -347,5 +347,63 @@
             window.addEventListener('scroll', checkSplitScroll);
         }
     });
+
+ // Favoritos para página principal con mensaje de login
+document.querySelectorAll('.wishlist-icon').forEach(icon => {
+    icon.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const productId = this.dataset.product;
+        const heartIcon = this.querySelector('i');
+        
+        fetch('/favorites/toggle', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({ productId: productId })
+        })
+        .then(response => {
+            if (response.status === 401) {
+                // Mostrar mensaje de que debe iniciar sesión
+                if (typeof showToast === 'function') {
+                    showToast('Debes iniciar sesión para guardar favoritos');
+                } else {
+                    alert('Debes iniciar sesión para guardar favoritos');
+                }
+                setTimeout(() => {
+                    window.location.href = '/login';
+                }, 2000);
+                return;
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data) {
+                if (data.status === 'added') {
+                    heartIcon.classList.remove('far');
+                    heartIcon.classList.add('fas');
+                    if (typeof showToast === 'function') {
+                        showToast('Añadido a favoritos');
+                    }
+                } else {
+                    heartIcon.classList.remove('fas');
+                    heartIcon.classList.add('far');
+                    if (typeof showToast === 'function') {
+                        showToast('Quitado de favoritos');
+                    }
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            if (typeof showToast === 'function') {
+                showToast('Error al procesar la solicitud');
+            }
+        });
+    });
+});
 </script>
 @endpush

@@ -67,6 +67,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/api/cart/add', [CartController::class, 'add']);
     Route::post('/api/cart/update', [CartController::class, 'update']);
     Route::post('/api/cart/remove', [CartController::class, 'remove']);
+
+    Route::middleware('auth')->post('/favorites/toggle', [App\Http\Controllers\FavoriteController::class, 'toggle']);
 });
 
 require __DIR__ . '/auth.php';

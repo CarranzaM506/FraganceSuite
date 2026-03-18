@@ -508,23 +508,54 @@ document.addEventListener('DOMContentLoaded', function() {
     // Iniciar animación
     setTimeout(animateProducts, 300);
     
-    // Wishlist
-    document.querySelectorAll('.wishlist-icon').forEach(icon => {
-        icon.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            const heartIcon = this.querySelector('i');
-            heartIcon.classList.toggle('far');
-            heartIcon.classList.toggle('fas');
-            
-            if (heartIcon.classList.contains('fas')) {
-                showToast('Añadido a favoritos');
-            } else {
-                showToast('Quitado de favoritos');
+  // Wishlist - Versión corregida con mensaje de login
+document.querySelectorAll('.wishlist-icon').forEach(icon => {
+    icon.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const productId = this.dataset.product;
+        const heartIcon = this.querySelector('i');
+        
+        // Hacer petición AJAX al servidor
+        fetch('/favorites/toggle', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({ productId: productId })
+        })
+        .then(response => {
+            if (response.status === 401) {
+                // Mostrar mensaje de que debe iniciar sesión
+                showToast('Debes iniciar sesión para guardar favoritos');
+                setTimeout(() => {
+                    window.location.href = '/login';
+                }, 2000);
+                return;
             }
+            return response.json();
+        })
+        .then(data => {
+            if (data) {
+                if (data.status === 'added') {
+                    heartIcon.classList.remove('far');
+                    heartIcon.classList.add('fas');
+                    showToast('Añadido a favoritos');
+                } else {
+                    heartIcon.classList.remove('fas');
+                    heartIcon.classList.add('far');
+                    showToast('Quitado de favoritos');
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('Error al procesar la solicitud');
         });
     });
+});
     
     // Toast notifications
     function showToast(message) {
