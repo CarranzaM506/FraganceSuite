@@ -10,10 +10,10 @@ console.log('✅ FAVORITOS: Archivo cargado correctamente');
     };
 
     function initFavorites() {
-        console.log('✅ FAVORITOS: Buscando iconos...');
+        console.log('FAVORITOS: Buscando iconos...');
         
         const wishlistIcons = document.querySelectorAll('.wishlist-icon');
-        console.log('✅ FAVORITOS: Iconos encontrados:', wishlistIcons.length);
+        console.log('FAVORITOS: Iconos encontrados:', wishlistIcons.length);
         
         wishlistIcons.forEach(icon => {
             icon.removeEventListener('click', handleFavoriteClick);
@@ -45,10 +45,10 @@ console.log('✅ FAVORITOS: Archivo cargado correctamente');
         const productId = icon.dataset.product;
         const heartIcon = icon.querySelector('i');
         
-        console.log('🟢 FAVORITOS: Click en icono - Producto:', productId);
+        console.log('FAVORITOS: Click en icono - Producto:', productId);
         
         if (!productId) {
-            console.error('❌ FAVORITOS: Product ID no encontrado');
+            console.error('FAVORITOS: Product ID no encontrado');
             return;
         }
 
@@ -73,7 +73,7 @@ console.log('✅ FAVORITOS: Archivo cargado correctamente');
             }
 
             const data = await response.json();
-            console.log('🟢 FAVORITOS: Respuesta:', data);
+            console.log('FAVORITOS: Respuesta:', data);
             
             if (data.success) {
                 // Limpiar todas las clases primero
@@ -88,7 +88,7 @@ console.log('✅ FAVORITOS: Archivo cargado correctamente');
                     // Quitar de favoritos
                     heartIcon.classList.add('far', 'fa-heart');
                     icon.classList.remove('active');
-                    showNotification('✗ Eliminado de favoritos', 'info');
+                    showNotification('Eliminado de favoritos', 'info');
                 }
                 
                 // Actualizar todos los elementos relacionados
@@ -99,7 +99,7 @@ console.log('✅ FAVORITOS: Archivo cargado correctamente');
                 restoreIconState(icon, productId);
             }
         } catch (error) {
-            console.error('❌ FAVORITOS: Error:', error);
+            console.error('FAVORITOS: Error:', error);
             showNotification('Error al procesar la solicitud', 'error');
             restoreIconState(icon, productId);
         } finally {
@@ -116,7 +116,7 @@ console.log('✅ FAVORITOS: Archivo cargado correctamente');
         const productId = btn.dataset.product;
         const heartIcon = btn.querySelector('i');
         
-        console.log('🟢 FAVORITOS: Click en botón detalle - Producto:', productId);
+        console.log('FAVORITOS: Click en botón detalle - Producto:', productId);
 
         btn.disabled = true;
         
@@ -139,7 +139,7 @@ console.log('✅ FAVORITOS: Archivo cargado correctamente');
             }
 
             const data = await response.json();
-            console.log('🟢 FAVORITOS: Respuesta detalle:', data);
+            console.log('FAVORITOS: Respuesta detalle:', data);
             
             if (data.success) {
                 // Limpiar todas las clases primero
@@ -152,7 +152,7 @@ console.log('✅ FAVORITOS: Archivo cargado correctamente');
                 } else {
                     heartIcon.classList.add('far', 'fa-heart');
                     btn.classList.remove('active');
-                    showNotification('✗ Eliminado de favoritos', 'info');
+                    showNotification('Eliminado de favoritos', 'info');
                 }
                 
                 // Actualizar todos los iconos del mismo producto
@@ -161,7 +161,7 @@ console.log('✅ FAVORITOS: Archivo cargado correctamente');
                 showNotification(data.error || 'Error al procesar', 'error');
             }
         } catch (error) {
-            console.error('❌ FAVORITOS: Error:', error);
+            console.error('FAVORITOS: Error:', error);
             showNotification('Error al procesar la solicitud', 'error');
         } finally {
             btn.disabled = false;
@@ -278,7 +278,7 @@ console.log('✅ FAVORITOS: Archivo cargado correctamente');
         const colors = {
             success: '#000',
             error: '#cc0000',
-            info: '#927a1b'
+            info: '#cc0000'
         };
         
         const existingNotification = document.querySelector('.aroma-notification');

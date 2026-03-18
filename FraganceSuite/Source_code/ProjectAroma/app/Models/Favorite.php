@@ -8,8 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class Favorite extends Model
 {
     protected $table = 'favorite';
-    protected $primaryKey = null;
+    
+    // IMPORTANTE: No hay una sola columna como primary key
     public $incrementing = false;
+    protected $primaryKey = null;
     public $timestamps = false;
 
     protected $fillable = [
@@ -27,5 +29,12 @@ class Favorite extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'iduser', 'id');
+    }
+
+    public function delete()
+    {
+        return static::where('iduser', $this->iduser)
+            ->where('idproduct', $this->idproduct)
+            ->delete();
     }
 }
