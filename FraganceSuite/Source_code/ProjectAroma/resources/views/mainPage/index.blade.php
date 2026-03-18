@@ -26,8 +26,9 @@
                         <i class="fas fa-wine-bottle"></i>
                     @endif
                     <div class="product-hover" onclick="event.stopPropagation();">
-                        <span class="wishlist-icon" data-product="{{ $product->idproduct }}"><i class="far fa-heart"></i></span>
-                        <span class="add-cart-icon" data-product="{{ $product->idproduct }}"><i class="fas fa-plus"></i></span>
+<span class="wishlist-icon" data-product="{{ $product->idproduct }}">
+    <i class="far fa-heart"></i>
+</span>                        <span class="add-cart-icon" data-product="{{ $product->idproduct }}"><i class="fas fa-plus"></i></span>
                     </div>
                 </div>
                 <div class="product-info">
@@ -56,8 +57,10 @@
                         <i class="fas fa-wine-bottle"></i>
                     @endif
                     <div class="product-hover" onclick="event.stopPropagation();">
-                        <span class="wishlist-icon" data-product="{{ $product->idproduct }}"><i class="far fa-heart"></i></span>
-                        <span class="add-cart-icon" data-product="{{ $product->idproduct }}"><i class="fas fa-plus"></i></span>
+<span class="wishlist-icon" data-product="{{ $product->idproduct }}">
+    <i class="far fa-heart"></i>  
+</span>     
+<span class="add-cart-icon" data-product="{{ $product->idproduct }}"><i class="fas fa-plus"></i></span>
                     </div>
                 </div>
                 <div class="product-info">
@@ -126,36 +129,7 @@
             });
         });
 
-        // ===== ICONOS DE WISHLIST Y CARRITO =====
-        // Wishlist icons
-        document.querySelectorAll('.wishlist-icon').forEach(icon => {
-            icon.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                
-                const heartIcon = this.querySelector('i');
-                heartIcon.classList.toggle('far');
-                heartIcon.classList.toggle('fas');
-                this.classList.toggle('active');
-                
-                if (heartIcon.classList.contains('fas')) {
-                    // Usar el sistema de notificaciones existente
-                    if (typeof showToast === 'function') {
-                        showToast('Añadido a favoritos');
-                    } else {
-                        console.log('Añadido a favoritos');
-                    }
-                } else {
-                    if (typeof showToast === 'function') {
-                        showToast('Eliminado de favoritos');
-                    } else {
-                        console.log('Eliminado de favoritos');
-                    }
-                }
-                
-                return false;
-            });
-        });
+        
         
         // Carrito icons
         document.querySelectorAll('.add-cart-icon').forEach(icon => {
@@ -347,5 +321,6 @@
             window.addEventListener('scroll', checkSplitScroll);
         }
     });
+
 </script>
 @endpush

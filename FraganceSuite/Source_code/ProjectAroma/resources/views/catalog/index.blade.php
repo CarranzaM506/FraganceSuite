@@ -211,9 +211,9 @@
         @endif
         
         <div class="product-hover">
-            <span class="wishlist-icon" onclick="event.preventDefault(); event.stopPropagation();" data-product="{{ $product->idproduct }}">
-                <i class="far fa-heart"></i>
-            </span>
+            <span class="wishlist-icon" data-product="{{ $product->idproduct }}">
+    <i class="far fa-heart"></i>  
+</span>
             <span class="add-cart-icon" onclick="event.preventDefault(); event.stopPropagation();" data-product="{{ $product->idproduct }}">
                 <i class="fas fa-plus"></i>
             </span>
@@ -507,24 +507,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Iniciar animación
     setTimeout(animateProducts, 300);
-    
-    // Wishlist
-    document.querySelectorAll('.wishlist-icon').forEach(icon => {
-        icon.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            const heartIcon = this.querySelector('i');
-            heartIcon.classList.toggle('far');
-            heartIcon.classList.toggle('fas');
-            
-            if (heartIcon.classList.contains('fas')) {
-                showToast('Añadido a favoritos');
-            } else {
-                showToast('Quitado de favoritos');
-            }
-        });
-    });
     
     // Toast notifications
     function showToast(message) {
