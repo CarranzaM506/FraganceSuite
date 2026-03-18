@@ -211,9 +211,9 @@
         @endif
         
         <div class="product-hover">
-            <span class="wishlist-icon" onclick="event.preventDefault(); event.stopPropagation();" data-product="{{ $product->idproduct }}">
-                <i class="far fa-heart"></i>
-            </span>
+            <span class="wishlist-icon" data-product="{{ $product->idproduct }}">
+    <i class="far fa-heart"></i>  
+</span>
             <span class="add-cart-icon" onclick="event.preventDefault(); event.stopPropagation();" data-product="{{ $product->idproduct }}">
                 <i class="fas fa-plus"></i>
             </span>
@@ -507,55 +507,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Iniciar animación
     setTimeout(animateProducts, 300);
-    
-  // Wishlist - Versión corregida con mensaje de login
-document.querySelectorAll('.wishlist-icon').forEach(icon => {
-    icon.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        
-        const productId = this.dataset.product;
-        const heartIcon = this.querySelector('i');
-        
-        // Hacer petición AJAX al servidor
-        fetch('/favorites/toggle', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-            },
-            body: JSON.stringify({ productId: productId })
-        })
-        .then(response => {
-            if (response.status === 401) {
-                // Mostrar mensaje de que debe iniciar sesión
-                showToast('Debes iniciar sesión para guardar favoritos');
-                setTimeout(() => {
-                    window.location.href = '/login';
-                }, 2000);
-                return;
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data) {
-                if (data.status === 'added') {
-                    heartIcon.classList.remove('far');
-                    heartIcon.classList.add('fas');
-                    showToast('Añadido a favoritos');
-                } else {
-                    heartIcon.classList.remove('fas');
-                    heartIcon.classList.add('far');
-                    showToast('Quitado de favoritos');
-                }
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showToast('Error al procesar la solicitud');
-        });
-    });
-});
     
     // Toast notifications
     function showToast(message) {

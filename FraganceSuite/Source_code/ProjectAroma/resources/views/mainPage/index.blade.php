@@ -26,8 +26,9 @@
                         <i class="fas fa-wine-bottle"></i>
                     @endif
                     <div class="product-hover" onclick="event.stopPropagation();">
-                        <span class="wishlist-icon" data-product="{{ $product->idproduct }}"><i class="far fa-heart"></i></span>
-                        <span class="add-cart-icon" data-product="{{ $product->idproduct }}"><i class="fas fa-plus"></i></span>
+<span class="wishlist-icon" data-product="{{ $product->idproduct }}">
+    <i class="far fa-heart"></i>
+</span>                        <span class="add-cart-icon" data-product="{{ $product->idproduct }}"><i class="fas fa-plus"></i></span>
                     </div>
                 </div>
                 <div class="product-info">
@@ -56,8 +57,10 @@
                         <i class="fas fa-wine-bottle"></i>
                     @endif
                     <div class="product-hover" onclick="event.stopPropagation();">
-                        <span class="wishlist-icon" data-product="{{ $product->idproduct }}"><i class="far fa-heart"></i></span>
-                        <span class="add-cart-icon" data-product="{{ $product->idproduct }}"><i class="fas fa-plus"></i></span>
+<span class="wishlist-icon" data-product="{{ $product->idproduct }}">
+    <i class="far fa-heart"></i>  
+</span>     
+<span class="add-cart-icon" data-product="{{ $product->idproduct }}"><i class="fas fa-plus"></i></span>
                     </div>
                 </div>
                 <div class="product-info">
@@ -126,36 +129,7 @@
             });
         });
 
-        // ===== ICONOS DE WISHLIST Y CARRITO =====
-        // Wishlist icons
-        document.querySelectorAll('.wishlist-icon').forEach(icon => {
-            icon.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                
-                const heartIcon = this.querySelector('i');
-                heartIcon.classList.toggle('far');
-                heartIcon.classList.toggle('fas');
-                this.classList.toggle('active');
-                
-                if (heartIcon.classList.contains('fas')) {
-                    // Usar el sistema de notificaciones existente
-                    if (typeof showToast === 'function') {
-                        showToast('Añadido a favoritos');
-                    } else {
-                        console.log('Añadido a favoritos');
-                    }
-                } else {
-                    if (typeof showToast === 'function') {
-                        showToast('Eliminado de favoritos');
-                    } else {
-                        console.log('Eliminado de favoritos');
-                    }
-                }
-                
-                return false;
-            });
-        });
+        
         
         // Carrito icons
         document.querySelectorAll('.add-cart-icon').forEach(icon => {
@@ -348,62 +322,5 @@
         }
     });
 
- // Favoritos para página principal con mensaje de login
-document.querySelectorAll('.wishlist-icon').forEach(icon => {
-    icon.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        
-        const productId = this.dataset.product;
-        const heartIcon = this.querySelector('i');
-        
-        fetch('/favorites/toggle', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-            },
-            body: JSON.stringify({ productId: productId })
-        })
-        .then(response => {
-            if (response.status === 401) {
-                // Mostrar mensaje de que debe iniciar sesión
-                if (typeof showToast === 'function') {
-                    showToast('Debes iniciar sesión para guardar favoritos');
-                } else {
-                    alert('Debes iniciar sesión para guardar favoritos');
-                }
-                setTimeout(() => {
-                    window.location.href = '/login';
-                }, 2000);
-                return;
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data) {
-                if (data.status === 'added') {
-                    heartIcon.classList.remove('far');
-                    heartIcon.classList.add('fas');
-                    if (typeof showToast === 'function') {
-                        showToast('Añadido a favoritos');
-                    }
-                } else {
-                    heartIcon.classList.remove('fas');
-                    heartIcon.classList.add('far');
-                    if (typeof showToast === 'function') {
-                        showToast('Quitado de favoritos');
-                    }
-                }
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            if (typeof showToast === 'function') {
-                showToast('Error al procesar la solicitud');
-            }
-        });
-    });
-});
 </script>
 @endpush

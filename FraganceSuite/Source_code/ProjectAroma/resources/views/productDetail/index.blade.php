@@ -90,8 +90,8 @@
                 @endif
                 
                 <button class="btn-secondary" id="wishlistBtn" data-product="{{ $product->idproduct }}">
-                    <i class="far fa-heart"></i> Favoritos
-                </button>
+    <i class="far fa-heart"></i> Favoritos
+</button>
             </div>
         </div>
     </div>
@@ -111,7 +111,6 @@
             currentQuantity = newQuantity;
             document.getElementById('quantity').value = currentQuantity;
             
-            // Actualizar botones
             document.getElementById('decrementQty').disabled = currentQuantity <= 1;
             document.getElementById('incrementQty').disabled = currentQuantity >= maxStock;
         }
@@ -122,7 +121,9 @@
         try {
             const csrfTokenElement = document.querySelector('meta[name="csrf-token"]');
             if (!csrfTokenElement) {
-                showNotification('Error: CSRF token no encontrado. Recarga la página.', 'error');
+                if (window.favoritesSystem) {
+                    window.favoritesSystem.showNotification('Error: CSRF token no encontrado', 'error');
+                }
                 return;
             }
 
@@ -141,7 +142,9 @@
             }
             
             if (response.ok) {
-                showNotification('Producto añadido al carrito', 'success');
+                if (window.favoritesSystem) {
+                    window.favoritesSystem.showNotification('Producto añadido al carrito', 'success');
+                }
                 if (window.cartPreview) {
                     setTimeout(() => {
                         window.cartPreview.updatePreview();
@@ -149,140 +152,22 @@
                 }
             } else {
                 const errorData = await response.json();
-                showNotification(`Error: ${errorData.error || 'Error al añadir al carrito'}`, 'error');
+                if (window.favoritesSystem) {
+                    window.favoritesSystem.showNotification(`Error: ${errorData.error || 'Error al añadir al carrito'}`, 'error');
+                }
             }
         } catch (error) {
             console.error('Error:', error);
-            showNotification('Error al añadir al carrito', 'error');
-        }
-    }
-
-    // Función para toggle favoritos - Versión corregida con mensaje de login
-    function toggleWishlist(productId) {
-        const wishlistBtn = document.getElementById('wishlistBtn');
-        const heartIcon = wishlistBtn.querySelector('i');
-        
-        // Hacer petición AJAX al servidor
-        fetch('/favorites/toggle', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-            },
-            body: JSON.stringify({ productId: productId })
-        })
-        .then(response => {
-            if (response.status === 401) {
-                // Mostrar mensaje de que debe iniciar sesión
-                showNotification('Debes iniciar sesión para guardar favoritos', 'info');
-                setTimeout(() => {
-                    window.location.href = '/login';
-                }, 2000);
-                return;
+            if (window.favoritesSystem) {
+                window.favoritesSystem.showNotification('Error al añadir al carrito', 'error');
             }
-            return response.json();
-        })
-        .then(data => {
-            if (data) {
-                if (data.status === 'added') {
-                    heartIcon.classList.remove('far');
-                    heartIcon.classList.add('fas');
-                    wishlistBtn.classList.add('active');
-                    showNotification('Añadido a favoritos', 'success');
-                } else {
-                    heartIcon.classList.remove('fas');
-                    heartIcon.classList.add('far');
-                    wishlistBtn.classList.remove('active');
-                    showNotification('Eliminado de favoritos', 'info');
-                }
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showNotification('Error al procesar la solicitud', 'error');
-        });
+        }
     }
 
-    // Función para mostrar notificaciones
-    function showNotification(message, type = 'success') {
-        // Eliminar notificaciones existentes
-        const existingNotification = document.querySelector('.product-notification');
-        if (existingNotification) {
-            existingNotification.remove();
-        }
-
-        // Crear nueva notificación
-        const notification = document.createElement('div');
-        notification.className = 'product-notification';
-        
-        // Color según tipo
-        const colors = {
-            success: '#000',
-            error: '#cc0000',
-            info: '#927a1b'
-        };
-        
-        notification.textContent = message;
-        notification.style.cssText = `
-            position: fixed;
-            bottom: 80px;
-            right: 20px;
-            background: ${colors[type] || colors.success};
-            color: white;
-            padding: 15px 25px;
-            border-radius: 0px;
-            z-index: 9999;
-            font-size: 13px;
-            font-weight: 500;
-            letter-spacing: 0.5px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-            animation: slideInUp 0.3s ease;
-        `;
-        
-        document.body.appendChild(notification);
-        
-        // Agregar estilos de animación si no existen
-        if (!document.querySelector('style[data-notification-styles]')) {
-            const style = document.createElement('style');
-            style.setAttribute('data-notification-styles', 'true');
-            style.textContent = `
-                @keyframes slideInUp {
-                    from {
-                        transform: translateY(100px);
-                        opacity: 0;
-                    }
-                    to {
-                        transform: translateY(0);
-                        opacity: 1;
-                    }
-                }
-                @keyframes slideOutDown {
-                    from {
-                        transform: translateY(0);
-                        opacity: 1;
-                    }
-                    to {
-                        transform: translateY(100px);
-                        opacity: 0;
-                    }
-                }
-            `;
-            document.head.appendChild(style);
-        }
-        
-        // Eliminar después de 3 segundos
-        setTimeout(() => {
-            notification.style.animation = 'slideOutDown 0.3s ease';
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.remove();
-                }
-            }, 300);
-        }, 3000);
-    }
-
-    // Función para cargar estado inicial de favoritos
+    // Cargar estado inicial de favoritos
     function loadFavoriteStatus() {
+        if (!window.isAuthenticated) return;
+        
         const productId = {{ $product->idproduct }};
         fetch(`/favorites/check/${productId}`)
             .then(response => response.json())
@@ -300,22 +185,11 @@
 
     // Inicializar al cargar la página
     document.addEventListener('DOMContentLoaded', function() {
-        // Cargar estado de favoritos
-        loadFavoriteStatus();
-
-        // Inicializar botones de cantidad
         if (maxStock > 0) {
             document.getElementById('decrementQty').disabled = true;
         }
-
-        // Agregar event listener al botón de favoritos
-        const wishlistBtn = document.getElementById('wishlistBtn');
-        if (wishlistBtn) {
-            wishlistBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                toggleWishlist({{ $product->idproduct }});
-            });
-        }
+        
+        loadFavoriteStatus();
     });
 
     // Efecto de scroll en la imagen
