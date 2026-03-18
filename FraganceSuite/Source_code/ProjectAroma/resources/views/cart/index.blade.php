@@ -41,6 +41,12 @@
                     <span>Descuentos:</span>
                     <span id="discountAmount" class="discount-text">-₡0.00</span>
                 </div>
+
+                <div class="summary-item promo-code-row">
+                    <input id="promoCodeInput" class="promo-code-input" type="text" placeholder="Código de descuento" autocomplete="off">
+                    <button id="applyPromoBtn" class="promo-code-btn" type="button">Aplicar</button>
+                </div>
+                <p id="promoCodeMessage" class="promo-code-message"></p>
                 
                 <div class="summary-divider"></div>
                 
@@ -57,4 +63,3 @@
 </div>
 
 @endsection
-

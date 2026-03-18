@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 use App\Models\Cart;
 use App\Models\CartDetail;
 use App\Models\Product;
+use App\Models\CodePromotion;
 
 class CartController extends Controller
 {
@@ -103,6 +105,7 @@ class CartController extends Controller
                     'image' => $detail->product->pathimg,
                     'quantity' => (int)$detail->quantity,
                     'discount' => $discount,
+                    'stock' => (int)$detail->product->stock,
                 ];
             }
 
@@ -112,7 +115,6 @@ class CartController extends Controller
             return response()->json(['error' => $e->getMessage(), 'items' => [], 'total' => 0], 500);
         }
     }
-
     public function add(Request $request)
     {
         try {
@@ -129,6 +131,16 @@ class CartController extends Controller
             $productId = intval($request->productId);
             $quantity = intval($request->quantity ?? 1);
 
+            $product = Product::find($productId);
+            if (!$product) {
+                return response()->json(['error' => 'Producto no encontrado'], 404);
+            }
+
+            $stock = intval($product->stock ?? 0);
+            if ($stock < 1) {
+                return response()->json(['error' => 'No hay unidades disponibles'], 422);
+            }
+
             // Obtener o crear carrito
             $cart = Cart::firstOrCreate(
                 ['iduser' => $user->id],
@@ -141,9 +153,22 @@ class CartController extends Controller
                 ->first();
 
             if ($cartDetail) {
+                $newQuantity = intval($cartDetail->quantity) + $quantity;
+                if ($newQuantity > $stock) {
+                    return response()->json([
+                        'error' => 'No hay suficientes unidades disponibles',
+                        'available' => $stock
+                    ], 422);
+                }
                 // Si existe, sumar cantidad
                 $cartDetail->increment('quantity', $quantity);
             } else {
+                if ($quantity > $stock) {
+                    return response()->json([
+                        'error' => 'No hay suficientes unidades disponibles',
+                        'available' => $stock
+                    ], 422);
+                }
                 // Si no existe, crear
                 CartDetail::create([
                     'idcart' => $cart->idcart,
@@ -174,6 +199,19 @@ class CartController extends Controller
 
             $productId = intval($request->productId);
             $quantity = intval($request->quantity);
+
+            $product = Product::find($productId);
+            if (!$product) {
+                return response()->json(['error' => 'Producto no encontrado'], 404);
+            }
+
+            $stock = intval($product->stock ?? 0);
+            if ($quantity > $stock) {
+                return response()->json([
+                    'error' => 'No hay suficientes unidades disponibles',
+                    'available' => $stock
+                ], 422);
+            }
 
             $cart = Cart::where('iduser', $user->id)->first();
             if (!$cart) {
@@ -226,6 +264,54 @@ class CartController extends Controller
             return response()->json(['success' => true]);
         } catch (\Exception $e) {
             \Log::error('CART REMOVE ERROR', ['error' => $e->getMessage()]);
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function applyDiscountCode(Request $request)
+    {
+        try {
+            $user = Auth::user();
+            if (!$user) {
+                return response()->json(['error' => 'Unauthorized'], 401);
+            }
+
+            $request->validate([
+                'code' => 'required|string|max:255',
+            ]);
+
+            $code = trim($request->code);
+            if ($code === '') {
+                return response()->json(['error' => 'Código inválido'], 422);
+            }
+
+            $query = CodePromotion::query()
+                ->whereRaw('LOWER(code_promotion) = ?', [strtolower($code)]);
+
+            $now = now()->toDateString();
+            if (Schema::hasColumn('code_promotion', 'startdate')) {
+                $query->whereDate('startdate', '<=', $now);
+            } elseif (Schema::hasColumn('code_promotion', 'start_date')) {
+                $query->whereDate('start_date', '<=', $now);
+            }
+            if (Schema::hasColumn('code_promotion', 'enddate')) {
+                $query->whereDate('enddate', '>=', $now);
+            } elseif (Schema::hasColumn('code_promotion', 'end_date')) {
+                $query->whereDate('end_date', '>=', $now);
+            }
+
+            $promotion = $query->first();
+            if (!$promotion) {
+                return response()->json(['error' => 'Código inválido'], 404);
+            }
+
+            return response()->json([
+                'valid' => true,
+                'code' => $promotion->code_promotion,
+                'value' => floatval($promotion->value)
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('CART APPLY CODE ERROR', ['error' => $e->getMessage()]);
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
