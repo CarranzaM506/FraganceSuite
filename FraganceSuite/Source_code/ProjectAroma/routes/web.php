@@ -60,6 +60,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/api/cart/add', [CartController::class, 'add']);
     Route::post('/api/cart/update', [CartController::class, 'update']);
     Route::post('/api/cart/remove', [CartController::class, 'remove']);
+    Route::post('/api/cart/apply-code', [CartController::class, 'applyDiscountCode']);
 
     // FAVORITOS - Rutas específicas para favoritos
     Route::post('/favorites/toggle', [FavoriteController::class, 'toggle'])->name('favorites.toggle');

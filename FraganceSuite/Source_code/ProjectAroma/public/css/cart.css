@@ -492,6 +492,50 @@
     gap: 10px;
 }
 
+.promo-code-row {
+    align-items: stretch;
+}
+
+.promo-code-input {
+    flex: 1;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.promo-code-btn {
+    padding: 10px 14px;
+    border: 1px solid #000;
+    background: #000;
+    color: #fff;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+}
+
+.promo-code-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.promo-code-message {
+    margin: -6px 0 12px;
+    font-size: 12px;
+    color: #666;
+    min-height: 16px;
+}
+
+.promo-code-message.success {
+    color: #1b7f3c;
+}
+
+.promo-code-message.error {
+    color: #cc0000;
+}
+
 .discount-text {
     color: #d4a574;
     font-weight: 600;

@@ -48,7 +48,7 @@ class CartManager {
             if (!csrfTokenElement) {
                 this.showNotification('Error: CSRF token no encontrado. Recarga la página.', 'error');
                 console.error('CSRF token meta tag not found');
-                return;
+                return false;
             }
 
             const response = await fetch('/api/cart/add', {
@@ -62,10 +62,14 @@ class CartManager {
             
             if (response.redirected || response.status === 401) {
                 window.location.href = response.url || '/login';
-                return;
+                return false;
             }
             if (!response.ok) {
                 const errorData = await response.json();
+                const errorMessage = (errorData?.error || '').toLowerCase();
+                if (errorMessage.includes('no hay') && errorMessage.includes('unidades')) {
+                    return false;
+                }
                 throw new Error(errorData.error || 'Failed to add to cart');
             }
             
@@ -73,9 +77,11 @@ class CartManager {
             if (window.cartPreview) {
                 window.cartPreview.updatePreview();
             }
+            return true;
         } catch (error) {
             console.error('Error adding to cart:', error);
             this.showNotification(`Error al añadir al carrito: ${error.message}`, 'error');
+            return false;
         }
     }
 
@@ -118,8 +124,10 @@ class CartManager {
                 window.location.href = response.url || '/login';
                 return false;
             }
-            if (response.ok) {
-                return true;
+            if (response.ok) return true;
+            const errorData = await response.json();
+            if (errorData?.error) {
+                this.showNotification(errorData.error, 'error');
             }
         } catch (error) {
             console.error('Error updating quantity:', error);
@@ -167,9 +175,22 @@ class CartManager {
                     // Obtener datos completos del producto incluyendo descuento
                     const productData = await this.fetchProductData(productId);
                     const discount = productData?.discount || 0;
+                    const stock = parseInt(productData?.stock ?? -1);
+
+                    if (stock === 0) {
+                        return;
+                    }
+
+                    if (stock > -1) {
+                        const cart = await this.getCart();
+                        const currentQty = cart[productId]?.quantity || 0;
+                        if (currentQty + 1 > stock) {
+                            return;
+                        }
+                    }
 
                     // Agregar directamente al carrito
-                    await this.addToCart(
+                    const added = await this.addToCart(
                         productId,
                         productName,
                         productBrand,
@@ -179,11 +200,13 @@ class CartManager {
                         discount
                     );
 
-                    // Mostrar notificación
-                    this.showNotification(`Producto añadido al carrito`);
+                    if (added) {
+                        // Mostrar notificación
+                        this.showNotification(`Producto añadido al carrito`);
 
-                    // Animación visual
-                    this.animateAddToCart(button);
+                        // Animación visual
+                        this.animateAddToCart(button);
+                    }
                 } else {
                     console.warn('No se pudo obtener los datos del producto');
                 }
@@ -293,6 +316,8 @@ class CartManager {
 class CartPageManager {
     constructor() {
         this.listenersAttached = false;
+        this.codeDiscountPercent = 0;
+        this.appliedCode = null;
         
         // Siempre intentar inicializar en DOMContentLoaded
         if (document.readyState === 'loading') {
@@ -311,6 +336,9 @@ class CartPageManager {
         this.discountEl = document.getElementById('discountAmount');
         this.totalEl = document.getElementById('totalPrice');
         this.checkoutBtn = document.getElementById('checkoutBtn');
+        this.promoInput = document.getElementById('promoCodeInput');
+        this.promoBtn = document.getElementById('applyPromoBtn');
+        this.promoMessage = document.getElementById('promoCodeMessage');
         
         // Solo proceder si estamos en la página del carrito
         if (!this.container) {
@@ -396,7 +424,7 @@ class CartPageManager {
                 const lineTotal = finalPrice * qty;
 
                 itemsHTML += `
-                    <tr class="cart-item" data-product-id="${item.id}">
+                    <tr class="cart-item" data-product-id="${item.id}" data-stock="${item.stock ?? ''}">
                         <td class="product-cell">
                             <div class="product-wrapper">
                                 ${item.image ? `<img src="${item.image}" alt="${item.name}" class="product-image">` : `<div class="placeholder"><i class="fas fa-wine-bottle"></i></div>`}
@@ -479,6 +507,18 @@ class CartPageManager {
                 await this.removeItem(productId, cartItem);
             }
         });
+
+        if (this.promoBtn) {
+            this.promoBtn.addEventListener('click', () => this.applyPromoCode());
+        }
+        if (this.promoInput) {
+            this.promoInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    this.applyPromoCode();
+                }
+            });
+        }
     }
 
     async decreaseQty(productId, qtySpan, cartItem) {
@@ -503,6 +543,13 @@ class CartPageManager {
 
     async increaseQty(productId, qtySpan, cartItem) {
         const currentQty = parseInt(qtySpan.textContent);
+        const stock = parseInt(cartItem.getAttribute('data-stock') || '-1');
+        if (stock > -1 && currentQty + 1 > stock) {
+            if (window.cartManager) {
+                window.cartManager.showNotification('No hay suficientes unidades disponibles', 'error');
+            }
+            return;
+        }
         const newQty = currentQty + 1;
         
         qtySpan.textContent = newQty;
@@ -538,6 +585,61 @@ class CartPageManager {
             if (window.cartPreview) {
                 window.cartPreview.updatePreview();
             }
+        }
+    }
+
+    async applyPromoCode() {
+        if (!this.promoInput || !this.promoBtn) return;
+
+        const code = this.promoInput.value.trim();
+        if (!code) {
+            this.setPromoMessage('Ingresa un código válido', 'error');
+            return;
+        }
+
+        try {
+            this.promoBtn.disabled = true;
+            const response = await fetch('/api/cart/apply-code', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({ code })
+            });
+
+            if (response.redirected || response.status === 401) {
+                window.location.href = response.url || '/login';
+                return;
+            }
+
+            const data = await response.json();
+            if (!response.ok) {
+                this.codeDiscountPercent = 0;
+                this.appliedCode = null;
+                this.setPromoMessage(data.error || 'Código inválido', 'error');
+                this.updateTotals();
+                return;
+            }
+
+            this.codeDiscountPercent = parseFloat(data.value || 0);
+            this.appliedCode = data.code || code;
+            this.setPromoMessage(`Código aplicado: ${this.appliedCode} (-${this.codeDiscountPercent}%)`, 'success');
+            this.updateTotals();
+        } catch (error) {
+            console.error('Error applying promo code:', error);
+            this.setPromoMessage('Error al validar el código', 'error');
+        } finally {
+            this.promoBtn.disabled = false;
+        }
+    }
+
+    setPromoMessage(message, type = '') {
+        if (!this.promoMessage) return;
+        this.promoMessage.textContent = message;
+        this.promoMessage.classList.remove('success', 'error');
+        if (type) {
+            this.promoMessage.classList.add(type);
         }
     }
 
@@ -588,10 +690,14 @@ class CartPageManager {
             totalDiscount += itemSubtotal * (discount / 100);
         });
 
-        const total = subtotal - totalDiscount;
+        const totalAfterProductDiscount = subtotal - totalDiscount;
+        const codeDiscountPercent = this.codeDiscountPercent || 0;
+        const codeDiscountAmount = totalAfterProductDiscount * (codeDiscountPercent / 100);
+        const total = totalAfterProductDiscount - codeDiscountAmount;
+        const combinedDiscount = totalDiscount + codeDiscountAmount;
         
         if (this.subtotalEl) this.subtotalEl.textContent = '₡' + subtotal.toFixed(2);
-        if (this.discountEl) this.discountEl.textContent = '-₡' + totalDiscount.toFixed(2);
+        if (this.discountEl) this.discountEl.textContent = '-₡' + combinedDiscount.toFixed(2);
         if (this.totalEl) this.totalEl.textContent = '₡' + total.toFixed(2);
     }
 

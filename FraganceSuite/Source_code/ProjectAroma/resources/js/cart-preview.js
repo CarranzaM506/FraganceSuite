@@ -27,11 +27,8 @@ class CartPreview {
         
         // Solo proceder si existen los elementos necesarios
         if (!this.container || !this.preview) {
-            console.warn('[CartPreview] Elements not found - not initializing preview');
             return;
         }
-        
-        console.log('[CartPreview] Initializing with container:', this.container);
         this.attachListeners();
         this.attachItemListeners(); // Agregar listeners una sola vez
     }
@@ -85,6 +82,8 @@ class CartPreview {
             const price = item.price;
             const qty = item.quantity;
             const discountPercent = item.discount || 0;
+            const stock = parseInt(item.stock ?? -1);
+            const disablePlus = stock > -1 && qty >= stock;
             
             // Calcular precio con descuento
             const finalPrice = discountPercent > 0 ? price * (1 - discountPercent / 100) : price;
@@ -92,7 +91,7 @@ class CartPreview {
             total += itemTotal;
 
             html += `
-                <div class="cart-preview-item" data-product-id="${productId}">
+                <div class="cart-preview-item" data-product-id="${productId}" data-stock="${stock}">
                     <div class="item-image">
                         <img src="${item.image}" alt="${item.name}">
                     </div>
@@ -111,7 +110,7 @@ class CartPreview {
                             <div class="item-controls">
                                 <button class="qty-btn qty-minus" data-product-id="${productId}">−</button>
                                 <span class="item-quantity">${qty}</span>
-                                <button class="qty-btn qty-plus" data-product-id="${productId}">+</button>
+                                <button class="qty-btn qty-plus" data-product-id="${productId}" ${disablePlus ? 'disabled' : ''}>+</button>
                                 <button class="btn-delete" data-product-id="${productId}" title="Eliminar"><i class="fas fa-trash-alt"></i></button>
                             </div>
                             <div class="item-total" data-product-id="${productId}" data-base-price="${price}" data-discount="${discountPercent}">₡${itemTotal.toLocaleString('es-CR', {minimumFractionDigits: 0})}</div>
@@ -132,12 +131,10 @@ class CartPreview {
         if (this.listenersAttached) return;
         
         if (!this.itemsContainer) {
-            console.log('[CartPreview] itemsContainer not found, skipping item listeners');
             return;
         }
         
         this.listenersAttached = true;
-        console.log('[CartPreview] Attaching item listeners to container');
         
         // Usar un único listener con event delegation
         this.itemsContainer.addEventListener('click', (e) => {
@@ -146,20 +143,15 @@ class CartPreview {
 
             const productId = parseInt(btn.dataset.productId);
             if (!productId) {
-                console.log('[CartPreview] No product ID found on button');
                 return;
             }
 
-            console.log('[CartPreview] Button clicked for product', productId, 'Class:', btn.className);
-
             // Botón de aumentar cantidad
             if (btn.classList.contains('qty-plus')) {
-                console.log('[CartPreview] Increasing quantity for product', productId);
                 this.increaseQuantity(productId);
             }
             // Botón de disminuir cantidad
             else if (btn.classList.contains('qty-minus')) {
-                console.log('[CartPreview] Decreasing quantity for product', productId);
                 this.decreaseQuantity(productId);
             }
             // Botón de eliminar
@@ -175,14 +167,21 @@ class CartPreview {
             // 1. Actualizar el DOM inmediatamente (feedback visual)
             const item = this.itemsContainer?.querySelector(`.cart-preview-item[data-product-id="${productId}"]`);
             if (!item) {
-                console.warn('[CartPreview] Item not found for product', productId);
                 return;
             }
+            const stock = parseInt(item.getAttribute('data-stock') || '-1');
             const qtySpan = item.querySelector('.item-quantity');
             const currentQty = parseInt(qtySpan.textContent);
+            if (stock > -1 && currentQty + 1 > stock) {
+                return;
+            }
             const newQty = currentQty + 1;
             
             qtySpan.textContent = newQty;
+            const plusBtn = item.querySelector('.qty-plus');
+            if (plusBtn && stock > -1) {
+                plusBtn.disabled = newQty >= stock;
+            }
             this.updatePreviewTotal();
             
             // Actualizar total del item
@@ -213,10 +212,13 @@ class CartPreview {
             if (!response.ok) {
                 // Si falla, revertir el cambio en el DOM
                 qtySpan.textContent = currentQty;
+                if (plusBtn && stock > -1) {
+                    plusBtn.disabled = currentQty >= stock;
+                }
                 if (itemTotalEl) {
                     itemTotalEl.textContent = '₡' + (finalPrice * currentQty).toLocaleString('es-CR', {minimumFractionDigits: 0});
                 }
-                console.error('Error al agregar cantidad:', await response.json());
+                console.error('[CartPreview] Error al agregar cantidad:', await response.json());
             } else {
                 // Actualizar total general
                 this.updatePreviewTotal();
@@ -231,7 +233,6 @@ class CartPreview {
         try {
             const item = this.itemsContainer?.querySelector(`.cart-preview-item[data-product-id="${productId}"]`);
             if (!item) {
-                console.warn('[CartPreview] Item not found for product', productId);
                 return;
             }
             const qtySpan = item.querySelector('.item-quantity');
@@ -246,6 +247,11 @@ class CartPreview {
             // 1. Actualizar el DOM inmediatamente
             const newQty = currentQty - 1;
             qtySpan.textContent = newQty;
+            const plusBtn = item.querySelector('.qty-plus');
+            const stock = parseInt(item.getAttribute('data-stock') || '-1');
+            if (plusBtn && stock > -1) {
+                plusBtn.disabled = newQty >= stock;
+            }
             this.updatePreviewTotal();
             
             // Actualizar total del item
@@ -276,10 +282,13 @@ class CartPreview {
             if (!response.ok) {
                 // Si falla, revertir
                 qtySpan.textContent = currentQty;
+                if (plusBtn && stock > -1) {
+                    plusBtn.disabled = currentQty >= stock;
+                }
                 if (itemTotalEl) {
                     itemTotalEl.textContent = '₡' + (finalPrice * currentQty).toLocaleString('es-CR', {minimumFractionDigits: 0});
                 }
-                console.error('Error:', await response.json());
+                console.error('[CartPreview] Error al decrementar cantidad:', await response.json());
             } else {
                 // Actualizar total general
                 this.updatePreviewTotal();
@@ -295,7 +304,6 @@ class CartPreview {
             // 1. Eliminar del DOM inmediatamente
             const item = this.itemsContainer?.querySelector(`.cart-preview-item[data-product-id="${productId}"]`);
             if (!item) {
-                console.warn('[CartPreview] Item not found for product', productId);
                 return;
             }
             item.style.opacity = '0';
@@ -324,10 +332,10 @@ class CartPreview {
             } else {
                 // Si falla, volver a mostrar el item
                 item.style.opacity = '1';
-                console.error('Error:', await response.json());
+                console.error('[CartPreview] Error al eliminar producto:', await response.json());
             }
         } catch (error) {
-            console.error('Error:', error);
+            console.error('[CartPreview] Exception:', error);
         }
     }
 
@@ -398,7 +406,7 @@ class CartPreview {
                 }, {});
             }
         } catch (error) {
-            console.error('Error al obtener carrito:', error);
+            console.error('[CartPreview] Error al obtener carrito:', error);
         }
         return {};
     }
@@ -637,6 +645,18 @@ style.textContent = `
 
     .qty-btn:active {
         transform: scale(0.95);
+    }
+
+    .qty-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background: #f0f0f0;
+        border-color: #eee;
+    }
+
+    .qty-btn:disabled:hover {
+        background: #f0f0f0;
+        border-color: #eee;
     }
 
     .item-quantity {
