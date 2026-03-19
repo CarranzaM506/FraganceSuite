@@ -9,6 +9,11 @@ class CartManager {
         this.pendingProduct = null;
         this.init();
     }
+
+    emitCartUpdated() {
+        window.dispatchEvent(new CustomEvent('cartUpdated'));
+    }
+    
     // Inicializar event listeners
     init() {
         // Ejecutar solo una vez cuando el DOM esté listo
@@ -72,7 +77,8 @@ class CartManager {
                 }
                 throw new Error(errorData.error || 'Failed to add to cart');
             }
-            
+            this.emitCartUpdated();
+
             // Actualizar el preview si está disponible
             if (window.cartPreview) {
                 window.cartPreview.updatePreview();
@@ -101,6 +107,7 @@ class CartManager {
                 return false;
             }
             if (response.ok) {
+                this.emitCartUpdated();
                 return true;
             }
         } catch (error) {
@@ -124,7 +131,10 @@ class CartManager {
                 window.location.href = response.url || '/login';
                 return false;
             }
-            if (response.ok) return true;
+            if (response.ok) {
+                this.emitCartUpdated();
+                return true;
+            }
             const errorData = await response.json();
             if (errorData?.error) {
                 this.showNotification(errorData.error, 'error');
@@ -356,6 +366,7 @@ class CartPageManager {
         });
         this.renderCart();
         this.attachListeners();
+        window.addEventListener('cartUpdated', () => this.renderCart());
     }
 
     async renderCart() {
@@ -809,3 +820,5 @@ window.cartPageManager = new CartPageManager();
 
 // Inicializar el CartManager cuando se cargue la página
 window.cartManager = new CartManager();
+
+
