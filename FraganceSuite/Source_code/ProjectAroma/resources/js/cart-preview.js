@@ -6,24 +6,31 @@
 
 class CartPreview {
     constructor() {
-        this.container = document.getElementById('cartIconContainer');
-        this.preview = document.getElementById('cartPreview');
-        this.itemsContainer = document.getElementById('cartPreviewItems');
-        this.totalElement = document.getElementById('cartPreviewTotal');
-        this.hideTimeout = null;
+        this.listenersAttached = false; // Bandera para evitar duplicados
         
-        if (this.container && this.preview) {
+        // Siempre intentar inicializar en DOMContentLoaded
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => this.init());
+        } else {
             this.init();
         }
     }
 
     // Inicializar event listeners
     init() {
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => this.attachListeners());
-        } else {
-            this.attachListeners();
+        // Re-obtener elementos cada vez que se inicializa
+        this.container = document.getElementById('cartIconContainer');
+        this.preview = document.getElementById('cartPreview');
+        this.itemsContainer = document.getElementById('cartPreviewItems');
+        this.totalElement = document.getElementById('cartPreviewTotal');
+        this.hideTimeout = null;
+        
+        // Solo proceder si existen los elementos necesarios
+        if (!this.container || !this.preview) {
+            return;
         }
+        this.attachListeners();
+        this.attachItemListeners(); // Agregar listeners una sola vez
     }
 
     // Adjuntar listeners al contenedor del carrito
@@ -58,8 +65,8 @@ class CartPreview {
     }
 
     // Actualizar el contenido del preview
-    updatePreview() {
-        const cart = this.getCart();
+    async updatePreview() {
+        const cart = await this.getCart();
         
         if (Object.keys(cart).length === 0) {
             this.itemsContainer.innerHTML = '<p class="empty-cart">Tu carrito está vacío</p>';
@@ -72,26 +79,41 @@ class CartPreview {
         let total = 0;
 
         Object.entries(cart).forEach(([productId, item]) => {
-            const itemTotal = (item.price * item.quantity) - (item.discount || 0);
+            const price = item.price;
+            const qty = item.quantity;
+            const discountPercent = item.discount || 0;
+            const stock = parseInt(item.stock ?? -1);
+            const disablePlus = stock > -1 && qty >= stock;
+            
+            // Calcular precio con descuento
+            const finalPrice = discountPercent > 0 ? price * (1 - discountPercent / 100) : price;
+            const itemTotal = finalPrice * qty;
             total += itemTotal;
 
             html += `
-                <div class="cart-preview-item" data-product-id="${productId}">
+                <div class="cart-preview-item" data-product-id="${productId}" data-stock="${stock}">
                     <div class="item-image">
                         <img src="${item.image}" alt="${item.name}">
                     </div>
                     <div class="item-details">
                         <div class="item-name">${item.name}</div>
                         <div class="item-brand">${item.brand}</div>
-                        <div class="item-price">₡${item.price.toLocaleString('es-CR', {minimumFractionDigits: 0})}</div>
+                        ${discountPercent > 0 ? `
+                            <div class="item-price" style="font-size: 0.85em;">
+                                <span style="text-decoration: line-through; color: #999;">₡${price.toLocaleString('es-CR', {minimumFractionDigits: 0})}</span>
+                            </div>
+                            <div class="item-final-price" style="color: #333; font-weight: bold; font-size: 1.05em;">₡${finalPrice.toLocaleString('es-CR', {minimumFractionDigits: 0})}</div>
+                        ` : `
+                            <div class="item-price">₡${price.toLocaleString('es-CR', {minimumFractionDigits: 0})}</div>
+                        `}
                         <div class="item-bottom">
                             <div class="item-controls">
                                 <button class="qty-btn qty-minus" data-product-id="${productId}">−</button>
-                                <span class="item-quantity">${item.quantity}</span>
-                                <button class="qty-btn qty-plus" data-product-id="${productId}">+</button>
+                                <span class="item-quantity">${qty}</span>
+                                <button class="qty-btn qty-plus" data-product-id="${productId}" ${disablePlus ? 'disabled' : ''}>+</button>
                                 <button class="btn-delete" data-product-id="${productId}" title="Eliminar"><i class="fas fa-trash-alt"></i></button>
                             </div>
-                            <div class="item-total">₡${(item.price * item.quantity).toLocaleString('es-CR', {minimumFractionDigits: 0})}</div>
+                            <div class="item-total" data-product-id="${productId}" data-base-price="${price}" data-discount="${discountPercent}">₡${itemTotal.toLocaleString('es-CR', {minimumFractionDigits: 0})}</div>
                         </div>
                     </div>
                 </div>
@@ -100,174 +122,244 @@ class CartPreview {
 
         this.itemsContainer.innerHTML = html;
         this.totalElement.textContent = '₡' + total.toLocaleString('es-CR', {minimumFractionDigits: 0});
-        
-        // Adjuntar listeners a los botones
-        this.attachItemListeners();
+        // Los listeners ya están agregados una sola vez en init()
     }
 
     // Adjuntar listeners a los botones de cantidad y eliminación
     attachItemListeners() {
-        // Botones de aumentar cantidad
-        this.itemsContainer.querySelectorAll('.qty-plus').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                const productId = btn.dataset.productId;
+        // Si ya se agregaron listeners, no hacer nada
+        if (this.listenersAttached) return;
+        
+        if (!this.itemsContainer) {
+            return;
+        }
+        
+        this.listenersAttached = true;
+        
+        // Usar un único listener con event delegation
+        this.itemsContainer.addEventListener('click', (e) => {
+            const btn = e.target.closest('button');
+            if (!btn) return;
+
+            const productId = parseInt(btn.dataset.productId);
+            if (!productId) {
+                return;
+            }
+
+            // Botón de aumentar cantidad
+            if (btn.classList.contains('qty-plus')) {
                 this.increaseQuantity(productId);
-            });
-        });
-
-        // Botones de disminuir cantidad
-        this.itemsContainer.querySelectorAll('.qty-minus').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                const productId = btn.dataset.productId;
+            }
+            // Botón de disminuir cantidad
+            else if (btn.classList.contains('qty-minus')) {
                 this.decreaseQuantity(productId);
-            });
-        });
-
-        // Botones de eliminar
-        this.itemsContainer.querySelectorAll('.btn-delete').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                const productId = btn.dataset.productId;
+            }
+            // Botón de eliminar
+            else if (btn.classList.contains('btn-delete')) {
                 this.deleteProduct(productId);
-            });
+            }
         });
     }
 
-    // Aumentar cantidad
-    increaseQuantity(productId) {
-        const cart = this.getCart();
-        if (cart[productId]) {
-            cart[productId].quantity += 1;
-            this.saveCart(cart);
-        }
-    }
-
-    // Disminuir cantidad
-    async decreaseQuantity(productId) {
-        const cart = this.getCart();
-        if (cart[productId]) {
-            if (cart[productId].quantity <= 1) {
-                // Si es la última unidad, pedir confirmación para eliminar
-                await this.deleteProduct(productId);
-            } else {
-                cart[productId].quantity -= 1;
-                this.saveCart(cart);
+    // Aumentar cantidad - RÁPIDO Y RESPONSIVO
+    async increaseQuantity(productId) {
+        try {
+            // 1. Actualizar el DOM inmediatamente (feedback visual)
+            const item = this.itemsContainer?.querySelector(`.cart-preview-item[data-product-id="${productId}"]`);
+            if (!item) {
+                return;
             }
-        }
-    }
-
-    // Eliminar producto con confirmación
-    async deleteProduct(productId) {
-        const cart = this.getCart();
-        if (cart[productId]) {
-            const productName = cart[productId].name;
-            const confirmed = await this.showDeleteConfirmationModal(productName);
+            const stock = parseInt(item.getAttribute('data-stock') || '-1');
+            const qtySpan = item.querySelector('.item-quantity');
+            const currentQty = parseInt(qtySpan.textContent);
+            if (stock > -1 && currentQty + 1 > stock) {
+                return;
+            }
+            const newQty = currentQty + 1;
             
-            if (confirmed) {
-                delete cart[productId];
-                this.saveCart(cart);
-                this.showDeleteNotification(`${productName} eliminado del carrito`);
+            qtySpan.textContent = newQty;
+            const plusBtn = item.querySelector('.qty-plus');
+            if (plusBtn && stock > -1) {
+                plusBtn.disabled = newQty >= stock;
             }
+            this.updatePreviewTotal();
+            
+            // Actualizar total del item
+            const itemTotalEl = item.querySelector('.item-total');
+            const basePrice = parseFloat(itemTotalEl?.dataset.basePrice) || 0;
+            const discount = parseFloat(itemTotalEl?.dataset.discount) || 0;
+            const finalPrice = discount > 0 ? basePrice * (1 - discount / 100) : basePrice;
+            const newTotal = finalPrice * newQty;
+            if (itemTotalEl) {
+                itemTotalEl.textContent = '₡' + newTotal.toLocaleString('es-CR', {minimumFractionDigits: 0});
+            }
+            
+            // 2. Ahora actualizar la BD en background
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            const response = await fetch('/api/cart/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
+                },
+                body: JSON.stringify({ productId, quantity: newQty })
+            });
+            
+            if (response.redirected || response.status === 401) {
+                window.location.href = response.url || '/login';
+                return;
+            }
+            if (!response.ok) {
+                // Si falla, revertir el cambio en el DOM
+                qtySpan.textContent = currentQty;
+                if (plusBtn && stock > -1) {
+                    plusBtn.disabled = currentQty >= stock;
+                }
+                if (itemTotalEl) {
+                    itemTotalEl.textContent = '₡' + (finalPrice * currentQty).toLocaleString('es-CR', {minimumFractionDigits: 0});
+                }
+                console.error('[CartPreview] Error al agregar cantidad:', await response.json());
+            } else {
+                // Actualizar total general
+                this.updatePreviewTotal();
+                window.dispatchEvent(new CustomEvent('cartUpdated'));
+            }
+        } catch (error) {
+            console.error('Error:', error);
         }
     }
 
-    // Modal de confirmación para eliminar producto
-    showDeleteConfirmationModal(productName) {
-        return new Promise((resolve) => {
-            const modal = document.createElement('div');
-            modal.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: rgba(0, 0, 0, 0.6);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                z-index: 10000;
-                animation: fadeIn 0.3s ease-in-out;
-            `;
-
-            const modalContent = document.createElement('div');
-            modalContent.style.cssText = `
-                background: white;
-                padding: 30px;
-                border-radius: 0px;
-                max-width: 300px;
-                width: 90%;
-                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-                animation: slideUp 0.3s ease-in-out;
-                text-align: center;
-            `;
-
-            modalContent.innerHTML = `
-                <p style="margin: 0 0 25px 0; color: #666; font-size: 14px;">
-                    ¿Eliminar del carrito?
-                </p>
-                <div style="display: flex; gap: 10px; justify-content: center;">
-                    <button id="deleteCancel" style="
-                        padding: 10px 20px;
-                        background: #f5f5f5;
-                        color: #666;
-                        border: 1px solid #ddd;
-                        border-radius: 0px;
-                        font-size: 12px;
-                        font-weight: 600;
-                        cursor: pointer;
-                        letter-spacing: 0.5px;
-                        text-transform: uppercase;
-                        transition: all 0.2s;
-                    ">
-                        No
-                    </button>
-                    <button id="deleteConfirm" style="
-                        padding: 10px 20px;
-                        background: #cc0000;
-                        color: white;
-                        border: none;
-                        border-radius: 0px;
-                        font-size: 12px;
-                        font-weight: 600;
-                        cursor: pointer;
-                        letter-spacing: 0.5px;
-                        text-transform: uppercase;
-                        transition: all 0.2s;
-                    ">
-                        Sí, eliminar
-                    </button>
-                </div>
-            `;
-
-            modal.appendChild(modalContent);
-            document.body.appendChild(modal);
-
-            const confirmBtn = modal.querySelector('#deleteConfirm');
-            const cancelBtn = modal.querySelector('#deleteCancel');
-
-            const closeModal = (result) => {
-                modal.style.animation = 'fadeOut 0.3s ease-in-out';
-                setTimeout(() => {
-                    modal.remove();
-                    resolve(result);
-                }, 300);
-            };
-
-            confirmBtn.addEventListener('click', () => closeModal(true));
-            cancelBtn.addEventListener('click', () => closeModal(false));
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) closeModal(false);
+    // Disminuir cantidad - RÁPIDO Y RESPONSIVO
+    async decreaseQuantity(productId) {
+        try {
+            const item = this.itemsContainer?.querySelector(`.cart-preview-item[data-product-id="${productId}"]`);
+            if (!item) {
+                return;
+            }
+            const qtySpan = item.querySelector('.item-quantity');
+            const currentQty = parseInt(qtySpan.textContent);
+            
+            if (currentQty <= 1) {
+                // Si es 1, eliminar
+                await this.deleteProduct(productId);
+                return;
+            }
+            
+            // 1. Actualizar el DOM inmediatamente
+            const newQty = currentQty - 1;
+            qtySpan.textContent = newQty;
+            const plusBtn = item.querySelector('.qty-plus');
+            const stock = parseInt(item.getAttribute('data-stock') || '-1');
+            if (plusBtn && stock > -1) {
+                plusBtn.disabled = newQty >= stock;
+            }
+            this.updatePreviewTotal();
+            
+            // Actualizar total del item
+            const itemTotalEl = item.querySelector('.item-total');
+            const basePrice = parseFloat(itemTotalEl?.dataset.basePrice) || 0;
+            const discount = parseFloat(itemTotalEl?.dataset.discount) || 0;
+            const finalPrice = discount > 0 ? basePrice * (1 - discount / 100) : basePrice;
+            const newTotal = finalPrice * newQty;
+            if (itemTotalEl) {
+                itemTotalEl.textContent = '₡' + newTotal.toLocaleString('es-CR', {minimumFractionDigits: 0});
+            }
+            
+            // 2. Actualizar la BD en background
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            const response = await fetch('/api/cart/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
+                },
+                body: JSON.stringify({ productId, quantity: newQty })
             });
+            
+            if (response.redirected || response.status === 401) {
+                window.location.href = response.url || '/login';
+                return;
+            }
+            if (!response.ok) {
+                // Si falla, revertir
+                qtySpan.textContent = currentQty;
+                if (plusBtn && stock > -1) {
+                    plusBtn.disabled = currentQty >= stock;
+                }
+                if (itemTotalEl) {
+                    itemTotalEl.textContent = '₡' + (finalPrice * currentQty).toLocaleString('es-CR', {minimumFractionDigits: 0});
+                }
+                console.error('[CartPreview] Error al decrementar cantidad:', await response.json());
+            } else {
+                // Actualizar total general
+                this.updatePreviewTotal();
+                window.dispatchEvent(new CustomEvent('cartUpdated'));
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
 
-            confirmBtn.addEventListener('mouseenter', function() {
-                this.style.background = '#ff0000';
+    // Eliminar producto - RÁPIDO Y RESPONSIVO
+    async deleteProduct(productId) {
+        try {
+            // 1. Eliminar del DOM inmediatamente
+            const item = this.itemsContainer?.querySelector(`.cart-preview-item[data-product-id="${productId}"]`);
+            if (!item) {
+                return;
+            }
+            item.style.opacity = '0';
+            item.style.transition = 'opacity 0.2s';
+            
+            setTimeout(() => item.remove(), 200);
+            
+            // 2. Actualizar la BD
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            const response = await fetch('/api/cart/remove', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
+                },
+                body: JSON.stringify({ productId })
             });
-            confirmBtn.addEventListener('mouseleave', function() {
-                this.style.background = '#cc0000';
-            });
+            
+            if (response.redirected || response.status === 401) {
+                window.location.href = response.url || '/login';
+                return;
+            }
+            if (response.ok) {
+                this.showDeleteNotification('Producto eliminado');
+                this.updatePreviewTotal();
+                window.dispatchEvent(new CustomEvent('cartUpdated'));
+            } else {
+                // Si falla, volver a mostrar el item
+                item.style.opacity = '1';
+                console.error('[CartPreview] Error al eliminar producto:', await response.json());
+            }
+        } catch (error) {
+            console.error('[CartPreview] Exception:', error);
+        }
+    }
+
+    // Actualizar solo el total sin re-renderizar todo
+    updatePreviewTotal() {
+        let total = 0;
+        const items = this.itemsContainer ? this.itemsContainer.querySelectorAll('.cart-preview-item') : [];
+        items.forEach(item => {
+            const basePrice = parseFloat(item.querySelector('.item-total').dataset.basePrice) || 0;
+            const discount = parseFloat(item.querySelector('.item-total').dataset.discount) || 0;
+            const quantity = parseInt(item.querySelector('.item-quantity').textContent) || 0;
+            
+            const finalPrice = discount > 0 ? basePrice * (1 - discount / 100) : basePrice;
+            const itemTotal = finalPrice * quantity;
+            
+            // Update the item total display
+            item.querySelector('.item-total').textContent = `₡${itemTotal.toLocaleString('es-CR', {minimumFractionDigits: 0})}`;
+            
+            total += itemTotal;
         });
+        this.totalElement.textContent = '₡' + total.toLocaleString('es-CR', {minimumFractionDigits: 0});
     }
 
     // Mostrar notificación de eliminación
@@ -305,26 +397,27 @@ class CartPreview {
         }, 3000);
     }
 
-    // Obtener carrito desde localStorage
-    getCart() {
+    // Obtener carrito desde la API
+    async getCart() {
         try {
-            const cart = localStorage.getItem('aroma_cart');
-            return cart ? JSON.parse(cart) : {};
+            const response = await fetch('/api/cart');
+            if (response.ok) {
+                const data = await response.json();
+                return data.items.reduce((acc, item) => {
+                    acc[item.id] = item;
+                    return acc;
+                }, {});
+            }
         } catch (error) {
-            console.error('Error al obtener carrito:', error);
-            return {};
+            console.error('[CartPreview] Error al obtener carrito:', error);
         }
+        return {};
     }
 
-    // Guardar carrito en localStorage
+    // Guardar carrito (no necesario con DB)
     saveCart(cart) {
-        try {
-            localStorage.setItem('aroma_cart', JSON.stringify(cart));
-            // Disparar evento personalizado
-            window.dispatchEvent(new CustomEvent('cartUpdated'));
-        } catch (error) {
-            console.error('Error al guardar carrito:', error);
-        }
+        // Disparar evento personalizado
+        window.dispatchEvent(new CustomEvent('cartUpdated'));
     }
 }
 
@@ -557,6 +650,18 @@ style.textContent = `
         transform: scale(0.95);
     }
 
+    .qty-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background: #f0f0f0;
+        border-color: #eee;
+    }
+
+    .qty-btn:disabled:hover {
+        background: #f0f0f0;
+        border-color: #eee;
+    }
+
     .item-quantity {
         font-size: 13px;
         font-weight: 600;
@@ -660,6 +765,14 @@ style.textContent = `
 
     .cart-preview-items::-webkit-scrollbar-thumb:hover {
         background: #b0b0b0;
+    }
+
+    /* Responsive para móviles */
+    @media (max-width: 768px) {
+        .cart-preview-dropdown {
+            width: 90vw;
+            max-width: 350px;
+        }
     }
 `;
 document.head.appendChild(style);

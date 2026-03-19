@@ -19,7 +19,6 @@
                         <tr>
                             <th>Inicio</th>
                             <th>Fin</th>
-                            <th>Condición</th>
                             <th>Productos</th>
                             <th>Acciones</th>
                         </tr>
@@ -55,7 +54,6 @@
                                         @endif
                                     @endif
                                 </td>
-                                <td>{{ $d->condition }}</td>
                                 <td>
                                     <button class="btn btn-sm btn-info" data-id="{{ $d->iddiscount }}" onclick="showProducts(this)">Ver productos</button>
                                 </td>
