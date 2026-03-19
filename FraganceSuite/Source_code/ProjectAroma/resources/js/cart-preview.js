@@ -196,13 +196,13 @@ class CartPreview {
             
             // 2. Ahora actualizar la BD en background
             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-            const response = await fetch('/api/cart/add', {
+            const response = await fetch('/api/cart/update', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': csrfToken
                 },
-                body: JSON.stringify({ productId, quantity: 1 })
+                body: JSON.stringify({ productId, quantity: newQty })
             });
             
             if (response.redirected || response.status === 401) {
@@ -222,6 +222,7 @@ class CartPreview {
             } else {
                 // Actualizar total general
                 this.updatePreviewTotal();
+                window.dispatchEvent(new CustomEvent('cartUpdated'));
             }
         } catch (error) {
             console.error('Error:', error);
@@ -292,6 +293,7 @@ class CartPreview {
             } else {
                 // Actualizar total general
                 this.updatePreviewTotal();
+                window.dispatchEvent(new CustomEvent('cartUpdated'));
             }
         } catch (error) {
             console.error('Error:', error);
@@ -329,6 +331,7 @@ class CartPreview {
             if (response.ok) {
                 this.showDeleteNotification('Producto eliminado');
                 this.updatePreviewTotal();
+                window.dispatchEvent(new CustomEvent('cartUpdated'));
             } else {
                 // Si falla, volver a mostrar el item
                 item.style.opacity = '1';
