@@ -1,6 +1,4 @@
 // public/js/favorites.js
-console.log('FAVORITOS: Archivo cargado correctamente');
-
 (function() {
     'use strict';
 
@@ -10,10 +8,7 @@ console.log('FAVORITOS: Archivo cargado correctamente');
     };
 
     function initFavorites() {
-        console.log('FAVORITOS: Buscando iconos...');
-        
         const wishlistIcons = document.querySelectorAll('.wishlist-icon');
-        console.log('FAVORITOS: Iconos encontrados:', wishlistIcons.length);
         
         wishlistIcons.forEach(icon => {
             icon.removeEventListener('click', handleFavoriteClick);
@@ -45,10 +40,7 @@ console.log('FAVORITOS: Archivo cargado correctamente');
         const productId = icon.dataset.product;
         const heartIcon = icon.querySelector('i');
         
-        console.log('FAVORITOS: Click en icono - Producto:', productId);
-        
         if (!productId) {
-            console.error('FAVORITOS: Product ID no encontrado');
             return;
         }
 
@@ -73,33 +65,26 @@ console.log('FAVORITOS: Archivo cargado correctamente');
             }
 
             const data = await response.json();
-            console.log('FAVORITOS: Respuesta:', data);
             
             if (data.success) {
-                // Limpiar todas las clases primero
                 heartIcon.className = '';
                 
                 if (data.status === 'added') {
-                    // Añadir a favoritos
                     heartIcon.classList.add('fas', 'fa-heart');
                     icon.classList.add('active');
                     showNotification('✓ Añadido a favoritos', 'success');
                 } else {
-                    // Quitar de favoritos
                     heartIcon.classList.add('far', 'fa-heart');
                     icon.classList.remove('active');
                     showNotification('Eliminado de favoritos', 'info');
                 }
                 
-                // Actualizar todos los elementos relacionados
                 updateAllRelatedElements(productId, data.status === 'added');
             } else {
                 showNotification(data.error || 'Error al procesar', 'error');
-                // Restaurar el icono a su estado anterior
                 restoreIconState(icon, productId);
             }
         } catch (error) {
-            console.error('FAVORITOS: Error:', error);
             showNotification('Debes iniciar sesión para guardar favoritos', 'error');
             restoreIconState(icon, productId);
         } finally {
@@ -115,8 +100,6 @@ console.log('FAVORITOS: Archivo cargado correctamente');
         const btn = this;
         const productId = btn.dataset.product;
         const heartIcon = btn.querySelector('i');
-        
-        console.log('FAVORITOS: Click en botón detalle - Producto:', productId);
 
         btn.disabled = true;
         
@@ -139,10 +122,8 @@ console.log('FAVORITOS: Archivo cargado correctamente');
             }
 
             const data = await response.json();
-            console.log('FAVORITOS: Respuesta detalle:', data);
             
             if (data.success) {
-                // Limpiar todas las clases primero
                 heartIcon.className = '';
                 
                 if (data.status === 'added') {
@@ -155,25 +136,22 @@ console.log('FAVORITOS: Archivo cargado correctamente');
                     showNotification('Eliminado de favoritos', 'info');
                 }
                 
-                // Actualizar todos los iconos del mismo producto
                 updateAllIcons(productId, data.status === 'added');
             } else {
                 showNotification(data.error || 'Error al procesar', 'error');
             }
         } catch (error) {
-            console.error('FAVORITOS: Error:', error);
             showNotification('Debes iniciar sesión para guardar favoritos', 'error');
         } finally {
             btn.disabled = false;
         }
     }
 
-    // Actualizar todos los iconos del mismo producto
     function updateAllIcons(productId, isFavorite) {
         const icons = document.querySelectorAll(`.wishlist-icon[data-product="${productId}"]`);
         icons.forEach(icon => {
             const heartIcon = icon.querySelector('i');
-            heartIcon.className = ''; // Limpiar todas las clases
+            heartIcon.className = '';
             
             if (isFavorite) {
                 heartIcon.classList.add('fas', 'fa-heart');
@@ -185,12 +163,9 @@ console.log('FAVORITOS: Archivo cargado correctamente');
         });
     }
 
-    // Actualizar todos los elementos relacionados (iconos y botón de detalle)
     function updateAllRelatedElements(productId, isFavorite) {
-        // Actualizar iconos
         updateAllIcons(productId, isFavorite);
         
-        // Actualizar botón de detalle
         const detailBtn = document.getElementById('wishlistBtn');
         if (detailBtn && detailBtn.dataset.product == productId) {
             const heartIcon = detailBtn.querySelector('i');
@@ -206,7 +181,6 @@ console.log('FAVORITOS: Archivo cargado correctamente');
         }
     }
 
-    // Restaurar el estado del icono en caso de error
     async function restoreIconState(icon, productId) {
         try {
             const response = await fetch(`/favorites/check/${productId}`);
@@ -223,18 +197,17 @@ console.log('FAVORITOS: Archivo cargado correctamente');
                 icon.classList.remove('active');
             }
         } catch (error) {
-            console.error('Error restoring icon state:', error);
+            // Silently fail
         }
     }
 
-    // Verificar estado para iconos
     async function checkFavoriteStatus(icon, productId) {
         try {
             const response = await fetch(`/favorites/check/${productId}`);
             const data = await response.json();
             
             const heartIcon = icon.querySelector('i');
-            heartIcon.className = ''; // Limpiar clases existentes
+            heartIcon.className = '';
             
             if (data.isFavorite) {
                 heartIcon.classList.add('fas', 'fa-heart');
@@ -244,18 +217,17 @@ console.log('FAVORITOS: Archivo cargado correctamente');
                 icon.classList.remove('active');
             }
         } catch (error) {
-            console.error('Error checking favorite status:', error);
+            // Silently fail
         }
     }
 
-    // Verificar estado para botón de detalle
     async function checkDetailFavoriteStatus(btn, productId) {
         try {
             const response = await fetch(`/favorites/check/${productId}`);
             const data = await response.json();
             
             const heartIcon = btn.querySelector('i');
-            heartIcon.className = ''; // Limpiar clases existentes
+            heartIcon.className = '';
             
             if (data.isFavorite) {
                 heartIcon.classList.add('fas', 'fa-heart');
@@ -265,7 +237,7 @@ console.log('FAVORITOS: Archivo cargado correctamente');
                 btn.classList.remove('active');
             }
         } catch (error) {
-            console.error('Error checking favorite status:', error);
+            // Silently fail
         }
     }
 
@@ -316,7 +288,6 @@ console.log('FAVORITOS: Archivo cargado correctamente');
         }, 3000);
     }
 
-    // Agregar estilos CSS necesarios
     function addStyles() {
         if (!document.getElementById('favorites-styles')) {
             const style = document.createElement('style');
@@ -351,7 +322,6 @@ console.log('FAVORITOS: Archivo cargado correctamente');
         }
     }
 
-    // Inicializar
     document.addEventListener('DOMContentLoaded', () => {
         addStyles();
         initFavorites();
