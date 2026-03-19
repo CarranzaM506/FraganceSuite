@@ -11,6 +11,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProductDetailController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CodePromotionController;
+use App\Http\Controllers\FavoriteController; // Asegúrate de importar esto
 use Illuminate\Support\Facades\Route;
 
 // RUTA PRINCIPAL
@@ -20,10 +21,9 @@ Route::get('/', [MainPageController::class, 'index'])->name('mainPage');
 Route::get('/catalog', [CatalogController::class, 'index'])->name('catalog.index');
 Route::get('/catalogo', [CatalogController::class, 'index'])->name('catalog');
 
-// DETALLE DE PRODUCTO - NUEVA RUTA
+// DETALLE DE PRODUCTO
 Route::get('/producto/{id}', [ProductDetailController::class, 'show'])->name('product.show');
 Route::get('/product', [ControllerProduct::class, 'index'])->name('product');
-
 
 // CARRITO
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
@@ -34,33 +34,26 @@ Route::get('/api/cart/preview', [CartController::class, 'getCartPreview'])->name
 
 // RUTAS DE ADMINISTRACIÓN
 Route::middleware(['auth', 'admin'])->group(function () {
-
     Route::get('/dashboard', function () { return view('dashboard.main');})->name('dashboard');
-
     Route::post('/import', [ControllerImportProducts::class, 'import'])->name('product.import');
-
-    // PRODUCTOS
     Route::resource('product', ControllerProduct::class);
-    
-    // HERO
     Route::resource('hero', HeroController::class)->except(['show']);
-
-    // PROMOCIONES / DESCUENTOS
     Route::resource('discount', ControllerDiscount::class);
     Route::get('discount/{id}/products', [ControllerDiscount::class, 'products'])->name('discount.products');
     Route::get('products/search', [ControllerDiscount::class, 'searchProducts'])->name('products.search');
     Route::resource('promotionCode', CodePromotionController::class);
 });
 
-// Perfil
+// RUTAS PROTEGIDAS (Requieren autenticación)
 Route::middleware('auth')->group(function () {
-    Route::get('/profile',[ProfileController::class,'index'])->name('profile.index');
-    Route::get('profile/edit',[ProfileController::class, 'edit'])->name('profile.edit');
-    Route::put('profile/update',[ProfileController::class,'update'])->name('profile.update');
+    // Perfil y ubicaciones
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+    Route::get('profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('profile/update', [ProfileController::class, 'update'])->name('profile.update');
     Route::get('/location', [LocationController::class, 'index'])->name('location.index');
     Route::post('/location/store', [LocationController::class, 'store'])->name('location.store');
-    Route::put('location/{id}/update',[LocationController::class,'update'])->name('location.update');
-    Route::delete('/location/{id}/delete',[LocationController::class,'destroy'])->name('location.destroy');
+    Route::put('location/{id}/update', [LocationController::class, 'update'])->name('location.update');
+    Route::delete('/location/{id}/delete', [LocationController::class, 'destroy'])->name('location.destroy');
 
     // API CARRITO
     Route::get('/api/cart', [CartController::class, 'get']);
@@ -68,6 +61,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/api/cart/update', [CartController::class, 'update']);
     Route::post('/api/cart/remove', [CartController::class, 'remove']);
     Route::post('/api/cart/apply-code', [CartController::class, 'applyDiscountCode']);
+
+    // FAVORITOS - Rutas específicas para favoritos
+    Route::post('/favorites/toggle', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
+    Route::get('/favorites/check/{productId}', [FavoriteController::class, 'check'])->name('favorites.check');
+    Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
 });
 
 require __DIR__ . '/auth.php';
