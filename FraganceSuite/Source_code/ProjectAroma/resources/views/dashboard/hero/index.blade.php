@@ -47,7 +47,7 @@
                                     <th>Imagen</th>
                                     <th>Título</th>
                                     <th>Estado</th>
-                                    <th>Acciones</th>
+                                    <th>Acción</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -56,7 +56,7 @@
                                     <td>#{{ $hero->idhero }}</td>
                                     <td>
                                         @if($hero->image)
-                                            <img src="/storage/{{ $hero->image }}" 
+                                            <img src="{{ asset('storage/' . $hero->image) }}" 
                                                  alt="{{ $hero->title ?? 'Hero' }}" 
                                                  style="width: 150px; height: 70px; object-fit: cover; border-radius: 6px; border: 1px solid #dee2e6;">
                                         @else
@@ -72,7 +72,7 @@
                                     <td>
                                         @if($hero->active)
                                             <span class="badge bg-success px-3 py-2">
-                                                <i class="fas fa-check-circle me-1"></i> Activo (visible)
+                                                <i class="fas fa-check-circle me-1"></i> Activo
                                             </span>
                                         @else
                                             <span class="badge bg-secondary px-3 py-2">
@@ -81,27 +81,19 @@
                                         @endif
                                     </td>
                                     <td>
-                                        <div class="btn-group">
-                                            <a href="{{ route('hero.edit', $hero->idhero) }}" 
-                                               class="btn btn-sm btn-outline-primary" 
-                                               data-bs-toggle="tooltip" 
-                                               title="Editar">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <form action="{{ route('hero.destroy', $hero->idhero) }}" 
-                                                  method="POST" 
-                                                  onsubmit="return confirm('¿Eliminar esta imagen permanentemente?')"
-                                                  class="d-inline">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" 
-                                                        class="btn btn-sm btn-outline-danger" 
-                                                        data-bs-toggle="tooltip" 
-                                                        title="Eliminar">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </form>
-                                        </div>
+                                        <form action="{{ route('hero.destroy', $hero->idhero) }}" 
+                                              method="POST" 
+                                              onsubmit="return confirm('¿Estás seguro de eliminar esta imagen permanentemente?')"
+                                              style="display: inline;">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" 
+                                                    class="btn btn-danger btn-sm" 
+                                                    data-bs-toggle="tooltip" 
+                                                    title="Eliminar">
+                                                <i class="fas fa-trash"></i> Eliminar
+                                            </button>
+                                        </form>
                                     </td>
                                 </tr>
                                 @endforeach
@@ -117,7 +109,7 @@
                                 <p class="text-muted mb-0">
                                     Mantén solo 1 imagen activa a la vez. Las imágenes inactivas puedes guardarlas como respaldo.
                                     <br>
-                                    <span class="small">Medida ideal: <strong>1920x350px</strong> | Formato: JPG, WEBP | Peso máx: 2MB</span>
+                                    <span class="small">Medida ideal: <strong>1920x350px</strong> | Formato: PNG, JPG, WEBP | Peso máx: 2MB</span>
                                 </p>
                             </div>
                         </div>

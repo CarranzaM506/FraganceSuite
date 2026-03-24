@@ -57,51 +57,7 @@ class HeroController extends Controller
             ->with('success', 'Hero image agregada correctamente');
     }
 
-    /**
-     * Mostrar formulario de edición
-     */
-    public function edit(string $id)
-    {
-        $hero = Hero::findOrFail($id);
-        return view('dashboard.hero.edit', compact('hero'));
-    }
 
-    /**
-     * Actualizar imagen hero
-     */
-    public function update(Request $request, string $id)
-    {
-        $request->validate([
-            'title' => 'nullable|string|max:255',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048'
-        ]);
-
-        $hero = Hero::findOrFail($id);
-
-        // Si se activa esta imagen, desactivar todas las demás
-        if ($request->has('active') && !$hero->active) {
-            Hero::where('active', 1)->update(['active' => 0]);
-        }
-
-        $data = [
-            'title' => $request->title,
-            'active' => $request->has('active') ? 1 : 0
-        ];
-
-        // Si hay nueva imagen
-        if ($request->hasFile('image')) {
-            // Eliminar imagen anterior
-            if ($hero->image) {
-                Storage::disk('public')->delete($hero->image);
-            }
-            $data['image'] = $request->file('image')->store('hero', 'public');
-        }
-
-        $hero->update($data);
-
-        return redirect()->route('hero.index')
-            ->with('success', 'Hero actualizado exitosamente.');
-    }
 
     /**
      * Eliminar imagen hero
