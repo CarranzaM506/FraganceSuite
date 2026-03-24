@@ -32,7 +32,7 @@ Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::get('/api/product/{id}', [CartController::class, 'getProductData']);
 Route::get('/api/cart/preview', [CartController::class, 'getCartPreview'])->name('cart.preview');
 
-// RUTAS DE ADMINISTRACIÓN
+// RUTAS DE ADMINISTRACIÓN (PROTEGIDAS)
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/dashboard', function () { return view('dashboard.main');})->name('dashboard');
     Route::post('/import', [ControllerImportProducts::class, 'import'])->name('product.import');
@@ -44,7 +44,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::resource('promotionCode', CodePromotionController::class);
 });
 
-// RUTAS PROTEGIDAS (Requieren autenticación)
+// RUTAS PROTEGIDAS USUARIOS (Requieren autenticación)
 Route::middleware('auth')->group(function () {
     // Perfil y ubicaciones
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
@@ -69,5 +69,3 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__ . '/auth.php';
-
-//Inicio de trabajo.
