@@ -23,22 +23,58 @@
                 <!--DIRECCIONES-->
                 <h3 class="summary-title">Dirección de envío</h3>
 
-                <div id="addressList">
-                    @foreach ($addresses as $address)
-                        <label class="address-option">
-                            <input type="radio" name="address_id" value="{{ $address->id }}">
-                            <div>
-                                <strong>{{ $address->province }}, {{ $address->canton }}</strong><br>
-                                <small>{{ $address->details }}</small>
-                            </div>
-                        </label>
-                    @endforeach
+                <div class="row g-3" id="addressList">
+
+                    @forelse ($addresses as $address)
+                        <div class="col-md-6 col-lg-4">
+
+                            <label class="address-card-select w-100">
+
+                                <!-- RADIO (oculto visualmente) -->
+                                <input type="radio" name="address_id" value="{{ $address->id }}" class="address-radio">
+
+                                <!-- CARD -->
+                                <div class="address-card">
+                                    <div class="address-card-body">
+
+                                        <h6 class="fw-bold mb-1">
+                                            {{ $address->province }}
+                                        </h6>
+
+                                        <h6 class="mb-1 text-muted small">
+                                            {{ $address->canton }} -
+                                            {{ $address->district }} -
+                                            {{ $address->zipcode }}
+                                        </h6>
+
+                                        <p class="mb-2">
+                                            {{ $address->detail }}
+                                        </p>
+
+                                        <span class="select-label">
+                                            Seleccionar dirección
+                                        </span>
+
+                                    </div>
+                                </div>
+
+                            </label>
+
+                        </div>
+                    @empty
+                        <p class="text-muted">No tienes direcciones registradas.</p>
+                    @endforelse
+
                 </div>
 
                 <hr>
 
                 <!-- NUEVA DIRECCIÓN -->
                 <h4 class="summary-title">Nueva dirección</h4>
+
+                <div id="addressMessage" class="alert d-none" role="alert">
+                    <span id="addressMessageText"></span>
+                </div>
 
                 <form id="newAddressForm" method="POST">
                     @csrf
@@ -108,7 +144,7 @@
                     </div>
 
                     <!-- PAYPAL -->
-                    <button id="paypalBtn" class="btn-checkout">
+                    <button id="paypalBtn" class="btn-checkout" disabled>
                         Pagar con PayPal
                     </button>
 

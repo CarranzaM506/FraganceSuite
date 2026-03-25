@@ -10,6 +10,7 @@ use App\Http\Controllers\MainPageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProductDetailController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckOutController;
 use App\Http\Controllers\CodePromotionController;
 use App\Http\Controllers\FavoriteController; // Asegúrate de importar esto
 use Illuminate\Support\Facades\Route;
@@ -61,6 +62,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/api/cart/update', [CartController::class, 'update']);
     Route::post('/api/cart/remove', [CartController::class, 'remove']);
     Route::post('/api/cart/apply-code', [CartController::class, 'applyDiscountCode']);
+
+    Route::post('/api/address', [LocationController::class, 'storeApi']);
+    Route::get('/checkout', [CheckOutController::class, 'index'])->name('checkout');
 
     // FAVORITOS - Rutas específicas para favoritos
     Route::post('/favorites/toggle', [FavoriteController::class, 'toggle'])->name('favorites.toggle');

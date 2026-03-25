@@ -48,34 +48,101 @@ async function loadCheckoutCart() {
     container.innerHTML = html;
 }
 
-/* GUARDAR DIRECCIÓN (API)*/
-document.getElementById('newAddressForm').addEventListener('submit', async function (e) {
+//mensaje en el form de aviso
+function showAddressMessage(message, type = 'success') {
+    const container = document.getElementById('addressMessage');
+    const text = document.getElementById('addressMessageText');
+
+    if (!container || !text) return;
+
+    container.classList.remove('d-none', 'alert-success', 'alert-danger');
+    container.classList.add(type === 'success' ? 'alert-success' : 'alert-danger');
+
+    if (Array.isArray(message)) {
+        text.innerHTML = `
+            <ul class="mb-0">
+                ${message.map(m => `<li>${m}</li>`).join('')}
+            </ul>`;
+    } else {
+        text.textContent = message;
+    }
+}
+
+function closeAddressMessage() {
+    const container = document.getElementById('addressMessage');
+    if (container) {
+        container.classList.add('d-none');
+    }
+}
+
+// GUARDAR DIRECCIÓN (API)
+document.getElementById('newAddressForm')?.addEventListener('submit', async function (e) {
     e.preventDefault();
 
     const formData = new FormData(this);
 
-    const response = await fetch('/api/address', {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-        },
-        body: formData
-    });
+    try {
+        const response = await fetch('/api/address', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json'
+            },
+            body: formData
+        });
 
-    if (response.ok) {
-        location.reload(); // recargar para ver nueva dirección
+        const data = await response.json();
+
+        if (!response.ok) {
+            let messages = [];
+
+            if (data.errors) {
+                Object.values(data.errors).forEach(fieldErrors => {
+                    fieldErrors.forEach(error => {
+                        messages.push(error);
+                    });
+                });
+            } else {
+                messages.push(data.message || 'Ocurrió un error al guardar la dirección.');
+            }
+
+            showAddressMessage(messages, 'error');
+            return;
+        }
+
+        //SUCCESS
+        showAddressMessage(data.message, 'success');
+        this.reset();
+
+        // opcional: ocultar después de unos segundos
+        setTimeout(() => {
+            location.reload();
+        }, 1000);
+
+    } catch (error) {
+        console.error(error);
+        showAddressMessage('Error inesperado', 'error');
     }
 });
 
-/* PAYPAL BUTTON */
+// CONTROL BOTÓN PAYPAL
+function handleAddressSelection() {
+    const radios = document.querySelectorAll('input[name="address_id"]');
+    const paypalBtn = document.getElementById('paypalBtn');
+
+    if (!paypalBtn) return;
+
+    radios.forEach(radio => {
+        radio.addEventListener('change', () => {
+            paypalBtn.disabled = false;
+        });
+    });
+}
+
+//PAYPAL BUTTON 
 document.getElementById('paypalBtn').addEventListener('click', async () => {
 
     const addressId = document.querySelector('input[name="address_id"]:checked');
-
-    if (!addressId) {
-        alert('Seleccione una dirección');
-        return;
-    }
 
     const response = await fetch('/api/paypal/create-order', {
         method: 'POST',
@@ -97,3 +164,4 @@ document.getElementById('paypalBtn').addEventListener('click', async () => {
 
 /*INIT*/
 loadCheckoutCart();
+handleAddressSelection();
