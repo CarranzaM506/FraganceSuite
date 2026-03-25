@@ -42,7 +42,7 @@
                     <div class="table-responsive">
                         <table class="table table-hover align-middle">
                             <thead class="table-light">
-                                <tr>
+                                32
                                     <th>ID</th>
                                     <th>Imagen</th>
                                     <th>Título</th>
@@ -58,7 +58,7 @@
                                         @if($hero->image)
                                             <img src="{{ asset('storage/' . $hero->image) }}" 
                                                  alt="{{ $hero->title ?? 'Hero' }}" 
-                                                 style="width: 150px; height: 70px; object-fit: cover; border-radius: 6px; border: 1px solid #dee2e6;">
+                                                 style="width: 150px; height: 70px; object-fit: cover; border: 1px solid #dee2e6;">
                                         @else
                                             <span class="text-muted">Sin imagen</span>
                                         @endif
@@ -81,18 +81,20 @@
                                         @endif
                                     </td>
                                     <td>
-                                        <form action="{{ route('hero.destroy', $hero->idhero) }}" 
+                                        <button type="button" 
+                                                class="btn btn-danger btn-sm" 
+                                                onclick="mostrarModalEliminar({{ $hero->idhero }})"
+                                                data-bs-toggle="tooltip" 
+                                                title="Eliminar">
+                                            <i class="fas fa-trash"></i> Eliminar
+                                        </button>
+                                        
+                                        <form id="form-eliminar-{{ $hero->idhero }}" 
+                                              action="{{ route('hero.destroy', $hero->idhero) }}" 
                                               method="POST" 
-                                              onsubmit="return confirm('¿Estás seguro de eliminar esta imagen permanentemente?')"
-                                              style="display: inline;">
+                                              style="display: none;">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" 
-                                                    class="btn btn-danger btn-sm" 
-                                                    data-bs-toggle="tooltip" 
-                                                    title="Eliminar">
-                                                <i class="fas fa-trash"></i> Eliminar
-                                            </button>
                                         </form>
                                     </td>
                                 </tr>
@@ -101,7 +103,7 @@
                         </table>
                     </div>
 
-                    <div class="mt-4 p-3 bg-light rounded">
+                    <div class="mt-4 p-3 bg-light">
                         <div class="d-flex">
                             <i class="fas fa-lightbulb text-warning me-3 mt-1"></i>
                             <div>
@@ -120,7 +122,36 @@
     </div>
 </main>
 
+<!-- Modal -->
+<div class="modal fade" id="modalConfirmacion" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content" style="border: none; border-radius: 0; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
+            <div class="modal-body p-4">
+                <p class="text-center mb-4" style="font-size: 0.95rem;">¿Eliminar esta imagen?</p>
+                <div class="d-flex justify-content-center gap-2">
+                    <button type="button" class="btn btn-light btn-sm px-4" data-bs-dismiss="modal" style="border: 1px solid #dee2e6; border-radius: 0;">Cancelar</button>
+                    <button type="button" class="btn btn-danger btn-sm px-4" id="btnConfirmarEliminar" style="border-radius: 0;">Confirmar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
+    let idAEliminar = null;
+    
+    function mostrarModalEliminar(id) {
+        idAEliminar = id;
+        var modal = new bootstrap.Modal(document.getElementById('modalConfirmacion'));
+        modal.show();
+    }
+    
+    document.getElementById('btnConfirmarEliminar').addEventListener('click', function() {
+        if (idAEliminar) {
+            document.getElementById('form-eliminar-' + idAEliminar).submit();
+        }
+    });
+    
     // Activar tooltips
     document.addEventListener('DOMContentLoaded', function() {
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
