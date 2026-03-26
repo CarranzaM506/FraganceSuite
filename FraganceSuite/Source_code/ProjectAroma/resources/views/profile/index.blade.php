@@ -23,7 +23,7 @@
                 <span>Mis pedidos</span>
             </a>
 
-            <a href="#" class="profile-action">
+            <a href="{{ route('favorites.index') }}" class="profile-action">
                 <i class="far fa-heart"></i>
                 <span>Favoritos</span>
             </a>
