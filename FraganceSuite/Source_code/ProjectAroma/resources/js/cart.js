@@ -46,7 +46,7 @@ class CartManager {
     async addToCart(productId, productName, productBrand, productCategory, productPrice, productImage, discount = 0) {
         try {
             if (window.isAuthenticated === false) {
-                this.showNotification('Debes iniciar sesiÃ³n para agregar al carrito', 'error');
+                this.showNotification('Debes iniciar sesión para agregar al carrito', 'error');
                 setTimeout(() => {
                     window.location.href = '/login';
                 }, 2000);
@@ -68,8 +68,11 @@ class CartManager {
                 body: JSON.stringify({ productId, quantity: 1 })
             });
             
-            if (response.redirected || response.status === 401) {
-                window.location.href = response.url || '/login';
+            if (response.redirected || response.status === 401 || (response.url && response.url.includes('/login'))) {
+                this.showNotification('Debes iniciar sesión para agregar al carrito', 'error');
+                setTimeout(() => {
+                    window.location.href = response.url || '/login';
+                }, 2000);
                 return false;
             }
             if (!response.ok) {
@@ -163,6 +166,20 @@ class CartManager {
         return 0;
     }
 
+    // Obtener datos del producto (fallback seguro)
+    async fetchProductData(productId) {
+        try {
+            // Si existe un endpoint pÃºblico, reemplazar la URL aquÃ­
+            const response = await fetch(`/api/products/${productId}`);
+            if (response.ok) {
+                return await response.json();
+            }
+        } catch (error) {
+            // Silently fail: usamos el backend del carrito como fuente de verdad
+        }
+        return {};
+    }
+
     // Adjuntar listeners a botones de agregar al carrito
     attachAddToCartListeners() {
         const addCartButtons = document.querySelectorAll('.add-cart-icon');
@@ -231,65 +248,54 @@ class CartManager {
             error: '#cc0000',
             info: '#cc0000'
         };
-        // Crear notificaciÃƒÂ³n si no existe
-        let notification = document.getElementById('cartNotification');
-        if (!notification) {
-            notification = document.createElement('div');
-            notification.id = 'cartNotification';
-            notification.style.cssText = `
-                position: fixed;
-                bottom: 20px;
-                right: 20px;
-                background: ${colors[type] || colors.success};
-                color: white;
-                padding: 15px 25px;
-                border-radius: 0px;
-                z-index: 9999;
-                font-size: 13px;
-                font-weight: 500;
-                letter-spacing: 0.5px;
-                box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-                animation: slideIn 0.3s ease-in-out;
-            `;
-            document.body.appendChild(notification);
-
-            // Agregar estilos de animaciÃƒÂ³n
+        
+        if (!document.getElementById('cart-notification-styles')) {
             const style = document.createElement('style');
+            style.id = 'cart-notification-styles';
             style.textContent = `
-                @keyframes slideIn {
-                    from {
-                        transform: translateX(400px);
-                        opacity: 0;
-                    }
-                    to {
-                        transform: translateX(0);
-                        opacity: 1;
-                    }
+                @keyframes slideInUp {
+                    from { transform: translateY(100px); opacity: 0; }
+                    to { transform: translateY(0); opacity: 1; }
                 }
-                @keyframes slideOut {
-                    from {
-                        transform: translateX(0);
-                        opacity: 1;
-                    }
-                    to {
-                        transform: translateX(400px);
-                        opacity: 0;
-                    }
+                @keyframes slideOutDown {
+                    from { transform: translateY(0); opacity: 1; }
+                    to { transform: translateY(100px); opacity: 0; }
                 }
             `;
             document.head.appendChild(style);
         }
 
+        const existingNotification = document.querySelector('.aroma-notification');
+        if (existingNotification) {
+            existingNotification.remove();
+        }
+
+        const notification = document.createElement('div');
+        notification.className = 'aroma-notification';
         notification.textContent = message;
-        notification.style.background = colors[type] || colors.success;
-        notification.style.animation = 'slideIn 0.3s ease-in-out';
-        notification.style.display = 'block';
+        notification.style.cssText = `
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            background: ${colors[type] || colors.success};
+            color: white;
+            padding: 12px 20px;
+            border-radius: 0;
+            z-index: 9999;
+            font-size: 13px;
+            font-weight: 500;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            animation: slideInUp 0.3s ease;
+        `;
+        document.body.appendChild(notification);
 
         // Ocultar despuÃƒÂ©s de 3 segundos
         setTimeout(() => {
-            notification.style.animation = 'slideOut 0.3s ease-in-out';
+            notification.style.animation = 'slideOutDown 0.3s ease';
             setTimeout(() => {
-                notification.style.display = 'none';
+                if (notification.parentNode) {
+                    notification.remove();
+                }
             }, 300);
         }, 3000);
     }
@@ -805,4 +811,3 @@ window.cartPageManager = new CartPageManager();
 
 // Inicializar el CartManager cuando se cargue la pÃƒÂ¡gina
 window.cartManager = new CartManager();
-
