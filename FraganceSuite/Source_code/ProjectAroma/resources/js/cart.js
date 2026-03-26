@@ -381,7 +381,7 @@ class CartPageManager {
                 this.container.innerHTML = `
                     <div class="empty-cart">
                         <i class="fas fa-shopping-bag"></i>
-                        <p>Tu carrito estÃƒÂ¡ vacÃƒÂ­o</p>
+                        <p>Tu carrito está vacío</p>
                         <a href="/catalog" class="btn-continue-shopping">Continuar comprando</a>
                     </div>
                 `;
@@ -439,11 +439,11 @@ class CartPageManager {
                         <td class="price-cell">
                             ${discount > 0 ? `
                                 <div class="price-wrapper">
-                                    <span class="original-price">Ã¢â€šÂ¡${price.toFixed(2)}</span>
-                                    <span class="final-price">Ã¢â€šÂ¡${finalPrice.toFixed(2)}</span>
+                                    <span class="original-price">₡${price.toFixed(2)}</span>
+                                    <span class="final-price">₡${finalPrice.toFixed(2)}</span>
                                 </div>
                             ` : `
-                                <span class="final-price">Ã¢â€šÂ¡${price.toFixed(2)}</span>
+                                <span class="final-price">₡${price.toFixed(2)}</span>
                             `}
                         </td>
                         <td class="discount-cell">
@@ -461,7 +461,7 @@ class CartPageManager {
                             </div>
                         </td>
                         <td class="total-cell" data-base-price="${price}" data-discount="${discount}">
-                            <strong>Ã¢â€šÂ¡${lineTotal.toFixed(2)}</strong>
+                            <strong>₡${lineTotal.toFixed(2)}</strong>
                         </td>
                         <td class="actions-cell">
                             <button class="remove-btn" data-product-id="${item.id}" title="Eliminar del carrito">
@@ -594,7 +594,7 @@ class CartPageManager {
 
         const code = this.promoInput.value.trim();
         if (!code) {
-            this.setPromoMessage('Ingresa un cÃƒÂ³digo vÃƒÂ¡lido', 'error');
+            this.setPromoMessage('Ingresa un código válido', 'error');
             return;
         }
 
@@ -618,18 +618,18 @@ class CartPageManager {
             if (!response.ok) {
                 this.codeDiscountPercent = 0;
                 this.appliedCode = null;
-                this.setPromoMessage(data.error || 'CÃƒÂ³digo invÃƒÂ¡lido', 'error');
+                this.setPromoMessage(data.error || 'Código inválido', 'error');
                 this.updateTotals();
                 return;
             }
 
             this.codeDiscountPercent = parseFloat(data.value || 0);
             this.appliedCode = data.code || code;
-            this.setPromoMessage(`CÃƒÂ³digo aplicado: ${this.appliedCode} (-${this.codeDiscountPercent}%)`, 'success');
+            this.setPromoMessage(`Código aplicado: ${this.appliedCode} (-${this.codeDiscountPercent}%)`, 'success');
             this.updateTotals();
         } catch (error) {
             console.error('Error applying promo code:', error);
-            this.setPromoMessage('Error al validar el cÃƒÂ³digo', 'error');
+            this.setPromoMessage('Error al validar el código', 'error');
         } finally {
             this.promoBtn.disabled = false;
         }
@@ -657,7 +657,7 @@ class CartPageManager {
         const finalPrice = discount > 0 ? basePrice * (1 - discount / 100) : basePrice;
         const total = finalPrice * qty;
         
-        const totalText = `Ã¢â€šÂ¡${total.toFixed(2)}`;
+        const totalText = `₡${total.toFixed(2)}`;
         const totalStrong = itemTotal.querySelector('strong');
         if (totalStrong) {
             totalStrong.textContent = totalText;
@@ -668,7 +668,7 @@ class CartPageManager {
         if (discount > 0) {
             const finalPriceEl = item.querySelector('.final-price');
             if (finalPriceEl) {
-                finalPriceEl.textContent = `Ã¢â€šÂ¡${finalPrice.toFixed(2)}`;
+                finalPriceEl.textContent = `₡${finalPrice.toFixed(2)}`;
             }
         }
     }
@@ -697,9 +697,9 @@ class CartPageManager {
         const total = totalAfterProductDiscount - codeDiscountAmount;
         const combinedDiscount = totalDiscount + codeDiscountAmount;
         
-        if (this.subtotalEl) this.subtotalEl.textContent = 'Ã¢â€šÂ¡' + subtotal.toFixed(2);
-        if (this.discountEl) this.discountEl.textContent = '-Ã¢â€šÂ¡' + combinedDiscount.toFixed(2);
-        if (this.totalEl) this.totalEl.textContent = 'Ã¢â€šÂ¡' + total.toFixed(2);
+        if (this.subtotalEl) this.subtotalEl.textContent = '₡' + subtotal.toFixed(2);
+        if (this.discountEl) this.discountEl.textContent = '-₡' + combinedDiscount.toFixed(2);
+        if (this.totalEl) this.totalEl.textContent = '₡' + total.toFixed(2);
     }
 
     async showConfirmModal(productName) {
@@ -727,7 +727,7 @@ class CartPageManager {
                     text-align: center;
                     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
                 ">
-                    <p style="margin: 0 0 25px 0; color: #666; font-size: 14px;">Ã‚Â¿Eliminar del carrito?</p>
+                    <p style="margin: 0 0 25px 0; color: #666; font-size: 14px;">¿Eliminar del carrito?</p>
                     <div style="display: flex; gap: 10px;">
                         <button class="modal-cancel" style="
                             flex: 1;
