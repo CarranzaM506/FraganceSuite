@@ -65,7 +65,7 @@
                 body: JSON.stringify({ productId: productId })
             });
 
-            if (response.status === 401) {
+            if (response.redirected || response.status === 401 || (response.url && response.url.includes('/login'))) {
                 showNotification('Debes iniciar sesión para guardar favoritos', 'info');
                 setTimeout(() => {
                     window.location.href = '/login';
@@ -99,6 +99,9 @@
             }
         } catch (error) {
             showNotification('Debes iniciar sesión para guardar favoritos', 'error');
+            setTimeout(() => {
+                window.location.href = '/login';
+            }, FAVORITES_CONFIG.loginRedirectDelay);
             restoreIconState(icon, productId);
         } finally {
             setTimeout(() => {
@@ -126,7 +129,7 @@
                 body: JSON.stringify({ productId: productId })
             });
 
-            if (response.status === 401) {
+            if (response.redirected || response.status === 401 || (response.url && response.url.includes('/login'))) {
                 showNotification('Debes iniciar sesión para guardar favoritos', 'info');
                 setTimeout(() => {
                     window.location.href = '/login';
@@ -155,6 +158,9 @@
             }
         } catch (error) {
             showNotification('Debes iniciar sesión para guardar favoritos', 'error');
+            setTimeout(() => {
+                window.location.href = '/login';
+            }, FAVORITES_CONFIG.loginRedirectDelay);
         } finally {
             btn.disabled = false;
         }
