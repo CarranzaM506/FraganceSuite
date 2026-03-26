@@ -39,9 +39,18 @@
         const icon = this;
         const productId = icon.dataset.product;
         const heartIcon = icon.querySelector('i');
+        const isFavoritesPage = document.body.classList.contains('favorites-body');
         
         if (!productId) {
             return;
+        }
+
+        if (isFavoritesPage && (icon.classList.contains('active') || heartIcon.classList.contains('fas'))) {
+            const productName = icon.closest('.product-card')?.querySelector('.product-name')?.textContent?.trim() || 'este producto';
+            const confirmed = await showRemoveConfirm(productName);
+            if (!confirmed) {
+                return;
+            }
         }
 
         icon.style.pointerEvents = 'none';
@@ -56,7 +65,7 @@
                 body: JSON.stringify({ productId: productId })
             });
 
-            if (response.status === 401) {
+            if (response.redirected || response.status === 401 || (response.url && response.url.includes('/login'))) {
                 showNotification('Debes iniciar sesión para guardar favoritos', 'info');
                 setTimeout(() => {
                     window.location.href = '/login';
@@ -80,12 +89,19 @@
                 }
                 
                 updateAllRelatedElements(productId, data.status === 'added');
+
+                if (isFavoritesPage && data.status === 'removed') {
+                    removeFavoriteCard(icon);
+                }
             } else {
                 showNotification(data.error || 'Error al procesar', 'error');
                 restoreIconState(icon, productId);
             }
         } catch (error) {
             showNotification('Debes iniciar sesión para guardar favoritos', 'error');
+            setTimeout(() => {
+                window.location.href = '/login';
+            }, FAVORITES_CONFIG.loginRedirectDelay);
             restoreIconState(icon, productId);
         } finally {
             setTimeout(() => {
@@ -113,7 +129,7 @@
                 body: JSON.stringify({ productId: productId })
             });
 
-            if (response.status === 401) {
+            if (response.redirected || response.status === 401 || (response.url && response.url.includes('/login'))) {
                 showNotification('Debes iniciar sesión para guardar favoritos', 'info');
                 setTimeout(() => {
                     window.location.href = '/login';
@@ -142,6 +158,9 @@
             }
         } catch (error) {
             showNotification('Debes iniciar sesión para guardar favoritos', 'error');
+            setTimeout(() => {
+                window.location.href = '/login';
+            }, FAVORITES_CONFIG.loginRedirectDelay);
         } finally {
             btn.disabled = false;
         }
@@ -178,6 +197,30 @@
                 heartIcon.classList.add('far', 'fa-heart');
                 detailBtn.classList.remove('active');
             }
+        }
+    }
+
+    function removeFavoriteCard(icon) {
+        const card = icon.closest('.product-card');
+        if (!card) return;
+
+        card.style.opacity = '0';
+        card.style.transition = 'opacity 0.3s';
+        setTimeout(() => {
+            card.remove();
+            updateFavoritesEmptyState();
+        }, 300);
+    }
+
+    function updateFavoritesEmptyState() {
+        const grid = document.getElementById('favoritesGrid');
+        const emptyState = document.getElementById('favoritesEmpty');
+        if (!grid || !emptyState) return;
+
+        const remaining = grid.querySelectorAll('.product-card').length;
+        if (remaining === 0) {
+            grid.style.display = 'none';
+            emptyState.style.display = 'block';
         }
     }
 
@@ -286,6 +329,80 @@
                 }
             }, 300);
         }, 3000);
+    }
+
+    function showRemoveConfirm(productName) {
+        return new Promise((resolve) => {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.6);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10000;
+            `;
+
+            modal.innerHTML = `
+                <div style="
+                    background: white;
+                    padding: 28px;
+                    max-width: 320px;
+                    width: 90%;
+                    text-align: center;
+                    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+                ">
+                    <p style="margin: 0 0 20px 0; color: #666; font-size: 14px;">
+                        ¿Quitar "${productName}" de tus favoritos?
+                    </p>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="modal-cancel" style="
+                            flex: 1;
+                            padding: 10px;
+                            background: #f5f5f5;
+                            color: #666;
+                            border: 1px solid #ddd;
+                            cursor: pointer;
+                            font-weight: 600;
+                            font-size: 12px;
+                        ">No</button>
+                        <button class="modal-confirm" style="
+                            flex: 1;
+                            padding: 10px;
+                            background: #cc0000;
+                            color: white;
+                            border: none;
+                            cursor: pointer;
+                            font-weight: 600;
+                            font-size: 12px;
+                        ">Sí, quitar</button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+
+            modal.querySelector('.modal-confirm').addEventListener('click', () => {
+                modal.remove();
+                resolve(true);
+            });
+
+            modal.querySelector('.modal-cancel').addEventListener('click', () => {
+                modal.remove();
+                resolve(false);
+            });
+
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.remove();
+                    resolve(false);
+                }
+            });
+        });
     }
 
     function addStyles() {
