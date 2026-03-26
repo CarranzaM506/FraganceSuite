@@ -68,4 +68,5 @@ Route::middleware('auth')->group(function () {
     Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
 });
 
+
 require __DIR__ . '/auth.php';
