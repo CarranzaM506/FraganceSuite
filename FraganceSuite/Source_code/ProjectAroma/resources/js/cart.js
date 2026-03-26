@@ -1,8 +1,4 @@
-/**
- * LÓGICA DEL CARRITO CON LOCALSTORAGE
- * Maneja agregar, quitar, actualizar productos en el carrito
- */
-
+﻿
 class CartManager {
     constructor() {
         this.storageKey = 'aroma_cart';
@@ -16,7 +12,7 @@ class CartManager {
 
     // Inicializar event listeners
     init() {
-        // Ejecutar solo una vez cuando el DOM esté listo
+        // Ejecutar solo una vez cuando el DOM estÃƒÂ© listo
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => this.attachAddToCartListeners());
         } else {
@@ -49,9 +45,16 @@ class CartManager {
     // Agregar producto al carrito
     async addToCart(productId, productName, productBrand, productCategory, productPrice, productImage, discount = 0) {
         try {
+            if (window.isAuthenticated === false) {
+                this.showNotification('Debes iniciar sesión para agregar al carrito', 'error');
+                setTimeout(() => {
+                    window.location.href = '/login';
+                }, 2000);
+                return false;
+            }
             const csrfTokenElement = document.querySelector('meta[name="csrf-token"]');
             if (!csrfTokenElement) {
-                this.showNotification('Error: CSRF token no encontrado. Recarga la página.', 'error');
+                this.showNotification('Error: CSRF token no encontrado. Recarga la pÃƒÂ¡gina.', 'error');
                 console.error('CSRF token meta tag not found');
                 return false;
             }
@@ -64,29 +67,33 @@ class CartManager {
                 },
                 body: JSON.stringify({ productId, quantity: 1 })
             });
-
-            if (response.redirected || response.status === 401) {
-                window.location.href = response.url || '/login';
+            
+            if (response.redirected || response.status === 401 || (response.url && response.url.includes('/login'))) {
+                this.showNotification('Debes iniciar sesión para agregar al carrito', 'error');
+                setTimeout(() => {
+                    window.location.href = response.url || '/login';
+                }, 2000);
                 return false;
             }
             if (!response.ok) {
                 const errorData = await response.json();
                 const errorMessage = (errorData?.error || '').toLowerCase();
                 if (errorMessage.includes('no hay') && errorMessage.includes('unidades')) {
+                    this.showNotification('No hay unidades en stock', 'error');
                     return false;
                 }
                 throw new Error(errorData.error || 'Failed to add to cart');
             }
             this.emitCartUpdated();
 
-            // Actualizar el preview si está disponible
+            // Actualizar el preview si estÃƒÂ¡ disponible
             if (window.cartPreview) {
                 window.cartPreview.updatePreview();
             }
             return true;
         } catch (error) {
             console.error('Error adding to cart:', error);
-            this.showNotification(`Error al añadir al carrito: ${error.message}`, 'error');
+            this.showNotification(`Error al aÃƒÂ±adir al carrito: ${error.message}`, 'error');
             return false;
         }
     }
@@ -159,6 +166,20 @@ class CartManager {
         return 0;
     }
 
+    // Obtener datos del producto (fallback seguro)
+    async fetchProductData(productId) {
+        try {
+            // Si existe un endpoint pÃºblico, reemplazar la URL aquÃ­
+            const response = await fetch(`/api/products/${productId}`);
+            if (response.ok) {
+                return await response.json();
+            }
+        } catch (error) {
+            // Silently fail: usamos el backend del carrito como fuente de verdad
+        }
+        return {};
+    }
+
     // Adjuntar listeners a botones de agregar al carrito
     attachAddToCartListeners() {
         const addCartButtons = document.querySelectorAll('.add-cart-icon');
@@ -178,7 +199,7 @@ class CartManager {
                     const productName = productCard.querySelector('.product-name')?.textContent || 'Producto';
                     const productBrand = productCard.querySelector('.product-brand')?.textContent || '';
                     const productCategory = productCard.querySelector('.product-category')?.textContent || '';
-                    const productPrice = productCard.querySelector('.product-price')?.textContent?.replace('₡', '').replace(/,/g, '').trim() || '0';
+                    const productPrice = productCard.querySelector('.product-price')?.textContent?.replace('Ã¢â€šÂ¡', '').replace(/,/g, '').trim() || '0';
 
                     console.log('Producto capturado:', { productId, productName, productPrice });
 
@@ -188,6 +209,7 @@ class CartManager {
                     const stock = parseInt(productData?.stock ?? -1);
 
                     if (stock === 0) {
+                        this.showNotification('No hay unidades en stock', 'error');
                         return;
                     }
 
@@ -195,6 +217,7 @@ class CartManager {
                         const cart = await this.getCart();
                         const currentQty = cart[productId]?.quantity || 0;
                         if (currentQty + 1 > stock) {
+                            this.showNotification('No hay suficientes unidades disponibles', 'error');
                             return;
                         }
                     }
@@ -211,112 +234,79 @@ class CartManager {
                     );
 
                     if (added) {
-                        // Mostrar notificación
-                        this.showNotification(`Producto añadido al carrito`);
-
-                        // Animación visual
-                        this.animateAddToCart(button);
+                        this.showNotification('Producto agregado al carrito', 'success');
                     }
-                } else {
-                    console.warn('No se pudo obtener los datos del producto');
                 }
             });
         });
     }
 
-    // Obtener datos del producto desde la API
-    async fetchProductData(productId) {
-        try {
-            const response = await fetch(`/api/product/${productId}`);
-            if (response.ok) {
-                return await response.json();
-            }
-        } catch (error) {
-            console.error('Error cargando datos del producto:', error);
-        }
-        return null;
-    }
-
-    // Animación al agregar al carrito
-    animateAddToCart(button) {
-        button.style.transform = 'scale(1.2)';
-        setTimeout(() => {
-            button.style.transform = 'scale(1)';
-        }, 200);
-    }
-
-    // Mostrar notificación
+    // Mostrar notificaciÃƒÂ³n
     showNotification(message, type = 'success') {
-        // Crear notificación si no existe
-        let notification = document.getElementById('cartNotification');
-        if (!notification) {
-            notification = document.createElement('div');
-            notification.id = 'cartNotification';
-            notification.style.cssText = `
-                position: fixed;
-                bottom: 20px;
-                right: 20px;
-                background: #000;
-                color: white;
-                padding: 15px 25px;
-                border-radius: 0px;
-                z-index: 9999;
-                font-size: 13px;
-                font-weight: 500;
-                letter-spacing: 0.5px;
-                box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-                animation: slideIn 0.3s ease-in-out;
-            `;
-            document.body.appendChild(notification);
-
-            // Agregar estilos de animación
+        const colors = {
+            success: '#000',
+            error: '#cc0000',
+            info: '#cc0000'
+        };
+        
+        if (!document.getElementById('cart-notification-styles')) {
             const style = document.createElement('style');
+            style.id = 'cart-notification-styles';
             style.textContent = `
-                @keyframes slideIn {
-                    from {
-                        transform: translateX(400px);
-                        opacity: 0;
-                    }
-                    to {
-                        transform: translateX(0);
-                        opacity: 1;
-                    }
+                @keyframes slideInUp {
+                    from { transform: translateY(100px); opacity: 0; }
+                    to { transform: translateY(0); opacity: 1; }
                 }
-                @keyframes slideOut {
-                    from {
-                        transform: translateX(0);
-                        opacity: 1;
-                    }
-                    to {
-                        transform: translateX(400px);
-                        opacity: 0;
-                    }
+                @keyframes slideOutDown {
+                    from { transform: translateY(0); opacity: 1; }
+                    to { transform: translateY(100px); opacity: 0; }
                 }
             `;
             document.head.appendChild(style);
         }
 
-        notification.textContent = message;
-        notification.style.animation = 'slideIn 0.3s ease-in-out';
-        notification.style.display = 'block';
+        const existingNotification = document.querySelector('.aroma-notification');
+        if (existingNotification) {
+            existingNotification.remove();
+        }
 
-        // Ocultar después de 3 segundos
+        const notification = document.createElement('div');
+        notification.className = 'aroma-notification';
+        notification.textContent = message;
+        notification.style.cssText = `
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            background: ${colors[type] || colors.success};
+            color: white;
+            padding: 12px 20px;
+            border-radius: 0;
+            z-index: 9999;
+            font-size: 13px;
+            font-weight: 500;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            animation: slideInUp 0.3s ease;
+        `;
+        document.body.appendChild(notification);
+
+        // Ocultar despuÃƒÂ©s de 3 segundos
         setTimeout(() => {
-            notification.style.animation = 'slideOut 0.3s ease-in-out';
+            notification.style.animation = 'slideOutDown 0.3s ease';
             setTimeout(() => {
-                notification.style.display = 'none';
+                if (notification.parentNode) {
+                    notification.remove();
+                }
             }, 300);
         }, 3000);
     }
-
     // Actualizar preview del carrito
     updateCartPreview() {
-        // Función removida
+        // FunciÃƒÂ³n removida
     }
 
     // Inicializar eventos del preview
     initCartPreview() {
-        // Función removida
+        // FunciÃƒÂ³n removida
     }
 }
 
@@ -333,7 +323,7 @@ class CartPageManager {
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => this.init());
         } else {
-            // Si el DOM ya está listo cuando se carga el script
+            // Si el DOM ya estÃƒÂ¡ listo cuando se carga el script
             this.init();
         }
     }
@@ -765,7 +755,7 @@ class CartPageManager {
                             cursor: pointer;
                             font-weight: 600;
                             font-size: 12px;
-                        ">Sí, eliminar</button>
+                        ">SÃƒÂ­, eliminar</button>
                     </div>
                 </div>
             `;
@@ -814,6 +804,7 @@ class CartPageManager {
         }
 
         notification.textContent = message;
+        notification.style.background = colors[type] || colors.success;
         notification.style.display = 'block';
 
         setTimeout(() => {
@@ -822,10 +813,8 @@ class CartPageManager {
     }
 }
 
-// Inicializar CartPageManager si estamos en la página del carrito
+// Inicializar CartPageManager si estamos en la pÃƒÂ¡gina del carrito
 window.cartPageManager = new CartPageManager();
 
-// Inicializar el CartManager cuando se cargue la página
+// Inicializar el CartManager cuando se cargue la pÃƒÂ¡gina
 window.cartManager = new CartManager();
-
-

@@ -23,7 +23,14 @@
                 </a>
             @endguest
 
-            <span class="icon"><i class="far fa-heart"></i></span>
+            <a href="{{ route('favorites.index') }}" style="text-decoration: none; color: inherit;">
+                <span class="icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"></path>
+                    </svg>
+                </span>
+            </a>
             <div id="cartIconContainer" style="position: relative;" class="cart-dropdown-container">
                 <a href="{{ route('cart.index') }}" style="text-decoration: none; color: inherit;">
                     <span class="icon" id="cartIcon">
