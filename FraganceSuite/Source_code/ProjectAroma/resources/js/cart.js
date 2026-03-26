@@ -9,7 +9,7 @@ class CartManager {
     emitCartUpdated() {
         window.dispatchEvent(new CustomEvent('cartUpdated'));
     }
-    
+
     // Inicializar event listeners
     init() {
         // Ejecutar solo una vez cuando el DOM estÃƒÂ© listo
@@ -184,7 +184,7 @@ class CartManager {
     attachAddToCartListeners() {
         const addCartButtons = document.querySelectorAll('.add-cart-icon');
         console.log('Botones encontrados:', addCartButtons.length);
-        
+
         addCartButtons.forEach(button => {
             button.addEventListener('click', async (e) => {
                 e.preventDefault();
@@ -318,7 +318,7 @@ class CartPageManager {
         this.listenersAttached = false;
         this.codeDiscountPercent = 0;
         this.appliedCode = null;
-        
+
         // Siempre intentar inicializar en DOMContentLoaded
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => this.init());
@@ -339,13 +339,13 @@ class CartPageManager {
         this.promoInput = document.getElementById('promoCodeInput');
         this.promoBtn = document.getElementById('applyPromoBtn');
         this.promoMessage = document.getElementById('promoCodeMessage');
-        
-        // Solo proceder si estamos en la pÃƒÂ¡gina del carrito
+
+        // Solo proceder si estamos en la página del carrito
         if (!this.container) {
             console.log('[CartPageManager] No cart page detected - skipping initialization');
             return;
         }
-        
+
         console.log('[CartPageManager] Cart page detected - initializing');
         console.log('[CartPageManager] Elements:', {
             container: !!this.container,
@@ -369,10 +369,10 @@ class CartPageManager {
         try {
             const response = await fetch('/api/cart');
             console.log('[renderCart] Response status:', response.status, response.statusText);
-            
+
             const data = await response.json();
             console.log('[renderCart] Cart API response:', data);
-            
+
             const items = data.items || [];
             console.log('[renderCart] Number of items:', items.length);
 
@@ -392,7 +392,7 @@ class CartPageManager {
 
             console.log('[renderCart] Rendering', items.length, 'items');
             if (this.checkoutBtn) this.checkoutBtn.disabled = false;
-            
+
             let itemsHTML = `
                 <table class="cart-table">
                     <thead>
@@ -520,6 +520,13 @@ class CartPageManager {
                 }
             });
         }
+
+        if (this.checkoutBtn) {
+            this.checkoutBtn.addEventListener('click', () => {
+                window.location.href = '/checkout';
+            });
+        }
+        
     }
 
     async decreaseQty(productId, qtySpan, cartItem) {
@@ -552,7 +559,7 @@ class CartPageManager {
             return;
         }
         const newQty = currentQty + 1;
-        
+
         qtySpan.textContent = newQty;
         this.updateItemTotals(cartItem);
         this.updateTotals();
@@ -568,12 +575,12 @@ class CartPageManager {
     async removeItem(productId, cartItem) {
         const productName = cartItem.querySelector('.item-name').textContent;
         const confirmed = await this.showConfirmModal(productName);
-        
+
         if (!confirmed) return;
 
         cartItem.style.opacity = '0';
         cartItem.style.transition = 'opacity 0.3s';
-        
+
         setTimeout(() => cartItem.remove(), 300);
         this.updateTotals();
 
@@ -653,10 +660,10 @@ class CartPageManager {
         }
         const basePrice = parseFloat(itemTotal.getAttribute('data-base-price'));
         const discount = parseFloat(itemTotal.getAttribute('data-discount')) || 0;
-        
+
         const finalPrice = discount > 0 ? basePrice * (1 - discount / 100) : basePrice;
         const total = finalPrice * qty;
-        
+
         const totalText = `₡${total.toFixed(2)}`;
         const totalStrong = itemTotal.querySelector('strong');
         if (totalStrong) {
@@ -664,7 +671,7 @@ class CartPageManager {
         } else {
             itemTotal.textContent = totalText;
         }
-        
+
         if (discount > 0) {
             const finalPriceEl = item.querySelector('.final-price');
             if (finalPriceEl) {
@@ -685,7 +692,7 @@ class CartPageManager {
             }
             const basePrice = parseFloat(itemTotal.getAttribute('data-base-price'));
             const discount = parseFloat(itemTotal.getAttribute('data-discount')) || 0;
-            
+
             const itemSubtotal = basePrice * qty;
             subtotal += itemSubtotal;
             totalDiscount += itemSubtotal * (discount / 100);
@@ -696,7 +703,7 @@ class CartPageManager {
         const codeDiscountAmount = totalAfterProductDiscount * (codeDiscountPercent / 100);
         const total = totalAfterProductDiscount - codeDiscountAmount;
         const combinedDiscount = totalDiscount + codeDiscountAmount;
-        
+
         if (this.subtotalEl) this.subtotalEl.textContent = '₡' + subtotal.toFixed(2);
         if (this.discountEl) this.discountEl.textContent = '-₡' + combinedDiscount.toFixed(2);
         if (this.totalEl) this.totalEl.textContent = '₡' + total.toFixed(2);
