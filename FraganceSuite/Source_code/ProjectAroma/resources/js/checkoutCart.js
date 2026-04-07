@@ -39,10 +39,17 @@ async function loadCheckoutCart() {
         `;
     });
 
-    const total = subtotal - totalDiscount;
+    const promoPercent = parseFloat(data.promo_value || 0);
 
+    const codeDiscount = (subtotal - totalDiscount) * (promoPercent / 100);
+
+    const total = (subtotal - totalDiscount) - codeDiscount;
+
+    const combinedDiscount = totalDiscount + codeDiscount;
+
+    // mostrar en pantalla
     document.getElementById('subtotalPrice').textContent = '₡' + subtotal.toFixed(2);
-    document.getElementById('discountAmount').textContent = '-₡' + totalDiscount.toFixed(2);
+    document.getElementById('discountAmount').textContent = '-₡' + combinedDiscount.toFixed(2);
     document.getElementById('totalPrice').textContent = '₡' + total.toFixed(2);
 
     container.innerHTML = html;
@@ -125,42 +132,114 @@ document.getElementById('newAddressForm')?.addEventListener('submit', async func
     }
 });
 
+function showToast(message, type = 'error') {
+    const container = document.getElementById('toast-container');
+
+    const toast = document.createElement('div');
+
+    toast.style.background = type === 'error' ? '#dc3545' : '#28a745';
+    toast.style.color = '#fff';
+    toast.style.padding = '12px 18px';
+    toast.style.marginBottom = '10px';
+    toast.style.borderRadius = '8px';
+    toast.style.boxShadow = '0 4px 10px rgba(0,0,0,0.2)';
+    toast.style.fontSize = '14px';
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateX(100%)';
+    toast.style.transition = 'all 0.3s ease';
+
+    toast.textContent = message;
+
+    container.appendChild(toast);
+
+    // animación entrada
+    setTimeout(() => {
+        toast.style.opacity = '1';
+        toast.style.transform = 'translateX(0)';
+    }, 10);
+
+    // desaparecer
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(100%)';
+
+        setTimeout(() => {
+            toast.remove();
+        }, 300);
+    }, 3000);
+}
+
 // CONTROL BOTÓN PAYPAL
 function handleAddressSelection() {
     const radios = document.querySelectorAll('input[name="address_id"]');
-    const paypalBtn = document.getElementById('paypalBtn');
+    const container = document.getElementById('paypal-button-container');
 
-    if (!paypalBtn) return;
+    if (!container) return;
 
     radios.forEach(radio => {
         radio.addEventListener('change', () => {
-            paypalBtn.disabled = false;
+            container.style.opacity = '1';
+            container.style.pointerEvents = 'auto';
         });
     });
 }
 
-//PAYPAL BUTTON 
-document.getElementById('paypalBtn').addEventListener('click', async () => {
+if (typeof paypal !== 'undefined') {
+    paypal.Buttons({
 
-    const addressId = document.querySelector('input[name="address_id"]:checked');
+        createOrder: function () {
+            const addressId = document.querySelector('input[name="address_id"]:checked');
 
-    const response = await fetch('/api/paypal/create-order', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            if (!addressId) {
+                showToast('Selecciona una dirección antes de pagar', 'error');
+                return;
+            }
+
+            return fetch('/paypal/create-order', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({
+                    address_id: addressId.value
+                })
+            })
+                .then(async res => {
+
+                    const data = await res.json();
+
+                    if (!res.ok) {
+                        console.error('🔥 ERROR BACKEND PAYPAL:', data);
+                        throw new Error(data.error || 'Error creando orden');
+                    }
+
+                    console.log('ORDER CREADA:', data);
+
+                    return data.id;
+                });
         },
-        body: JSON.stringify({
-            address_id: addressId.value
-        })
-    });
 
-    const data = await response.json();
+        onApprove: function (data) {
+            return fetch('/paypal/capture-order', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({
+                    orderID: data.orderID
+                })
+            })
+                .then(res => res.json())
+                .then(details => {
+                    alert('Pago completado');
+                    window.location.href = "/success";
+                });
+        }
 
-    if (data.url) {
-        window.location.href = data.url; // redirige a PayPal
-    }
-});
+    }).render('#paypal-button-container');
+}
 
 /*INIT*/
 loadCheckoutCart();

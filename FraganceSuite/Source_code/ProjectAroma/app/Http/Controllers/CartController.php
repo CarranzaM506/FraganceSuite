@@ -73,7 +73,7 @@ class CartController extends Controller
 
             // Obtener carrito del usuario
             $cart = Cart::where('iduser', $user->id)->first();
-            
+
             if (!$cart) {
                 return response()->json(['items' => [], 'total' => 0]);
             }
@@ -109,7 +109,12 @@ class CartController extends Controller
                 ];
             }
 
-            return response()->json(['items' => $items, 'total' => $total]);
+            return response()->json([
+                'items' => $items,
+                'promo_code' => session('promo_code'),
+                'promo_value' => session('promo_value')
+            ]);
+            
         } catch (\Exception $e) {
             \Log::error('CART GET ERROR', ['error' => $e->getMessage()]);
             return response()->json(['error' => $e->getMessage(), 'items' => [], 'total' => 0], 500);
@@ -304,6 +309,11 @@ class CartController extends Controller
             if (!$promotion) {
                 return response()->json(['error' => 'Código inválido'], 404);
             }
+
+            session([
+                'promo_code' => $promotion->code_promotion,
+                'promo_value' => floatval($promotion->value)
+            ]);
 
             return response()->json([
                 'valid' => true,

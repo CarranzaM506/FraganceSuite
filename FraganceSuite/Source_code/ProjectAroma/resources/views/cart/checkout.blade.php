@@ -144,14 +144,13 @@
                     </div>
 
                     <!-- PAYPAL -->
-                    <button id="paypalBtn" class="btn-checkout" disabled>
-                        Pagar con PayPal
-                    </button>
+                    <div id="paypal-button-container"></div>
 
                 </div>
             </div>
 
         </div>
     </div>
-
+    <div id="toast-container" style="position: fixed;top: 20px;right: 20px;z-index: 9999;"></div>
+    <script src="https://www.paypal.com/sdk/js?client-id={{ env('PAYPAL_CLIENT_ID') }}"></script>
 @endsection
