@@ -82,4 +82,4 @@ Route::middleware('auth')->group(function () {
 
 require __DIR__ . '/auth.php';
 
-//Inicio de trabajo con la tarea de paypal 
+//Inicio de trabajo y continuando con la tarea de paypal.
