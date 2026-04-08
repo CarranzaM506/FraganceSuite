@@ -13,6 +13,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckOutController;
 use App\Http\Controllers\CodePromotionController;
 use App\Http\Controllers\FavoriteController; // Asegúrate de importar esto
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PayPalController;
 use Illuminate\Support\Facades\Route;
 
@@ -65,6 +66,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/api/cart/update', [CartController::class, 'update']);
     Route::post('/api/cart/remove', [CartController::class, 'remove']);
     Route::post('/api/cart/apply-code', [CartController::class, 'applyDiscountCode']);
+
+    //Orders
+    Route::get('/order/success/{id}', [OrderController::class, 'success']);
 
     Route::post('/api/address', [LocationController::class, 'storeApi']);
     Route::get('/checkout', [CheckOutController::class, 'index'])->name('checkout');

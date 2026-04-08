@@ -31,7 +31,7 @@
                             <label class="address-card-select w-100">
 
                                 <!-- RADIO (oculto visualmente) -->
-                                <input type="radio" name="address_id" value="{{ $address->id }}" class="address-radio">
+                                <input type="radio" name="address_id" value="{{ $address->idlocation }}" class="address-radio">
 
                                 <!-- CARD -->
                                 <div class="address-card">

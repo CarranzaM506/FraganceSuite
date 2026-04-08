@@ -188,11 +188,12 @@ if (typeof paypal !== 'undefined') {
     paypal.Buttons({
 
         createOrder: function () {
+
             const addressId = document.querySelector('input[name="address_id"]:checked');
 
             if (!addressId) {
                 showToast('Selecciona una dirección antes de pagar', 'error');
-                return;
+                return Promise.reject('No address');
             }
 
             return fetch('/paypal/create-order', {
@@ -205,22 +206,30 @@ if (typeof paypal !== 'undefined') {
                     address_id: addressId.value
                 })
             })
-                .then(async res => {
-
-                    const data = await res.json();
-
-                    if (!res.ok) {
-                        console.error('🔥 ERROR BACKEND PAYPAL:', data);
-                        throw new Error(data.error || 'Error creando orden');
-                    }
-
+                .then(res => res.json())
+                .then(data => {
                     console.log('ORDER CREADA:', data);
+
+                    if (!data.id) {
+                        throw new Error('No order ID from backend');
+                    }
 
                     return data.id;
                 });
         },
 
         onApprove: function (data) {
+
+            const addressId = document.querySelector('input[name="address_id"]:checked');
+
+            if (!addressId) {
+                alert('Selecciona una dirección');
+                return;
+            }
+
+            console.log('RADIO:', addressId);
+            console.log('VALUE:', addressId?.value);
+
             return fetch('/paypal/capture-order', {
                 method: 'POST',
                 headers: {
@@ -228,13 +237,18 @@ if (typeof paypal !== 'undefined') {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                 },
                 body: JSON.stringify({
-                    orderID: data.orderID
+                    orderID: data.orderID,
+                    address_id: addressId.value // 🔥 ESTO FALTABA
                 })
             })
                 .then(res => res.json())
-                .then(details => {
-                    alert('Pago completado');
-                    window.location.href = "/success";
+                .then(data => {
+                    console.log('CAPTURE:', data);
+                    if (data.success) {
+                        window.location.href = `/order/success/${data.order_id}`;
+                    } else {
+                        alert('Error al procesar el pago');
+                    }
                 });
         }
 

@@ -33,7 +33,12 @@ class User extends Authenticatable
 
     public function locations()
     {
-        return $this->hasMany(Location::class, 'iduser','id');
+        return $this->hasMany(Location::class, 'iduser', 'id');
+    }
+
+    public function cart()
+    {
+        return $this->hasOne(Cart::class, 'iduser', 'id');
     }
 
 
