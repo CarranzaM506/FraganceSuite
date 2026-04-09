@@ -69,6 +69,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/api/cart/update', [CartController::class, 'update']);
     Route::post('/api/cart/remove', [CartController::class, 'remove']);
     Route::post('/api/cart/apply-code', [CartController::class, 'applyDiscountCode']);
+    Route::post('/api/reviews', [ReviewController::class, 'store']);
 
     //Orders
     Route::get('/order/success/{id}', [OrderController::class, 'success']);
