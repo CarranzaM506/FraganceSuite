@@ -31,7 +31,7 @@
                             <label class="address-card-select w-100">
 
                                 <!-- RADIO (oculto visualmente) -->
-                                <input type="radio" name="address_id" value="{{ $address->id }}" class="address-radio">
+                                <input type="radio" name="address_id" value="{{ $address->idlocation }}" class="address-radio">
 
                                 <!-- CARD -->
                                 <div class="address-card">
@@ -144,14 +144,13 @@
                     </div>
 
                     <!-- PAYPAL -->
-                    <button id="paypalBtn" class="btn-checkout" disabled>
-                        Pagar con PayPal
-                    </button>
+                    <div id="paypal-button-container"></div>
 
                 </div>
             </div>
 
         </div>
     </div>
-
+    <div id="toast-container" style="position: fixed;top: 20px;right: 20px;z-index: 9999;"></div>
+    <script src="https://www.paypal.com/sdk/js?client-id={{ env('PAYPAL_CLIENT_ID') }}"></script>
 @endsection

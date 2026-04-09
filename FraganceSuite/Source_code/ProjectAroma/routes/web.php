@@ -5,13 +5,17 @@ use App\Http\Controllers\ControllerImportProducts;
 use App\Http\Controllers\ControllerProduct;
 use App\Http\Controllers\ControllerDiscount;
 use App\Http\Controllers\LocationController;
-use App\Http\Controllers\HeroController; 
+use App\Http\Controllers\HeroController;
 use App\Http\Controllers\MainPageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProductDetailController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckOutController;
 use App\Http\Controllers\CodePromotionController;
+use App\Http\Controllers\FavoriteController; // Asegúrate de importar esto
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PayPalController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\FavoriteController; 
 use Illuminate\Support\Facades\Route;
 
@@ -35,7 +39,9 @@ Route::get('/api/cart/preview', [CartController::class, 'getCartPreview'])->name
 
 // RUTAS DE ADMINISTRACIÓN (PROTEGIDAS)
 Route::middleware(['auth', 'admin'])->group(function () {
-    Route::get('/dashboard', function () { return view('dashboard.main');})->name('dashboard');
+    Route::get('/dashboard', function () {
+        return view('dashboard.main');
+    })->name('dashboard');
     Route::post('/import', [ControllerImportProducts::class, 'import'])->name('product.import');
     Route::resource('product', ControllerProduct::class);
     Route::resource('hero', HeroController::class)->except(['show']);
@@ -63,6 +69,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/api/cart/remove', [CartController::class, 'remove']);
     Route::post('/api/cart/apply-code', [CartController::class, 'applyDiscountCode']);
 
+    //Orders
+    Route::get('/order/success/{id}', [OrderController::class, 'success']);
+
     Route::post('/api/address', [LocationController::class, 'storeApi']);
     Route::get('/checkout', [CheckOutController::class, 'index'])->name('checkout');
 
@@ -70,6 +79,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/favorites/toggle', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
     Route::get('/favorites/check/{productId}', [FavoriteController::class, 'check'])->name('favorites.check');
     Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
+
+    //ruta para pagar con paypal y guardar pedido
+    Route::post('/paypal/create-order', [PayPalController::class, 'createOrder']);
+    Route::post('/paypal/capture-order', [PayPalController::class, 'captureOrder']);
 });
 
 
