@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
-use App\Models\Hero; // CAMBIADO de Slider a Hero
+use App\Models\Hero; 
 use App\Models\Discount;
+use App\Models\Brand;
+
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 
@@ -28,6 +30,18 @@ class MainPageController extends Controller
                 'title' => 'AROMA'
             ];
         }
+
+// Obtener marcas que tienen logo
+$brandsWithLogo = Brand::where('active', true)
+    ->whereNotNull('logo')
+    ->where('logo', '!=', '')
+    ->orderBy('order')
+    ->orderBy('brand_name')
+    ->get();
+
+// Solo pasar las marcas a la vista si hay al menos 20
+$activeBrands = $brandsWithLogo->count() >= 20 ? $brandsWithLogo : collect();
+    
 
         // Obtener productos para MUJER
         $productsForWomen = Product::where(function($query) {
@@ -69,11 +83,13 @@ class MainPageController extends Controller
         }
 
         return view('mainPage.index', compact(
-            'heroImage', // CAMBIADO de sliderProducts a heroImage
+            'heroImage', 
             'productsForWomen',
             'productsForMen',
             'activePromotion',
-            'promotionProduct'
+            'promotionProduct',
+            'activeBrands' 
+
         ));
     }
 }

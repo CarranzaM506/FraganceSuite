@@ -4,6 +4,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Favorite;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -11,6 +12,18 @@ use Illuminate\Support\Facades\DB;
 
 class FavoriteController extends Controller
 {
+    public function index()
+    {
+        $user = Auth::user();
+
+        $products = Product::join('favorite', 'favorite.idproduct', '=', 'product.idproduct')
+            ->where('favorite.iduser', $user->id)
+            ->select('product.*')
+            ->get();
+
+        return view('favorites.index', compact('products'));
+    }
+
     public function toggle(Request $request)
     {
         try {
