@@ -95,6 +95,41 @@
             </div>
         </div>
     </div>
+
+    <!-- Reviews Section -->
+    <section class="reviews-section">
+        <div class="reviews-header">
+            <h2 class="reviews-title">Reseñas</h2>
+            <p class="reviews-subtitle">Contanos tu experiencia con este producto.</p>
+        </div>
+
+        <button class="btn-secondary review-toggle" type="button" id="toggleReviewForm">
+            Agregar reseña
+        </button>
+
+        <form class="review-form is-hidden" id="reviewForm" onsubmit="return false;">
+            <div class="review-field">
+                <label class="review-label">Calificación</label>
+                <div class="star-rating" id="ratingStars" data-max="5" aria-label="Calificación">
+                    <input type="hidden" id="rating" name="rating" required>
+                    <span class="star" data-star="1" aria-hidden="true"></span>
+                    <span class="star" data-star="2" aria-hidden="true"></span>
+                    <span class="star" data-star="3" aria-hidden="true"></span>
+                    <span class="star" data-star="4" aria-hidden="true"></span>
+                    <span class="star" data-star="5" aria-hidden="true"></span>
+                    <div class="rating-tooltip" id="ratingTooltip" role="status" aria-live="polite"></div>
+                </div>
+            </div>
+
+            <div class="review-field">
+                <label for="comment" class="review-label">Comentario (opcional)</label>
+                <textarea id="comment" name="comment" class="review-input" rows="4" maxlength="250" placeholder="Máximo 250 caracteres"></textarea>
+                <div class="review-hint"><span id="commentRemaining">250</span> caracteres disponibles</div>
+            </div>
+
+            <button class="btn-primary review-submit" type="submit">Enviar reseña</button>
+        </form>
+    </section>
 @endsection
 
 @push('scripts')
@@ -185,11 +220,230 @@
 
     // Inicializar al cargar la página
     document.addEventListener('DOMContentLoaded', function() {
+        const notify = (message, type = 'success') => {
+            if (window.favoritesSystem && typeof window.favoritesSystem.showNotification === 'function') {
+                window.favoritesSystem.showNotification(message, type);
+                return;
+            }
+            if (window.cartManager && typeof window.cartManager.showNotification === 'function') {
+                window.cartManager.showNotification(message, type);
+                return;
+            }
+            console.warn(message);
+        };
+
         if (maxStock > 0) {
             document.getElementById('decrementQty').disabled = true;
         }
         
         loadFavoriteStatus();
+
+        const toggleBtn = document.getElementById('toggleReviewForm');
+        const reviewForm = document.getElementById('reviewForm');
+        const commentInput = document.getElementById('comment');
+        const remainingEl = document.getElementById('commentRemaining');
+
+        if (toggleBtn && reviewForm) {
+            toggleBtn.addEventListener('click', () => {
+                reviewForm.classList.toggle('is-hidden');
+                toggleBtn.textContent = reviewForm.classList.contains('is-hidden')
+                    ? 'Agregar reseña'
+                    : 'Ocultar reseña';
+            });
+        }
+
+        if (commentInput && remainingEl) {
+            const updateRemaining = () => {
+                const max = Number(commentInput.getAttribute('maxlength')) || 250;
+                const remaining = Math.max(0, max - commentInput.value.length);
+                remainingEl.textContent = remaining;
+            };
+            commentInput.addEventListener('input', updateRemaining);
+            updateRemaining();
+        }
+
+        const ratingWrap = document.getElementById('ratingStars');
+        const ratingInput = document.getElementById('rating');
+        if (ratingWrap && ratingInput) {
+            const stars = Array.from(ratingWrap.querySelectorAll('.star'));
+            const tooltip = document.getElementById('ratingTooltip');
+            let selectedValue = 0;
+            let tooltipTimeout = null;
+
+            const formatValue = (value) => value.toFixed(1).replace(/\.0$/, '');
+
+            const renderStars = (value) => {
+                const full = Math.floor(value);
+                const hasHalf = value - full >= 0.5;
+                stars.forEach((star, idx) => {
+                    const starIndex = idx + 1;
+                    star.classList.remove('full', 'half');
+                    if (starIndex <= full) {
+                        star.classList.add('full');
+                    } else if (starIndex === full + 1 && hasHalf) {
+                        star.classList.add('half');
+                    }
+                });
+            };
+
+            const findStarByX = (clientX) => {
+                const rects = stars.map(star => ({ star, rect: star.getBoundingClientRect() }));
+                for (const item of rects) {
+                    if (clientX >= item.rect.left && clientX <= item.rect.right) {
+                        return item;
+                    }
+                }
+                let closest = rects[0];
+                let minDist = Infinity;
+                rects.forEach(item => {
+                    const center = item.rect.left + item.rect.width / 2;
+                    const dist = Math.abs(clientX - center);
+                    if (dist < minDist) {
+                        minDist = dist;
+                        closest = item;
+                    }
+                });
+                return closest;
+            };
+
+            const valueFromX = (clientX) => {
+                const item = findStarByX(clientX);
+                if (!item) return null;
+                const { star, rect } = item;
+                const starIndex = Number(star.dataset.star) || 1;
+                const mid = rect.left + rect.width * 0.5;
+                const isLeftHalf = clientX <= mid;
+                return starIndex - (isLeftHalf ? 0.5 : 0);
+            };
+
+            const showTooltip = (value) => {
+                if (!tooltip) return;
+                tooltip.textContent = `${formatValue(value)}/5`;
+                tooltip.classList.add('is-visible');
+                if (tooltipTimeout) clearTimeout(tooltipTimeout);
+            };
+
+            const hideTooltip = () => {
+                if (!tooltip) return;
+                tooltip.classList.remove('is-visible');
+            };
+
+            ratingWrap.addEventListener('mousemove', (event) => {
+                const value = valueFromX(event.clientX);
+                if (!value) return;
+                renderStars(value);
+                showTooltip(value);
+            });
+
+            ratingWrap.addEventListener('mouseleave', () => {
+                renderStars(selectedValue);
+                hideTooltip();
+            });
+
+            ratingWrap.addEventListener('click', (event) => {
+                const value = valueFromX(event.clientX);
+                if (!value) return;
+                selectedValue = value;
+                ratingInput.value = formatValue(value);
+                renderStars(selectedValue);
+                showTooltip(selectedValue);
+                tooltipTimeout = setTimeout(() => hideTooltip(), 1200);
+            });
+
+            ratingWrap.addEventListener('touchstart', (event) => {
+                const touch = event.touches[0];
+                if (!touch) return;
+                const value = valueFromX(touch.clientX);
+                if (!value) return;
+                renderStars(value);
+                showTooltip(value);
+            }, { passive: true });
+
+            ratingWrap.addEventListener('touchmove', (event) => {
+                const touch = event.touches[0];
+                if (!touch) return;
+                const value = valueFromX(touch.clientX);
+                if (!value) return;
+                renderStars(value);
+                showTooltip(value);
+            }, { passive: true });
+
+            ratingWrap.addEventListener('touchend', (event) => {
+                const touch = event.changedTouches[0];
+                if (!touch) return;
+                const value = valueFromX(touch.clientX);
+                if (!value) return;
+                selectedValue = value;
+                ratingInput.value = formatValue(value);
+                renderStars(selectedValue);
+                showTooltip(selectedValue);
+                tooltipTimeout = setTimeout(() => hideTooltip(), 1200);
+            });
+
+            if (reviewForm) {
+                reviewForm.addEventListener('submit', async (event) => {
+                    event.preventDefault();
+
+                    const rating = ratingInput.value;
+                    if (!rating) {
+                        notify('Seleccioná una calificación', 'error');
+                        return;
+                    }
+
+                    const commentValue = commentInput ? commentInput.value.trim() : '';
+                    const csrfTokenElement = document.querySelector('meta[name="csrf-token"]');
+                    if (!csrfTokenElement) {
+                        notify('Error: CSRF token no encontrado', 'error');
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch('/api/reviews', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrfTokenElement.getAttribute('content')
+                            },
+                            body: JSON.stringify({
+                                productId: {{ $product->idproduct }},
+                                rating,
+                                comment: commentValue || null
+                            })
+                        });
+
+                        if (response.redirected || response.status === 401) {
+                            window.location.href = response.url || '/login';
+                            return;
+                        }
+
+                        if (!response.ok) {
+                            const errorData = await response.json().catch(() => ({}));
+                            const msg = errorData.error || 'Error al guardar la reseña';
+                            notify(msg, 'error');
+                            return;
+                        }
+
+                        notify('Reseña guardada', 'success');
+
+                        reviewForm.reset();
+                        selectedValue = 0;
+                        ratingInput.value = '';
+                        renderStars(0);
+                        if (commentInput && remainingEl) {
+                            remainingEl.textContent = commentInput.getAttribute('maxlength') || '250';
+                        }
+                        hideTooltip();
+                        reviewForm.classList.add('is-hidden');
+                        if (toggleBtn) {
+                            toggleBtn.textContent = 'Agregar reseña';
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        notify('Error al guardar la reseña', 'error');
+                    }
+                });
+            }
+        }
     });
 
     // Efecto de scroll en la imagen
