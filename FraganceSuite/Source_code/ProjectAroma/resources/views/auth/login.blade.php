@@ -1,80 +1,268 @@
-@extends('layouts.guest')
+@extends('layouts.app')
 
 @section('content')
-    <div class="container d-flex align-items-center justify-content-center min-vh-100">
-        <div class="col-md-5">
-            <div class="card shadow-lg border-0">
-                <div class="card-body p-4">
+<style>
+/* ========== LOGIN ESTILO AROMA ========== */
+.login-wrapper {
+    min-height: calc(100vh - 70px - 350px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    background: #ffffff;
+}
 
-                    <h3 class="text-center mb-4">Iniciar sesión</h3>
+.login-card {
+    background: white;
+    width: 100%;
+    max-width: 420px;
+    padding: 45px 40px;
+    border: none;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.05);
+}
 
-                    @if (session('status'))
-                        <div class="alert alert-success">
-                            {{ session('status') }}
-                        </div>
-                    @endif
+.login-title {
+    font-size: 22px;
+    font-weight: 400;
+    letter-spacing: 3px;
+    text-align: center;
+    margin-bottom: 35px;
+    color: #1a1a1a;
+    text-transform: uppercase;
+}
 
-                    <form method="POST" action="{{ route('login') }}">
-                        @csrf
+.form-group {
+    margin-bottom: 25px;
+}
 
-                        <div class="mb-3">
-                            <label>Email</label>
-                            <input type="email" name="email" class="form-control" required autofocus>
-                        </div>
+.form-group label {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #999;
+    margin-bottom: 8px;
+}
 
-                        <div class="mb-3">
-                            <label>Contraseña</label>
-                            <input type="password" name="password" class="form-control" required>
-                        </div>
+.login-input {
+    width: 100%;
+    padding: 10px 0;
+    border: none;
+    border-bottom: 1px solid #e0e0e0;
+    background: transparent;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+}
 
-                        <div class="form-check mb-3">
-                            <input class="form-check-input" type="checkbox" name="remember">
-                            <label class="form-check-label">Recordarme</label>
-                        </div>
+.login-input:focus {
+    outline: none;
+    border-bottom-color: #927a1b;
+}
 
-                        <div class="d-grid mb-3">
-                            <button class="btn btn-dark">Entrar</button>
-                        </div>
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 30px;
+}
 
-                        <hr>
-                        <div class="text-center mb-3">
-                            <a class="text-decoration-none" data-bs-toggle="collapse" href="#socialLogin">
-                                Continuar con redes sociales
-                            </a>
-                        </div>
+.checkbox-group input {
+    width: 14px;
+    height: 14px;
+    margin: 0;
+    cursor: pointer;
+}
 
-                        <div class="collapse" id="socialLogin">
-                            <div class="d-grid gap-2 mb-3">
-                                <a href="{{ url('/auth/google/redirect') }}" class="btn btn-outline-danger">
-                                    <i class="fab fa-google me-2"></i> Continuar con Google
-                                </a>
+.checkbox-group label {
+    font-size: 12px;
+    color: #888;
+    cursor: pointer;
+}
 
-                                <a href="{{ url('/auth/facebook/redirect') }}" class="btn btn-outline-primary">
-                                    <i class="fab fa-facebook-f me-2"></i> Continuar con Facebook
-                                </a>
-                            </div>
-                        </div>
+.login-btn {
+    width: 100%;
+    padding: 14px;
+    background: #000;
+    color: white;
+    border: none;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: opacity 0.3s;
+    margin-bottom: 25px;
+}
 
+.login-btn:hover {
+    opacity: 0.85;
+}
 
-                        <hr>
+.login-links {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
 
-                        <div class="text-center">
-                            <p class="mb-2">¿No tienes cuenta?</p>
-                            <a href="{{ route('register') }}" class="btn btn-outline-dark w-100">
-                                Crear cuenta
-                            </a>
-                        </div>
+.login-links a {
+    color: #888;
+    text-decoration: none;
+    font-size: 11px;
+    letter-spacing: 0.8px;
+    transition: color 0.3s;
+}
 
-                        <hr>
+.login-links a:hover {
+    color: #927a1b;
+}
 
-                        <div class="text-center">
-                            <a href="{{ route('password.request') }}">¿Olvidaste tu contraseña?</a>
-                        </div>
+.divider {
+    text-align: center;
+    margin: 30px 0 25px;
+    position: relative;
+}
 
-                    </form>
+.divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #eee;
+}
 
-                </div>
+.divider span {
+    background: white;
+    padding: 0 15px;
+    position: relative;
+    font-size: 10px;
+    color: #bbb;
+    letter-spacing: 1px;
+}
+
+.social-buttons {
+    display: flex;
+    gap: 15px;
+}
+
+.social-btn {
+    flex: 1;
+    text-align: center;
+    padding: 12px;
+    border: 1px solid #e0e0e0;
+    background: white;
+    color: #333;
+    text-decoration: none;
+    font-size: 12px;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.social-btn:hover {
+    border-color: #927a1b;
+    color: #927a1b;
+}
+
+.alert {
+    padding: 10px 15px;
+    margin-bottom: 20px;
+    font-size: 12px;
+}
+
+.alert-success {
+    background: #f5f5f5;
+    color: #2c5f2d;
+    border-left: 2px solid #2c5f2d;
+}
+
+.alert-danger {
+    background: #f5f5f5;
+    color: #c33;
+    border-left: 2px solid #c33;
+}
+
+@media (max-width: 480px) {
+    .login-card {
+        padding: 35px 25px;
+    }
+    
+    .login-title {
+        font-size: 18px;
+        letter-spacing: 2px;
+    }
+    
+    .login-links {
+        flex-direction: column;
+        gap: 12px;
+        text-align: center;
+    }
+    
+    .social-buttons {
+        flex-direction: column;
+    }
+}
+</style>
+
+<div class="login-wrapper">
+    <div class="login-card">
+        <h3 class="login-title">INICIAR SESIÓN</h3>
+
+        @if (session('status'))
+            <div class="alert alert-success">{{ session('status') }}</div>
+        @endif
+
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul class="mb-0" style="padding-left: 20px;">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
             </div>
-        </div>
+        @endif
+
+        <form method="POST" action="{{ route('login') }}">
+            @csrf
+
+            <div class="form-group">
+                <label>EMAIL</label>
+                <input type="email" name="email" class="login-input" value="{{ old('email') }}" required autofocus>
+            </div>
+
+            <div class="form-group">
+                <label>CONTRASEÑA</label>
+                <input type="password" name="password" class="login-input" required>
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" name="remember" id="remember">
+                <label for="remember">Recordarme</label>
+            </div>
+
+            <button type="submit" class="login-btn">ENTRAR</button>
+
+            <div class="login-links">
+                <a href="{{ route('register') }}">CREAR CUENTA</a>
+                <a href="{{ route('password.request') }}">¿OLVIDASTE TU CONTRASEÑA?</a>
+            </div>
+
+            <div class="divider">
+                <span>O CONTINÚA CON</span>
+            </div>
+
+            <div class="social-buttons">
+                <a href="{{ url('/auth/google/redirect') }}" class="social-btn">
+                    <i class="fab fa-google"></i> Google
+                </a>
+                <a href="{{ url('/auth/facebook/redirect') }}" class="social-btn">
+                    <i class="fab fa-facebook-f"></i> Facebook
+                </a>
+            </div>
+        </form>
     </div>
+</div>
 @endsection
