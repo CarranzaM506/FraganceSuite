@@ -14,8 +14,6 @@ use App\Http\Controllers\CheckOutController;
 use App\Http\Controllers\CodePromotionController;
 use App\Http\Controllers\FavoriteController; 
 use App\Http\Controllers\BrandController; 
-
-use App\Http\Controllers\FavoriteController; // Asegúrate de importar esto
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PayPalController;
 use App\Http\Controllers\ReviewController;
