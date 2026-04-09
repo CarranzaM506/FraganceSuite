@@ -16,7 +16,6 @@ use App\Http\Controllers\FavoriteController; // Asegúrate de importar esto
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PayPalController;
 use App\Http\Controllers\ReviewController;
-use App\Http\Controllers\FavoriteController; 
 use Illuminate\Support\Facades\Route;
 
 // RUTA PRINCIPAL
