@@ -12,7 +12,9 @@ use App\Http\Controllers\ProductDetailController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckOutController;
 use App\Http\Controllers\CodePromotionController;
-use App\Http\Controllers\FavoriteController; // Asegúrate de importar esto
+use App\Http\Controllers\FavoriteController; 
+use App\Http\Controllers\BrandController; 
+
 use Illuminate\Support\Facades\Route;
 
 // RUTA PRINCIPAL
@@ -43,7 +45,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('discount/{id}/products', [ControllerDiscount::class, 'products'])->name('discount.products');
     Route::get('products/search', [ControllerDiscount::class, 'searchProducts'])->name('products.search');
     Route::resource('promotionCode', CodePromotionController::class);
-});
+    Route::get('brands/sync', [BrandController::class, 'sync'])->name('brands.sync');
+    Route::resource('brands', BrandController::class)->only(['index', 'edit', 'update']);});
 
 // RUTAS PROTEGIDAS USUARIOS (Requieren autenticación)
 Route::middleware('auth')->group(function () {
