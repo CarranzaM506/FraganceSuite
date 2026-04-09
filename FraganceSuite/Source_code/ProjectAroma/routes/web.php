@@ -12,7 +12,7 @@ use App\Http\Controllers\ProductDetailController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckOutController;
 use App\Http\Controllers\CodePromotionController;
-use App\Http\Controllers\FavoriteController; // Asegúrate de importar esto
+use App\Http\Controllers\FavoriteController; 
 use Illuminate\Support\Facades\Route;
 
 // RUTA PRINCIPAL
@@ -75,4 +75,3 @@ Route::middleware('auth')->group(function () {
 
 require __DIR__ . '/auth.php';
 
-//Inicio de trabajo

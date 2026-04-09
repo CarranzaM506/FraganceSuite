@@ -6,7 +6,7 @@
 }
 
 body {
-    background-color: #f8f8f8;
+    background-color: #ffffff;
     color: #333;
 }
 
@@ -159,7 +159,7 @@ header.hidden {
     padding: 8px 10px;
 }
 
-/* ========== MENÚ LATERAL (OFF-CANVAS) ========== */
+/* ========== MENÚ LATERAL ========== */
 .side-menu {
     position: fixed;
     top: 0;
