@@ -75,6 +75,52 @@
     </div>
 </section>
 
+@if(isset($activeBrands) && $activeBrands->count() > 0)
+<section class="brands-section">
+    <div class="brands-container">
+        <!-- Fila 1 - se mueve hacia la IZQUIERDA -->
+        <div class="brands-row row-left">
+            <div class="brands-track">
+                @foreach($activeBrands as $brand)
+                <div class="brand-item" 
+                     onclick="window.location.href='{{ route('catalog', ['brand' => $brand->brand_name]) }}'"
+                     style="cursor: pointer;">
+                    <img src="{{ Storage::url($brand->logo) }}" alt="{{ $brand->brand_name }}">
+                </div>
+                @endforeach
+                @foreach($activeBrands as $brand)
+                <div class="brand-item" 
+                     onclick="window.location.href='{{ route('catalog', ['brand' => $brand->brand_name]) }}'"
+                     style="cursor: pointer;">
+                    <img src="{{ Storage::url($brand->logo) }}" alt="{{ $brand->brand_name }}">
+                </div>
+                @endforeach
+            </div>
+        </div>
+
+        <!-- Fila 2 - se mueve hacia la DERECHA -->
+        <div class="brands-row row-right">
+            <div class="brands-track">
+                @foreach($activeBrands as $brand)
+                <div class="brand-item" 
+                     onclick="window.location.href='{{ route('catalog', ['brand' => $brand->brand_name]) }}'"
+                     style="cursor: pointer;">
+                    <img src="{{ Storage::url($brand->logo) }}" alt="{{ $brand->brand_name }}">
+                </div>
+                @endforeach
+                @foreach($activeBrands as $brand)
+                <div class="brand-item" 
+                     onclick="window.location.href='{{ route('catalog', ['brand' => $brand->brand_name]) }}'"
+                     style="cursor: pointer;">
+                    <img src="{{ Storage::url($brand->logo) }}" alt="{{ $brand->brand_name }}">
+                </div>
+                @endforeach
+            </div>
+        </div>
+    </div>
+</section>
+@endif
+
 <!-- Promoción Activa -->
 @if($activePromotion && $promotionProduct)
 <section class="split-promo">

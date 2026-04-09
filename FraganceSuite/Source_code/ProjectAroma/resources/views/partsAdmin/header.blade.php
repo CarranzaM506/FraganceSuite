@@ -118,8 +118,17 @@
                         <hr class="border-light opacity-25 my-3 mx-4" />
 
                         <a class="nav-link" href="{{ route('promotionCode.create') }}">Crear código</a>
-
                     </div>
+
+                    <!-- ========== MARCAS (LOGO CARRUSEL) ========== -->
+                    <a class="nav-link {{ request()->is('brands*') ? 'active' : '' }}" href="{{ route('brands.index') }}">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                            <path d="M2 17l10 5 10-5"/>
+                            <path d="M2 12l10 5 10-5"/>
+                        </svg>
+                        Logos de Marcas
+                    </a>
 
                     <hr class="border-light opacity-25 my-3" />
 
