@@ -15,6 +15,7 @@ use App\Http\Controllers\CodePromotionController;
 use App\Http\Controllers\FavoriteController; // Asegúrate de importar esto
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PayPalController;
+use App\Http\Controllers\ReviewController;
 use Illuminate\Support\Facades\Route;
 
 // RUTA PRINCIPAL
@@ -66,6 +67,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/api/cart/update', [CartController::class, 'update']);
     Route::post('/api/cart/remove', [CartController::class, 'remove']);
     Route::post('/api/cart/apply-code', [CartController::class, 'applyDiscountCode']);
+    Route::post('/api/reviews', [ReviewController::class, 'store']);
 
     //Orders
     Route::get('/order/success/{id}', [OrderController::class, 'success']);
