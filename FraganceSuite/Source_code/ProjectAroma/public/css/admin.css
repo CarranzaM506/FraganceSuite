@@ -1,75 +1,96 @@
+/* admin.css - Versión Minimalista Unificada */
 
 :root {
   --aroma-black: #000000;
-  --aroma-black-soft: #0d0d0d;
+  --aroma-black-soft: #111111;
   --aroma-text: #ffffff;
-  --aroma-muted: #bfbfbf;
-  --aroma-border: rgba(255, 255, 255, .15);
+  --aroma-muted: #a0a0a0;
+  --aroma-border: rgba(255, 255, 255, .1);
+  --aroma-card-bg: #ffffff;
+  --aroma-body-bg: #f5f3f0;
+  --aroma-gray-100: #f8f8f8;
+  --aroma-gray-200: #e5e5e5;
+  --aroma-gray-300: #d4d4d4;
+  --aroma-gray-600: #666666;
+  --aroma-gray-700: #4a4a4a;
+  --aroma-primary: #1a1a1a;
+  --aroma-success: #2c5f2d;
+  --aroma-warning: #5e9c41;
+  --aroma-danger: #8c1212;
+  --aroma-info: #2c5f5f;
+  
+  --aroma-radius: 0px;
+}
+
+*,
+*::before,
+*::after {
+  border-radius: var(--aroma-radius) !important;
 }
 
 body {
-  background: #f6f2f0;
+  background: var(--aroma-body-bg);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  color: #1a1a1a;
 }
 
-/* Header negro */
+/* ============================================
+   HEADER Y SIDEBAR
+   ============================================ */
 .topbar {
   background: var(--aroma-black);
   border-bottom: 1px solid var(--aroma-border);
 }
 
-/* Sidebar negro */
 .aroma-offcanvas {
-  background: linear-gradient(180deg, var(--aroma-black), var(--aroma-black-soft));
+  background: var(--aroma-black);
   color: var(--aroma-text);
-  border-right: 1px solid var(--aroma-border);
+  border-right: none;
 }
 
 .sidebar-logo {
   display: flex;
   align-items: center;
   gap: .75rem;
-  padding: .9rem 1rem;
+  padding: 1rem;
   border-bottom: 1px solid var(--aroma-border);
 }
 
 .sidebar-logo .title {
-  font-weight: 800;
-  letter-spacing: .08em;
+  font-weight: 600;
+  letter-spacing: .1em;
   color: var(--aroma-text);
   margin: 0;
-  line-height: 1;
+  font-size: 1.1rem;
 }
 
 .sidebar-logo .subtitle {
   margin: 0;
   color: var(--aroma-muted);
-  font-size: .85rem;
+  font-size: .75rem;
 }
 
 .nav-link {
-  color: var(--aroma-text);
-  border-radius: 12px;
+  color: var(--aroma-muted);
   padding: .6rem .8rem;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
 }
 
 .nav-link:hover {
-  background: rgba(255, 255, 255, .08);
+  background: rgba(255, 255, 255, .05);
   color: var(--aroma-text);
 }
 
 .nav-link.active {
-  background: rgba(255, 255, 255, .15);
-  border: 1px solid rgba(255, 255, 255, .25);
+  background: rgba(255, 255, 255, .08);
   color: var(--aroma-text);
+  border-left: 2px solid var(--aroma-text);
 }
 
 .nav .submenu .nav-link {
-  padding-left: 2.25rem;
-  color: var(--aroma-muted);
-}
-
-.nav .submenu .nav-link:hover {
-  color: var(--aroma-text);
+  padding-left: 2rem;
+  font-size: 0.85rem;
 }
 
 .icon {
@@ -77,37 +98,474 @@ body {
   height: 18px;
   margin-right: .6rem;
   vertical-align: -3px;
-  opacity: .95;
+  opacity: 0.8;
 }
 
 /* Layout */
+.layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  min-height: 100vh;
+}
+
+.aroma-offcanvas {
+  position: static !important;
+  transform: none !important;
+  visibility: visible !important;
+  width: 280px;
+}
+
+.only-mobile {
+  display: none !important;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 1020;
+}
+
 .content-wrap {
+  padding: 1.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ============================================
+   TARJETAS - Minimalistas
+   ============================================ */
+.card {
+  background: var(--aroma-card-bg);
+  border: 1px solid var(--aroma-gray-200);
+  box-shadow: none;
+  margin-bottom: 1.5rem;
+}
+
+.card-header {
+  background: transparent;
+  border-bottom: 1px solid var(--aroma-gray-200);
+  padding: 1rem 1.25rem;
+  font-weight: 500;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--aroma-gray-600);
+}
+
+.card-body {
   padding: 1.25rem;
 }
 
-/* Desktop: sidebar fijo + contenido al lado */
-@media (min-width: 992px) {
+/* ============================================
+   TABLAS - Limpias y sin flechas raras
+   ============================================ */
+.table {
+  margin-bottom: 0;
+}
+
+.table thead th {
+  background: var(--aroma-gray-100);
+  border-bottom: 1px solid var(--aroma-gray-200);
+  color: var(--aroma-gray-700);
+  font-weight: 500;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  padding: 0.75rem;
+}
+
+.table td {
+  padding: 0.75rem;
+  vertical-align: middle;
+  border-top: 1px solid var(--aroma-gray-200);
+  font-size: 0.85rem;
+}
+
+.table-hover tbody tr:hover {
+  background-color: var(--aroma-gray-100);
+}
+
+/* Eliminar flechas de ordenamiento de DataTables */
+.dataTables_wrapper .dataTables_length,
+.dataTables_wrapper .dataTables_filter,
+.dataTables_wrapper .dataTables_info,
+.dataTables_wrapper .dataTables_paginate {
+  font-size: 0.85rem;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--aroma-gray-200);
+  background: white;
+  color: var(--aroma-gray-700);
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+  background: var(--aroma-black);
+  border-color: var(--aroma-black);
+  color: white;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+  background: var(--aroma-gray-200);
+  border-color: var(--aroma-gray-300);
+}
+
+/* Eliminar flechas de sorting de DataTables */
+table.dataTable thead .sorting:after,
+table.dataTable thead .sorting_asc:after,
+table.dataTable thead .sorting_desc:after,
+table.dataTable thead .sorting:before,
+table.dataTable thead .sorting_asc:before,
+table.dataTable thead .sorting_desc:before {
+  display: none !important;
+}
+
+/* ============================================
+   BOTONES - Colores suaves
+   ============================================ */
+.btn {
+  border-radius: var(--aroma-radius);
+  padding: 0.4rem 1rem;
+  font-weight: 450;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.btn-dark {
+  background-color: var(--aroma-primary);
+  border-color: var(--aroma-primary);
+  color: white;
+}
+
+.btn-dark:hover {
+  background-color: #333;
+  border-color: #333;
+}
+
+.btn-outline-secondary {
+  border-color: var(--aroma-gray-300);
+  color: var(--aroma-gray-700);
+  background: transparent;
+}
+
+.btn-outline-secondary:hover {
+  background-color: var(--aroma-gray-100);
+  border-color: var(--aroma-gray-400);
+  color: var(--aroma-black);
+}
+
+.btn-warning {
+  background-color: var(--aroma-warning);
+  border-color: var(--aroma-warning);
+  color: white;
+}
+
+.btn-warning:hover {
+  background-color: #7a5d35;
+  border-color: #7a5d35;
+}
+
+.btn-danger {
+  background-color: var(--aroma-danger);
+  border-color: var(--aroma-danger);
+  color: white;
+}
+
+.btn-danger:hover {
+  background-color: #6e2e2e;
+  border-color: #6e2e2e;
+}
+
+.btn-success {
+  background-color: var(--aroma-success);
+  border-color: var(--aroma-success);
+  color: white;
+}
+
+.btn-success:hover {
+  background-color: #214521;
+  border-color: #214521;
+}
+
+.btn-info {
+  background-color: var(--aroma-info);
+  border-color: var(--aroma-info);
+  color: white;
+}
+
+.btn-info:hover {
+  background-color: #1e4a4a;
+  border-color: #1e4a4a;
+}
+
+/* ============================================
+   BADGES - Suaves
+   ============================================ */
+.badge {
+  border-radius: var(--aroma-radius);
+  padding: 0.25rem 0.6rem;
+  font-weight: 450;
+  font-size: 0.7rem;
+}
+
+.bg-success {
+  background-color: var(--aroma-success) !important;
+}
+
+.bg-danger {
+  background-color: var(--aroma-danger) !important;
+}
+
+.bg-warning {
+  background-color: var(--aroma-warning) !important;
+  color: white;
+}
+
+.bg-info {
+  background-color: var(--aroma-info) !important;
+}
+
+.bg-secondary {
+  background-color: var(--aroma-gray-600) !important;
+}
+
+/* ============================================
+   FORMULARIOS
+   ============================================ */
+.form-control,
+.form-select {
+  border-radius: var(--aroma-radius);
+  border: 1px solid var(--aroma-gray-300);
+  padding: 0.45rem 0.7rem;
+  font-size: 0.85rem;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--aroma-black);
+  box-shadow: none;
+}
+
+.form-label {
+  font-weight: 500;
+  margin-bottom: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--aroma-gray-700);
+}
+
+/* ============================================
+   DASHBOARD STAT CARDS
+   ============================================ */
+.dashboard-stat-card {
+  background: white;
+  border: 1px solid var(--aroma-gray-200);
+  padding: 1.25rem;
+  transition: all 0.2s ease;
+}
+
+.dashboard-stat-card:hover {
+  background: var(--aroma-gray-100);
+}
+
+.stat-value {
+  font-size: 1.75rem;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--aroma-black);
+}
+
+.stat-label {
+  font-size: 0.7rem;
+  color: var(--aroma-gray-600);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 0.25rem;
+}
+
+.stat-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--aroma-gray-600);
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 991.98px) {
   .layout {
-    display: grid;
-    grid-template-columns: 300px 1fr;
-    min-height: 100vh;
+    grid-template-columns: 1fr;
   }
-
+  
   .aroma-offcanvas {
-    position: static !important;
-    transform: none !important;
-    visibility: visible !important;
-    width: 300px;
+    position: fixed !important;
+    width: 260px !important;
   }
-
+  
   .only-mobile {
+    display: block !important;
+  }
+  
+  .content-wrap {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .content-wrap {
+    padding: 0.75rem;
+  }
+  
+  .card-header,
+  .card-body {
+    padding: 0.85rem;
+  }
+  
+  .dashboard-stat-card {
+    padding: 0.85rem;
+  }
+  
+  .stat-value {
+    font-size: 1.25rem;
+  }
+}
+
+/* ============================================
+   PAGINACIÓN ULTRA MINIMALISTA - SIN COLORES
+   ============================================ */
+
+/* Mantener layout original de DataTables */
+.dataTables_wrapper .dataTables_length {
+    float: left;
+    margin-bottom: 1rem;
+}
+
+.dataTables_wrapper .dataTables_filter {
+    float: right;
+    margin-bottom: 1rem;
+}
+
+.dataTables_wrapper .dataTables_info {
+    float: left;
+    padding-top: 0.75rem;
+    font-size: 0.75rem;
+    color: #999;
+}
+
+.dataTables_wrapper .dataTables_paginate {
+    float: right;
+    padding-top: 0.5rem;
+}
+
+/* Botones de paginación - SIN fondos, SIN bordes */
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    padding: 0.25rem 0.5rem;
+    margin: 0 0.125rem;
+    border: none !important;
+    background: transparent !important;
+    color: #666;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+/* Hover - solo cambia el color del texto */
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    background: transparent !important;
+    color: #000;
+    border: none !important;
+}
+
+/* Página actual - solo texto en negrita y color negro */
+.dataTables_wrapper .dataTables_paginate .paginate_button.current,
+.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+    background: transparent !important;
+    color: #000;
+    font-weight: 600;
+    border: none !important;
+}
+
+/* Botones deshabilitados (Previous/Next cuando no aplican) */
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover {
+    background: transparent !important;
+    color: #ccc !important;
+    cursor: default;
+    border: none !important;
+}
+
+/* Quitar focus azul */
+.dataTables_wrapper .dataTables_paginate .paginate_button:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+/* Selector de registros por página - minimalista */
+.dataTables_wrapper .dataTables_length select {
+    padding: 0.25rem 1.5rem 0.25rem 0.5rem;
+    margin: 0 0.25rem;
+    border: 1px solid #ddd;
+    background: white;
+    font-size: 0.7rem;
+    border-radius: 0px;
+}
+
+/* Campo de búsqueda - minimalista */
+.dataTables_wrapper .dataTables_filter input {
+    border: 1px solid #ddd;
+    padding: 0.3rem 0.5rem;
+    font-size: 0.75rem;
+    border-radius: 0px;
+    margin-left: 0.5rem;
+    width: 200px;
+}
+
+.dataTables_wrapper .dataTables_filter input:focus {
+    outline: none;
+    border-color: #999;
+}
+
+/* Limpiar floats */
+.dataTables_wrapper:before,
+.dataTables_wrapper:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .dataTables_wrapper .dataTables_length,
+    .dataTables_wrapper .dataTables_filter {
+        float: none;
+        margin-bottom: 0.75rem;
+    }
+    
+    .dataTables_wrapper .dataTables_info,
+    .dataTables_wrapper .dataTables_paginate {
+        float: none;
+        text-align: center;
+        margin-top: 0.75rem;
+    }
+}
+
+/* ============================================
+   ELIMINAR FLECHAS DE SORTING EN CABECERAS
+   ============================================ */
+table.dataTable thead th.sorting:after,
+table.dataTable thead th.sorting_asc:after,
+table.dataTable thead th.sorting_desc:after,
+table.dataTable thead th.sorting:before,
+table.dataTable thead th.sorting_asc:before,
+table.dataTable thead th.sorting_desc:before {
     display: none !important;
-  }
+}
 
-  .topbar {
-    position: sticky;
-    top: 0;
-    z-index: 1020;
-  }
-
+table.dataTable thead th.sorting {
+    background-image: none !important;
 }
