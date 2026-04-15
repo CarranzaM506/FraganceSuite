@@ -81,13 +81,20 @@
     <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
     <script>
         $(document).ready(function() {
-            $('#productsTable').DataTable({
-                pageLength: 10,
-                language: {
-                    url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
-                }
-            });
-        });
+    $('#productsTable').DataTable({
+        pageLength: 10,
+        language: {
+            url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json',
+            paginate: {
+                previous: "←",
+                next: "→"
+            }
+        },
+        columnDefs: [
+            { orderable: false, targets: [0, 8] }
+        ]
+    });
+});
     </script>
 
     <script>
