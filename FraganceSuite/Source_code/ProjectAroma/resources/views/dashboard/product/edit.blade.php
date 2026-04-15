@@ -119,7 +119,7 @@
                             <hr class="my-4">
 
                             {{-- BOTONES --}}
-                            <div class="d-flex justify-content-end gap-2">
+                            <div class="d-flex justify-content-end gap-2 flex-wrap">
                                 <a href="{{ route('product.index') }}" class="btn btn-outline-secondary">
                                     Cancelar
                                 </a>

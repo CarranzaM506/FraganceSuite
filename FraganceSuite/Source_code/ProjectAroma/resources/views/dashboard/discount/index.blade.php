@@ -3,10 +3,10 @@
 @section('title', 'Ver Promociones')
 
 @section('content')
-<div class="container py-4">
+<div class="container-fluid py-4">
     <div class="card shadow border-0">
         <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
                 <h4 class="mb-0">Listado de Promociones</h4>
                 <a href="{{ route('discount.create') }}" class="btn btn-dark btn-sm">+ Nueva Promoción</a>
             </div>
@@ -18,8 +18,9 @@
                 </div>
             @endif
 
+            <!-- Contenedor con scroll horizontal (como la tabla de marcas) -->
             <div class="table-responsive">
-                <table id="discountsTable" class="table table-striped table-hover table-bordered" style="width:100%">
+                <table class="table table-striped table-hover table-bordered" id="discountsTable">
                     <thead class="table-dark">
                         <tr>
                             <th>Descuento</th>
@@ -35,10 +36,10 @@
                             <td>
                                 <span class="badge bg-dark">{{ $d->value }}%</span>
                             </td>
-                            <td class="text-nowrap">
+                            <td style="white-space: nowrap;">
                                 {{ \Carbon\Carbon::parse($d->startdate)->format('d/m/Y H:i') }}
                             </td>
-                            <td class="text-nowrap">
+                            <td style="white-space: nowrap;">
                                 {{ \Carbon\Carbon::parse($d->enddate)->format('d/m/Y H:i') }}
                                 @php
                                     $now = \Carbon\Carbon::now();
@@ -56,13 +57,15 @@
                                     Ver ({{ $d->products->count() ?? 0 }})
                                 </button>
                             </td>
-                            <td class="text-nowrap">
-                                <a href="{{ route('discount.edit', $d->iddiscount) }}" class="btn btn-warning btn-sm">Editar</a>
-                                <form method="POST" action="{{ route('discount.destroy', $d->iddiscount) }}" class="d-inline" onsubmit="return confirm('¿Eliminar esta promoción?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
-                                </form>
+                            <td>
+                                <div class="d-flex gap-1">
+                                    <a href="{{ route('discount.edit', $d->iddiscount) }}" class="btn btn-warning btn-sm">Editar</a>
+                                    <form method="POST" action="{{ route('discount.destroy', $d->iddiscount) }}" class="d-inline" onsubmit="return confirm('¿Eliminar esta promoción?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                         @endforeach
@@ -92,19 +95,40 @@
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 <script>
+    function isMobile() {
+        return window.innerWidth < 768;
+    }
+
+    function initDataTable() {
+        if (!isMobile()) {
+            if ($.fn.DataTable.isDataTable('#discountsTable')) {
+                $('#discountsTable').DataTable().destroy();
+            }
+            $('#discountsTable').DataTable({
+                pageLength: 10,
+                language: {
+                    url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json',
+                    paginate: {
+                        previous: "←",
+                        next: "→"
+                    }
+                },
+                columnDefs: [
+                    { orderable: false, targets: [3, 4] }
+                ]
+            });
+        } else {
+            if ($.fn.DataTable.isDataTable('#discountsTable')) {
+                $('#discountsTable').DataTable().destroy();
+            }
+            $('.dataTables_wrapper').contents().unwrap();
+        }
+    }
+
     $(document).ready(function() {
-        $('#discountsTable').DataTable({
-            pageLength: 10,
-            language: {
-                url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json',
-                paginate: {
-                    previous: "←",
-                    next: "→"
-                }
-            },
-            columnDefs: [
-                { orderable: false, targets: [3, 4] }
-            ]
+        initDataTable();
+        $(window).resize(function() {
+            initDataTable();
         });
     });
 
