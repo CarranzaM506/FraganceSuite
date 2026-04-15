@@ -500,11 +500,15 @@
 
                 reviews.forEach(review => {
                     const stars = generateStars(review.rating);
+                    const formattedDate = formatDate(review.created_at);
 
                     const reviewHTML = `
                 <div class="review-item">
                     <div class="review-header">
-                        <strong>${review.user?.name ?? 'Usuario'}</strong>
+                        <div class="review-user">
+                            <strong>${review.user?.name ?? 'Usuario'}</strong>
+                            <span class="review-date">${formattedDate}</span>
+                        </div>
                         <span class="review-stars">${stars}</span>
                     </div>
                     ${review.comment ? `<p class="review-comment">${review.comment}</p>` : ''}
@@ -535,6 +539,16 @@
             }
 
             return html;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+
+            return `${day}/${month}/${year}`;
         }
     </script>
 @endpush
