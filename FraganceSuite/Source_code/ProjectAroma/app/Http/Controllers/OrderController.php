@@ -12,7 +12,7 @@ class OrderController extends Controller
      */
     public function index()
     {
-        //
+        return view('dashboard.sales.monthly-sales', compact('ventasMensuales'));
     }
 
     /**

@@ -121,14 +121,40 @@
                     </div>
 
                     <!-- ========== MARCAS (LOGO CARRUSEL) ========== -->
-                    <a class="nav-link {{ request()->is('brands*') ? 'active' : '' }}" href="{{ route('brands.index') }}">
-                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-                            <path d="M2 17l10 5 10-5"/>
-                            <path d="M2 12l10 5 10-5"/>
+                    <a class="nav-link {{ request()->is('brands*') ? 'active' : '' }}"
+                        href="{{ route('brands.index') }}">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                            <path d="M2 17l10 5 10-5" />
+                            <path d="M2 12l10 5 10-5" />
                         </svg>
                         Logos de Marcas
                     </a>
+
+                    <!-- Ventas -->
+                    <a class="nav-link d-flex align-items-center justify-content-between {{ request()->is('sales*') ? 'active' : '' }}"
+                        data-bs-toggle="collapse" href="#submenuVentas" role="button" aria-expanded="false"
+                        aria-controls="submenuVentas">
+                        <span>
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M3 3v18h18" />
+                                <path d="M7 14l4-4 4 4 5-5" />
+                            </svg>
+                            Ventas
+                        </span>
+                        <span class="ms-2">▾</span>
+                    </a>
+
+                    <div class="collapse submenu" id="submenuVentas">
+                        <a class="nav-link" href="{{ route('orders.index') }}">
+                            Ventas Mensuales
+                        </a>
+                        <a class="nav-link" href="#">
+                            Ventas Diarias
+                        </a>
+                    </div>
 
                     <hr class="border-light opacity-25 my-3" />
 
