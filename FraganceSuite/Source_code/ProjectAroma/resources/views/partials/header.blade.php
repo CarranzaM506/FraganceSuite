@@ -1,6 +1,6 @@
 <header>
     <div class="header-main">
-        <!-- Botón de menú lateral (hamburguesa)  -->
+        <!-- Botón de menú lateral (hamburguesa) -->
         <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="3" y1="12" x2="21" y2="12"></line>
@@ -12,19 +12,28 @@
         <!-- Logo centrado -->
         <a href="{{ route('mainPage') }}" class="logo">AROMA</a>
 
-        <!-- Iconos de usuario y búsqueda a la derecha -->
+        <!-- Iconos de usuario a la derecha -->
         <div class="user-icons">
-            <!-- Formulario de búsqueda integrado en iconos -->
+            <!-- Formulario de búsqueda expandible (SOLO DESKTOP) -->
             <form action="{{ route('catalog.index') }}" method="GET" class="search-icon-form">
                 <input type="text" name="search" class="search-input-mobile" placeholder="Buscar..." value="{{ request('search') }}">
-<button type="submit" class="search-icon-btn">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" 
-         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="11" cy="11" r="8"></circle>
-        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-    </svg>
-</button>
+                <button type="submit" class="search-icon-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" 
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </button>
             </form>
+
+            <!-- Botón de búsqueda para móvil (MODAL) -->
+            <button type="button" class="search-icon-btn" id="mobileSearchBtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" 
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+            </button>
 
             <!-- Icono de favoritos -->
             <a href="{{ route('favorites.index') }}" class="icon-link">
@@ -65,6 +74,27 @@
     </div>
 </header>
 
+<!-- Modal de búsqueda para móvil -->
+<div id="searchModal" class="search-modal">
+    <div class="search-modal-content">
+        <div class="search-modal-header">
+            <h3>Buscar productos</h3>
+            <button class="search-modal-close">&times;</button>
+        </div>
+        <form action="{{ route('catalog.index') }}" method="GET" class="search-modal-form">
+            <input type="text" name="search" placeholder="Buscar por nombre, marca..." value="{{ request('search') }}" autocomplete="off">
+            <button type="submit">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" 
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                Buscar
+            </button>
+        </form>
+    </div>
+</div>
+
 <!-- MENÚ LATERAL -->
 <div class="side-menu" id="sideMenu">
     <div class="side-menu-header">
@@ -72,17 +102,12 @@
         <button class="side-menu-close" id="closeMenuBtn" aria-label="Cerrar menú">✕</button>
     </div>
     <nav class="side-menu-nav">
-        <!-- Enlace Inicio -->
         <a href="{{ route('mainPage') }}" class="side-menu-link">
             <i class="fas fa-home"></i> Inicio
         </a>
-        
-        <!-- Enlace Catálogo -->
         <a href="{{ route('catalog.index') }}" class="side-menu-link">
             <i class="fas fa-box-open"></i> Catálogo
         </a>
-        
-        <!-- Sección de Categorías -->
         <div class="side-menu-categories">
             <span class="side-menu-categories-title">Categorías</span>
             <a href="{{ route('catalog.index', ['category' => 'hombre']) }}" class="side-menu-category-link">
@@ -98,18 +123,12 @@
                 <i class="fas fa-child"></i> Niños
             </a>
         </div>
-        
-        <!-- Enlace Favoritos -->
         <a href="{{ route('favorites.index') }}" class="side-menu-link">
             <i class="far fa-heart"></i> Favoritos
         </a>
-        
-        <!-- Enlace Carrito -->
         <a href="{{ route('cart.index') }}" class="side-menu-link">
             <i class="fas fa-shopping-cart"></i> Carrito
         </a>
-        
-        <!-- Sección de Usuario (Perfil y Logout) -->
         @auth
             <a href="{{ route('profile.index') }}" class="side-menu-link">
                 <i class="far fa-user"></i> Mi Perfil
@@ -132,7 +151,6 @@
     </nav>
 </div>
 
-<!-- Overlay para el menú lateral -->
 <div class="menu-overlay" id="menuOverlay"></div>
 
 <script>
@@ -158,10 +176,37 @@
         if (closeMenuBtn) closeMenuBtn.addEventListener('click', closeMenu);
         if (menuOverlay) menuOverlay.addEventListener('click', closeMenu);
 
-        // Cerrar menú al hacer clic en cualquier enlace
         const menuLinks = document.querySelectorAll('.side-menu-link');
         menuLinks.forEach(link => {
             link.addEventListener('click', closeMenu);
         });
+
+        // Modal de búsqueda para móvil
+        const mobileSearchBtn = document.getElementById('mobileSearchBtn');
+        const searchModal = document.getElementById('searchModal');
+        const searchModalClose = document.querySelector('.search-modal-close');
+
+        if (mobileSearchBtn && searchModal) {
+            mobileSearchBtn.addEventListener('click', function() {
+                searchModal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                const input = searchModal.querySelector('input');
+                if (input) setTimeout(() => input.focus(), 100);
+            });
+            
+            if (searchModalClose) {
+                searchModalClose.addEventListener('click', function() {
+                    searchModal.classList.remove('active');
+                    document.body.style.overflow = '';
+                });
+            }
+            
+            searchModal.addEventListener('click', function(e) {
+                if (e.target === searchModal) {
+                    searchModal.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            });
+        }
     });
 </script>
