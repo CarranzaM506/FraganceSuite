@@ -47,12 +47,12 @@
                         @foreach ($ventasMensuales as $venta)
                             <tr>
                                 <td>
-                                    {{ \Carbon\Carbon::create()->month($venta->month)->locale('es')->monthName }}
+                                    {{ ucfirst(\Carbon\Carbon::create()->month($venta->month)->locale('es')->monthName) }}
                                 </td>
                                 <td>{{ $venta->year }}</td>
-                                <td>₡{{ number_format($venta->total_sales ?? 0, 2) }}</td>
-                                <td>{{ $venta->total_orders ?? 0 }}</td>
-                                <td>₡{{ number_format($venta->avg_order ?? 0, 2) }}</td>
+                                <td>₡{{ number_format($venta->totalSales ?? 0, 2) }}</td>
+                                <td>{{ $venta->totalOrders ?? 0 }}</td>
+                                <td>₡{{ number_format($venta->avgOrder ?? 0, 2) }}</td>
                             </tr>
                         @endforeach
 
