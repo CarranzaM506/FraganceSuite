@@ -76,6 +76,7 @@ Route::middleware('auth')->group(function () {
 
     //Orders
     Route::get('/order/success/{id}', [OrderController::class, 'success']);
+    Route::resource('orders', OrderController::class);
 
     Route::post('/api/address', [LocationController::class, 'storeApi']);
     Route::get('/checkout', [CheckOutController::class, 'index'])->name('checkout');
