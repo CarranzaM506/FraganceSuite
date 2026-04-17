@@ -5,7 +5,7 @@
 @section('content')
 <main class="content-wrap">
     <div class="container-fluid py-4">
-        <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
             <h2 class="mb-0">Hero Principal</h2>
             <a href="{{ route('hero.create') }}" class="btn btn-primary">
                 <i class="fas fa-plus me-2"></i>Nueva Imagen Hero
@@ -30,7 +30,7 @@
                     </div>
                 @else
                     <div class="alert alert-info mb-4">
-                        <div class="d-flex align-items-center">
+                        <div class="d-flex align-items-center flex-wrap gap-2">
                             <i class="fas fa-info-circle fs-5 me-3"></i>
                             <div>
                                 <strong class="d-block">¿Cómo funciona el Hero?</strong>
@@ -58,7 +58,8 @@
                                         @if($hero->image)
                                             <img src="{{ asset('storage/' . $hero->image) }}" 
                                                  alt="{{ $hero->title ?? 'Hero' }}" 
-                                                 style="width: 150px; height: 70px; object-fit: cover; border: 1px solid #dee2e6;">
+                                                 class="img-fluid"
+                                                 style="max-width: 100px; height: auto; max-height: 60px; object-fit: cover; border: 1px solid #dee2e6;">
                                         @else
                                             <span class="text-muted">Sin imagen</span>
                                         @endif
@@ -104,7 +105,7 @@
                     </div>
 
                     <div class="mt-4 p-3 bg-light">
-                        <div class="d-flex">
+                        <div class="d-flex flex-wrap gap-2">
                             <i class="fas fa-lightbulb text-warning me-3 mt-1"></i>
                             <div>
                                 <strong class="d-block">Recomendación:</strong>
