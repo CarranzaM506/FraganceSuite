@@ -12,7 +12,8 @@ class CodePromotionController extends Controller
      */
     public function index()
     {
-        //
+        $codes = CodePromotion::orderByDesc('idcode_promotion')->get();
+        return view('dashboard.discount.indexCode', compact('codes'));
     }
 
     /**
