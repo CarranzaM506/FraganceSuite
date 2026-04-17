@@ -11,7 +11,7 @@
                 <div class="card shadow-sm border-0">
                     <div class="card-body p-4">
 
-                        <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
                             <div>
                                 <h3 class="mb-1">Crear codigo promocional</h3>
                                 <p class="text-muted mb-0">Ingrese los datos del codigo de descuento.</p>
@@ -72,7 +72,7 @@
 
                             </div>
 
-                            <div class="d-flex justify-content-end gap-2 mt-4">
+                            <div class="d-flex justify-content-end gap-2 mt-4 flex-wrap">
                                 <a href="{{ route('dashboard') }}" class="btn btn-outline-secondary">
                                     Cancelar
                                 </a>

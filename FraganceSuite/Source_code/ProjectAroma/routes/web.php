@@ -37,6 +37,9 @@ Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::get('/api/product/{id}', [CartController::class, 'getProductData']);
 Route::get('/api/cart/preview', [CartController::class, 'getCartPreview'])->name('cart.preview');
 
+//API ver resenas
+Route::get('/api/reviews/{productId}', [ReviewController::class, 'getByProduct']);
+
 // RUTAS DE ADMINISTRACIÓN (PROTEGIDAS)
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/dashboard', function () {
@@ -73,6 +76,7 @@ Route::middleware('auth')->group(function () {
 
     //Orders
     Route::get('/order/success/{id}', [OrderController::class, 'success']);
+    Route::resource('orders', OrderController::class);
 
     Route::post('/api/address', [LocationController::class, 'storeApi']);
     Route::get('/checkout', [CheckOutController::class, 'index'])->name('checkout');

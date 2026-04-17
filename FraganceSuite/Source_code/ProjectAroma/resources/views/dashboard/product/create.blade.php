@@ -20,7 +20,7 @@
                             </div>
 
                             {{-- Botón (lleva a una pantalla/modal de import o a una ruta directa) --}}
-                            <div class="d-flex gap-2">
+                            <div class="d-flex gap-2 flex-wrap">
                                 <a href="{{ route('dashboard') }}" class="btn btn-outline-secondary">
                                     Volver
                                 </a>
@@ -130,7 +130,7 @@
                             <hr class="my-4">
 
                             {{-- Botones --}}
-                            <div class="d-flex justify-content-end gap-2">
+                            <div class="d-flex justify-content-end gap-2 flex-wrap">
                                 <a href="{{ route('dashboard') }}" class="btn btn-outline-secondary">
                                     Cancelar
                                 </a>

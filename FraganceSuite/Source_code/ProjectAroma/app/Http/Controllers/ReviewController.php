@@ -39,4 +39,14 @@ class ReviewController extends Controller
             'reviewId' => $review->idreview,
         ]);
     }
+
+    public function getByProduct($productId)
+    {
+        $reviews = Review::where('idproduct', $productId)
+            ->with('user') // si tienes relación
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json($reviews);
+    }
 }
