@@ -14,7 +14,7 @@
 
 </head>
 
-<body>
+<body class="{{ request()->is('promotionCode*') ? 'promo-codes-admin-mode' : '' }}">
 
     <!-- Header negro -->
     <div class="topbar">

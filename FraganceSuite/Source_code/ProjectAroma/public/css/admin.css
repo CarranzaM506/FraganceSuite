@@ -111,3 +111,11 @@ body {
   }
 
 }
+
+/* Vista admin de códigos promocionales: todo cuadrado */
+body.promo-codes-admin-mode,
+body.promo-codes-admin-mode * {
+  border-radius: 0 !important;
+}
+
+
