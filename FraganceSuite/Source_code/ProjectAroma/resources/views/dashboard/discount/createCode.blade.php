@@ -1,6 +1,6 @@
 @extends('partsAdmin.header')
 
-@section('title', 'Agregar código promoción')
+@section('title', 'Agregar codigo promocion')
 
 @section('content')
 
@@ -13,13 +13,18 @@
 
                         <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
                             <div>
-                                <h3 class="mb-1">Crear promoción</h3>
-                                <p class="text-muted mb-0">Ingrese los datos de la promoción.</p>
+                                <h3 class="mb-1">Crear codigo promocional</h3>
+                                <p class="text-muted mb-0">Ingrese los datos del codigo de descuento.</p>
                             </div>
 
-                            <a href="{{ route('dashboard') }}" class="btn btn-outline-secondary">
-                                Volver
-                            </a>
+                            <div class="d-flex gap-2">
+                                <a href="{{ route('promotionCode.index') }}" class="btn btn-outline-secondary">
+                                    Ver codigos
+                                </a>
+                                <a href="{{ route('dashboard') }}" class="btn btn-outline-secondary">
+                                    Volver
+                                </a>
+                            </div>
                         </div>
 
                         @if (session('success'))
@@ -44,7 +49,7 @@
                             <div class="row g-3">
 
                                 <div class="col-12">
-                                    <label class="form-label">Código de promoción</label>
+                                    <label class="form-label">Codigo de promocion</label>
                                     <input type="text" name="code" class="form-control" value="{{ old('code') }}">
                                 </div>
 

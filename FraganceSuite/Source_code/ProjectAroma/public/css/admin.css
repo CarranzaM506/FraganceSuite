@@ -751,3 +751,11 @@ table.dataTable thead th.sorting:before {
     padding: 8px 12px;
 }
 
+
+/* Vista admin de códigos promocionales: todo cuadrado */
+body.promo-codes-admin-mode,
+body.promo-codes-admin-mode * {
+  border-radius: 0 !important;
+}
+
+

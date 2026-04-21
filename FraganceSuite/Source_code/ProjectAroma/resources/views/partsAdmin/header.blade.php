@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
 </head>
 
-<body>
+<body class="{{ request()->is('promotionCode*') ? 'promo-codes-admin-mode' : '' }}">
 
     <!-- Header negro -->
     <div class="topbar">
@@ -95,7 +95,7 @@
                     </a>
 
                     <!-- Promociones -->
-                    <a class="nav-link d-flex align-items-center justify-content-between {{ request()->is('discount') ? 'active' : '' }}"
+                    <a class="nav-link d-flex align-items-center justify-content-between {{ request()->is('discount*') || request()->is('promotionCode*') ? 'active' : '' }}"
                         data-bs-toggle="collapse" href="#submenuPromociones" role="button" aria-expanded="false"
                         aria-controls="submenuPromociones">
                         <span>
@@ -110,11 +110,14 @@
                         <span class="ms-2" aria-hidden="true">▾</span>
                     </a>
 
-                    <div class="collapse submenu" id="submenuPromociones">
-                        <a class="nav-link" href="{{ route('discount.create') }}">Crear promoción</a>
-                        <a class="nav-link" href="{{ route('discount.index') }}">Ver promoción</a>
+                    <div class="collapse submenu {{ request()->is('discount*') || request()->is('promotionCode*') ? 'show' : '' }}" id="submenuPromociones">
+                        <a class="nav-link {{ request()->routeIs('discount.create') ? 'active' : '' }}" href="{{ route('discount.create') }}">Crear promoción</a>
+                        <a class="nav-link {{ request()->routeIs('discount.index') ? 'active' : '' }}" href="{{ route('discount.index') }}">Ver promoción</a>
+
                         <hr class="border-light opacity-25 my-3 mx-4" />
-                        <a class="nav-link" href="{{ route('promotionCode.create') }}">Crear código</a>
+
+                        <a class="nav-link {{ request()->routeIs('promotionCode.create') ? 'active' : '' }}" href="{{ route('promotionCode.create') }}">Crear código</a>
+                        <a class="nav-link {{ request()->routeIs('promotionCode.index') ? 'active' : '' }}" href="{{ route('promotionCode.index') }}">Ver código</a>
                     </div>
 
                     <!-- Marcas -->
