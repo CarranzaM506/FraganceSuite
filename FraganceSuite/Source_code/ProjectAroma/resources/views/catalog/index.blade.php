@@ -192,9 +192,6 @@
                 <i class="fas fa-box-open"></i>
                 <h3>No hay productos disponibles</h3>
                 <p>No se encontraron productos con los filtros aplicados.</p>
-                <button onclick="clearAllFilters()" class="filter-btn" style="margin-top: 20px;">
-                    <i class="fas fa-times"></i> Limpiar filtros
-                </button>
             </div>
         @else
             <div class="product-grid catalog-grid">
