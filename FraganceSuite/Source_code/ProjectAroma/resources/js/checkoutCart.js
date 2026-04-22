@@ -1,3 +1,13 @@
+const CRC_TO_USD_RATE = 520;
+
+function updateCurrencyEquivalence(totalCrc) {
+    const equivalenceEl = document.getElementById('currencyEquivalence');
+    if (!equivalenceEl) return;
+
+    const usdValue = totalCrc / CRC_TO_USD_RATE;
+    equivalenceEl.textContent = `Equivalencia estimada: CRC ${totalCrc.toFixed(2)} ≈ USD ${usdValue.toFixed(2)}`;
+}
+
 async function loadCheckoutCart() {
     const container = document.getElementById('checkoutItems');
     if (!container) return;
@@ -9,6 +19,7 @@ async function loadCheckoutCart() {
     } catch (error) {
         console.error('Error cargando checkout cart:', error);
         container.innerHTML = '<p>Error al cargar el carrito.</p>';
+        updateCurrencyEquivalence(0);
         return;
     }
 
@@ -16,6 +27,7 @@ async function loadCheckoutCart() {
 
     if (items.length === 0) {
         container.innerHTML = '<p>Carrito vacio</p>';
+        updateCurrencyEquivalence(0);
         return;
     }
 
@@ -55,6 +67,7 @@ async function loadCheckoutCart() {
     document.getElementById('subtotalPrice').textContent = 'CRC ' + subtotal.toFixed(2);
     document.getElementById('discountAmount').textContent = '-CRC ' + combinedDiscount.toFixed(2);
     document.getElementById('totalPrice').textContent = 'CRC ' + total.toFixed(2);
+    updateCurrencyEquivalence(total);
 
     container.innerHTML = html;
 }
@@ -88,7 +101,7 @@ function showToast(message, type = 'error') {
     toast.style.color = '#fff';
     toast.style.padding = '12px 18px';
     toast.style.marginBottom = '10px';
-    toast.style.borderRadius = '8px';
+    toast.style.borderRadius = '0';
     toast.style.boxShadow = '0 4px 10px rgba(0,0,0,0.2)';
     toast.style.fontSize = '14px';
     toast.style.opacity = '0';
@@ -141,6 +154,11 @@ function showPaymentState(message, type = 'info', visible = true) {
 }
 
 function mapPaymentErrorMessage(data, httpStatus) {
+    const issue = data?.error?.details?.[0]?.issue;
+    if (issue === 'CURRENCY_NOT_SUPPORTED') {
+        return 'La pasarela no soporta CRC para este flujo en este entorno. Se usara USD en el widget, pero tu orden queda registrada en CRC.';
+    }
+
     if (data && typeof data.error === 'string' && data.error.trim() !== '') {
         return data.error;
     }
@@ -282,6 +300,11 @@ document.getElementById('newAddressForm')?.addEventListener('submit', async func
 
 if (typeof paypal !== 'undefined' && document.getElementById('paypal-button-container')) {
     paypal.Buttons({
+        style: {
+            shape: 'rect',
+            borderRadius: 0,
+            height: 45
+        },
         onInit: function (_data, actions) {
             handleAddressSelection(actions);
         },

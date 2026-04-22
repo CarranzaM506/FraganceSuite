@@ -136,6 +136,13 @@
                         <span id="totalPrice">CRC 0.00</span>
                     </div>
 
+                    <div id="currencyCompatibilityNotice" class="alert alert-warning" role="alert" style="font-size: 12px; margin-bottom: 12px;">
+                        Por compatibilidad de la pasarela, el cobro puede mostrarse en USD.
+                        <div id="currencyEquivalence" style="margin-top: 6px; font-weight: 600;">
+                            Equivalencia estimada: CRC 0.00 ≈ USD 0.00
+                        </div>
+                    </div>
+
                     <div id="paymentStatus" class="alert alert-info d-none" role="alert" style="font-size: 13px; margin-bottom: 12px;"></div>
 
                     <div style="position: relative;">
@@ -157,5 +164,10 @@
         </div>
     </div>
     <div id="toast-container" style="position: fixed; top: 20px; right: 20px; z-index: 9999;"></div>
-    <script src="https://www.paypal.com/sdk/js?client-id={{ env('PAYPAL_CLIENT_ID') }}"></script>
+    @php
+        $paypalClientId = config('paypal.mode') === 'live'
+            ? config('paypal.live.client_id')
+            : config('paypal.sandbox.client_id');
+    @endphp
+    <script src="https://www.paypal.com/sdk/js?client-id={{ $paypalClientId }}"></script>
 @endsection

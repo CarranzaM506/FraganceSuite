@@ -17,8 +17,6 @@ use Srmklive\PayPal\Services\PayPal;
 
 class PayPalController extends Controller
 {
-    private const EXCHANGE_RATE_CRC_TO_USD = 520;
-
     public function createOrder(Request $request)
     {
         $validated = $request->validate([
@@ -53,26 +51,35 @@ class PayPalController extends Controller
                 ], 400);
             }
 
-            $finalTotalUSD = $finalTotal / self::EXCHANGE_RATE_CRC_TO_USD;
-            $finalTotalUSD = number_format($finalTotalUSD, 2, '.', '');
+            $finalTotalCrc = number_format($finalTotal, 2, '.', '');
 
-            if ((float) $finalTotalUSD <= 0) {
-                return response()->json([
-                    'error' => 'Total en USD invalido',
-                ], 400);
-            }
-
-            $order = $this->withPaymentProvider(function (PayPal $provider) use ($finalTotalUSD) {
+            // Intentamos en CRC primero; algunas cuentas/entornos sandbox no lo soportan.
+            $order = $this->withPaymentProvider(function (PayPal $provider) use ($finalTotalCrc) {
                 return $provider->createOrder([
                     'intent' => 'CAPTURE',
                     'purchase_units' => [[
                         'amount' => [
-                            'currency_code' => 'USD',
-                            'value' => $finalTotalUSD,
+                            'currency_code' => 'CRC',
+                            'value' => $finalTotalCrc,
                         ],
                     ]],
                 ]);
             });
+
+            if ($this->isCurrencyNotSupported($order)) {
+                $usdValue = number_format($finalTotal / 520, 2, '.', '');
+                $order = $this->withPaymentProvider(function (PayPal $provider) use ($usdValue) {
+                    return $provider->createOrder([
+                        'intent' => 'CAPTURE',
+                        'purchase_units' => [[
+                            'amount' => [
+                                'currency_code' => 'USD',
+                                'value' => $usdValue,
+                            ],
+                        ]],
+                    ]);
+                });
+            }
 
             if (!$order || !isset($order['id'])) {
                 Log::error('PayPal createOrder response invalida', [
@@ -181,6 +188,7 @@ class PayPalController extends Controller
                 }
 
                 $cartItems = CartDetail::where('idcart', $cart->idcart)
+                    ->with('product.discount')
                     ->lockForUpdate()
                     ->get();
 
@@ -196,10 +204,15 @@ class PayPalController extends Controller
                     throw new \RuntimeException('Direccion invalida para este usuario');
                 }
 
+                $totals = $this->calculateCartTotals($cartItems);
+                if ($totals['final_total_crc'] <= 0) {
+                    throw new \RuntimeException('Total invalido para procesar el pedido');
+                }
+
                 $order = Order::create([
                     'date' => today(),
                     'state' => 1,
-                    'total' => $captureAmount,
+                    'total' => $totals['final_total_crc'],
                     'purchasemethod' => $paymentMethod,
                     'guidenumber' => $response['id'],
                     'iduser' => Auth::id(),
@@ -335,5 +348,11 @@ class PayPalController extends Controller
             'INVALID_SECURITY_CODE' => 'El CVV ingresado no es valido.',
             default => 'El pago no fue aprobado. Verifica los datos e intenta nuevamente.',
         };
+    }
+
+    private function isCurrencyNotSupported($orderResponse): bool
+    {
+        return isset($orderResponse['error']['details'][0]['issue'])
+            && $orderResponse['error']['details'][0]['issue'] === 'CURRENCY_NOT_SUPPORTED';
     }
 }
