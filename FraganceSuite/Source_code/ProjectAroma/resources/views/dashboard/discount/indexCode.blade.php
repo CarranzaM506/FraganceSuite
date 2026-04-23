@@ -56,10 +56,17 @@
                                     <td class="text-center">
                                         <div class="d-flex gap-1 flex-wrap justify-content-center">
                                             <button type="button" class="btn btn-sm btn-warning">Editar</button>
-                                            <button type="button" class="btn btn-sm btn-danger">Eliminar</button>
+                             <form method="POST" action="{{ route('promotionCode.destroy', $code->idcode_promotion) }}" 
+      class="d-inline" 
+      onsubmit="return confirm('¿Estás seguro de que deseas eliminar este código de promoción?')">
+    @csrf
+    @method('DELETE')
+    <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+</form>
                                         </div>
                                     </td>
                                 </tr>
+
                             @empty
                                 <tr>
                                     <td colspan="6" class="text-center text-muted py-4">No hay codigos registrados.</td>

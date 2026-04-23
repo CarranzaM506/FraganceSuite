@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\CodePromotion;
+use App\Models\Product;
+use Illuminate\Support\Facades\Log; 
+
 use Illuminate\Http\Request;
 
 class CodePromotionController extends Controller
@@ -78,11 +81,19 @@ class CodePromotionController extends Controller
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+ 
+ 
+public function destroy($id)
+{
+    try {
+        $codePromotion = CodePromotion::findOrFail($id);
+        $codePromotion->delete();
+        
+        return redirect()->route('promotionCode.index')
+            ->with('success', 'Código de promoción eliminado exitosamente.');
+    } catch (\Exception $e) {
+        return redirect()->route('promotionCode.index')
+            ->with('error', 'Error al eliminar el código de promoción.');
     }
+}
 }
