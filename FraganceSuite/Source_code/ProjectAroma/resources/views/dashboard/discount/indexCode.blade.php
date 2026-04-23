@@ -18,6 +18,13 @@
                     </div>
                 @endif
 
+                @if (session('error'))
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        {{ session('error') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                    </div>
+                @endif
+
                 <div class="table-responsive">
                     <table id="promotionCodesTable" class="table table-striped table-hover table-bordered">
                         <thead class="table-dark">
@@ -56,17 +63,16 @@
                                     <td class="text-center">
                                         <div class="d-flex gap-1 flex-wrap justify-content-center">
                                             <button type="button" class="btn btn-sm btn-warning">Editar</button>
-                             <form method="POST" action="{{ route('promotionCode.destroy', $code->idcode_promotion) }}" 
-      class="d-inline" 
-      onsubmit="return confirm('¿Estás seguro de que deseas eliminar este código de promoción?')">
-    @csrf
-    @method('DELETE')
-    <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
-</form>
+                                            <button type="button" class="btn btn-danger btn-sm" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#deleteModal" 
+                                                data-id="{{ $code->idcode_promotion }}" 
+                                                data-code="{{ $code->code_promotion }}">
+                                                Eliminar
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>
-
                             @empty
                                 <tr>
                                     <td colspan="6" class="text-center text-muted py-4">No hay codigos registrados.</td>
@@ -74,6 +80,21 @@
                             @endforelse
                         </tbody>
                     </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmación para eliminar -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-sm modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center py-4">
+                    <p class="mb-0" id="deleteModalMessage">¿Estás seguro de que deseas eliminar este código de promoción?</p>
+                </div>
+                <div class="modal-footer d-flex justify-content-center gap-2 border-0 pt-0 pb-4">
+                    <button type="button" class="btn btn-secondary btn-sm px-4" data-bs-dismiss="modal">No</button>
+                    <button type="button" class="btn btn-danger btn-sm px-4" id="confirmDeleteBtn">Sí, eliminar</button>
                 </div>
             </div>
         </div>
@@ -88,7 +109,7 @@
         function isMobile() {
             return window.innerWidth < 768;
         }
-
+$.fn.dataTable.ext.errMode = 'none';
         function initDataTable() {
             if (!isMobile()) {
                 if ($.fn.DataTable.isDataTable('#promotionCodesTable')) {
@@ -120,6 +141,42 @@
             $(window).resize(function() {
                 initDataTable();
             });
+        });
+
+        // Modal de confirmación para eliminar
+        let deleteId = null;
+
+        $('#deleteModal').on('show.bs.modal', function(event) {
+            const button = $(event.relatedTarget);
+            deleteId = button.data('id');
+            const code = button.data('code');
+            
+            const modal = $(this);
+            modal.find('#deleteModalMessage').html(`¿Eliminar "${code}" de los códigos promocionales?`);
+        });
+        
+        $('#confirmDeleteBtn').on('click', function() {
+            if (deleteId) {
+                // Crear formulario y enviar
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `/promotionCode/${deleteId}`;
+                
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = '_token';
+                csrfInput.value = '{{ csrf_token() }}';
+                form.appendChild(csrfInput);
+                
+                const methodInput = document.createElement('input');
+                methodInput.type = 'hidden';
+                methodInput.name = '_method';
+                methodInput.value = 'DELETE';
+                form.appendChild(methodInput);
+                
+                document.body.appendChild(form);
+                form.submit();
+            }
         });
     </script>
 @endsection
