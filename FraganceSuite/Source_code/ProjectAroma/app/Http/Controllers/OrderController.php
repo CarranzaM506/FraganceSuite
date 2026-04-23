@@ -8,15 +8,12 @@ use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
         $year = $request->year;
 
         $ventasMensuales = Order::select(
-            DB::raw('YEAR(date) as year'), // 🔥 importante
+            DB::raw('YEAR(date) as year'),
             DB::raw('MONTH(date) as month'),
             DB::raw('SUM(total) as totalSales'),
             DB::raw('COUNT(*) as totalOrders'),
@@ -39,53 +36,38 @@ class OrderController extends Controller
         return view('dashboard.sales.monthly-sales', compact('ventasMensuales', 'years'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function dailySales(Request $request)
     {
-        //
+        $date = $request->date;
+
+        $ventasDiarias = Order::select(
+            DB::raw('DATE(date) as day'),
+            DB::raw('SUM(total) as totalSales'),
+            DB::raw('COUNT(*) as totalOrders'),
+            DB::raw('AVG(total) as avgOrder')
+        )
+            ->where('state', 1)
+            ->when($date, function ($query) use ($date) {
+                $query->whereDate('date', $date);
+            })
+            ->groupBy(DB::raw('DATE(date)'))
+            ->orderBy('day', 'desc')
+            ->get();
+
+        return view('dashboard.sales.daily-sales', compact('ventasDiarias'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+    public function create() {}
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
+    public function store(Request $request) {}
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
+    public function show(string $id) {}
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
+    public function edit(string $id) {}
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
+    public function update(Request $request, string $id) {}
+
+    public function destroy(string $id) {}
 
     public function success($id)
     {

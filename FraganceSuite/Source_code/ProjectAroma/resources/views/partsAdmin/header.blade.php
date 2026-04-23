@@ -149,7 +149,7 @@
                         <a class="nav-link" href="{{ route('orders.index') }}">
                             Ventas Mensuales
                         </a>
-                        <a class="nav-link" href="#">
+                        <a class="nav-link" href="{{route('dailySales')}}">
                             Ventas Diarias
                         </a>
                     </div>
