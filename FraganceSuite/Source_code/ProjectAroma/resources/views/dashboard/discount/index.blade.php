@@ -19,7 +19,7 @@
             @endif
 
             <!-- Contenedor con scroll horizontal (como la tabla de marcas) -->
-            <div class="table-responsive">
+            <div class="table-responsive d-none d-md-block">
                 <table class="table table-striped table-hover table-bordered" id="discountsTable">
                     <thead class="table-dark">
                         <tr>
@@ -60,7 +60,7 @@
                             <td>
                                 <div class="d-flex gap-1">
                                     <a href="{{ route('discount.edit', $d->iddiscount) }}" class="btn btn-warning btn-sm">Editar</a>
-                                    <form method="POST" action="{{ route('discount.destroy', $d->iddiscount) }}" class="d-inline" onsubmit="return confirm('¿Eliminar esta promoción?')">
+                                    <form method="POST" action="{{ route('discount.destroy', $d->iddiscount) }}" class="d-inline" onsubmit="return confirmDelete(this, '&iquest;Est&aacute;s seguro de eliminar esta promoci&oacute;n?')">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
@@ -71,6 +71,50 @@
                         @endforeach
                     </tbody>
                 </table>
+            </div>
+
+            <div class="d-md-none mobile-records-list">
+                <div class="mobile-records-toolbar">
+                    <input type="text" id="discountSearch" class="form-control" placeholder="Buscar descuento o fecha...">
+                </div>
+                <div id="discountCards">
+                    @foreach ($discounts as $d)
+                        @php
+                            $startFmt = \Carbon\Carbon::parse($d->startdate)->format('d/m/Y H:i');
+                            $endFmt = \Carbon\Carbon::parse($d->enddate)->format('d/m/Y H:i');
+                        @endphp
+                        <article class="mobile-record-card" data-search="{{ strtolower($d->value . '% ' . $startFmt . ' ' . $endFmt) }}">
+                            <h5 class="mobile-record-title">Descuento: {{ $d->value }}%</h5>
+                            <p class="mobile-record-meta"><strong>Inicio:</strong> {{ $startFmt }}</p>
+                            <p class="mobile-record-meta"><strong>Fin:</strong> {{ $endFmt }}</p>
+                            <p class="mobile-record-meta"><strong>Productos:</strong> {{ $d->products->count() ?? 0 }}</p>
+                            <div class="product-mobile-footer">
+                                <div class="product-mobile-badges">
+                                    <button class="btn btn-outline-secondary btn-sm" data-id="{{ $d->iddiscount }}" onclick="showProducts(this)">
+                                        Ver productos
+                                    </button>
+                                </div>
+                                <div class="product-mobile-actions">
+                                    <a href="{{ route('discount.edit', $d->iddiscount) }}" class="btn btn-success btn-sm icon-btn" aria-label="Editar promoción">
+                                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>
+                                        </svg>
+                                    </a>
+                                    <form method="POST" action="{{ route('discount.destroy', $d->iddiscount) }}" class="d-inline" onsubmit="return confirmDelete(this, '&iquest;Est&aacute;s seguro de eliminar esta promoci&oacute;n?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger btn-sm icon-btn" aria-label="Eliminar promoción">
+                                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
+                                            </svg>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </article>
+                    @endforeach
+                </div>
+                <div class="mobile-records-pagination" id="discountPagination"></div>
             </div>
         </div>
     </div>
@@ -130,7 +174,62 @@
         $(window).resize(function() {
             initDataTable();
         });
+        initMobilePager('discountSearch', 'discountCards', 'discountPagination');
     });
+
+    function initMobilePager(searchId, cardsId, paginationId) {
+        const searchInput = document.getElementById(searchId);
+        const cardsContainer = document.getElementById(cardsId);
+        const paginationContainer = document.getElementById(paginationId);
+        if (!searchInput || !cardsContainer || !paginationContainer) return;
+        const cards = Array.from(cardsContainer.querySelectorAll('.mobile-record-card'));
+        const pageSize = 10;
+        let currentPage = 1;
+        let filteredCards = cards;
+
+        function renderPagination(totalPages) {
+            paginationContainer.innerHTML = '';
+            if (totalPages <= 1) return;
+            const prevBtn = document.createElement('button');
+            prevBtn.className = 'btn btn-outline-secondary btn-sm';
+            prevBtn.textContent = '←';
+            prevBtn.disabled = currentPage === 1;
+            prevBtn.onclick = () => { if (currentPage > 1) { currentPage--; renderCards(); } };
+            const label = document.createElement('span');
+            label.className = 'mobile-page-label';
+            label.textContent = `Página ${currentPage} de ${totalPages}`;
+            const nextBtn = document.createElement('button');
+            nextBtn.className = 'btn btn-outline-secondary btn-sm';
+            nextBtn.textContent = '→';
+            nextBtn.disabled = currentPage === totalPages;
+            nextBtn.onclick = () => { if (currentPage < totalPages) { currentPage++; renderCards(); } };
+            paginationContainer.append(prevBtn, label, nextBtn);
+        }
+
+        function renderCards() {
+            const totalPages = Math.max(1, Math.ceil(filteredCards.length / pageSize));
+            if (currentPage > totalPages) currentPage = totalPages;
+            const start = (currentPage - 1) * pageSize;
+            cards.forEach(c => c.style.display = 'none');
+            filteredCards.slice(start, start + pageSize).forEach(c => c.style.display = '');
+            renderPagination(totalPages);
+        }
+
+        searchInput.addEventListener('input', function () {
+            const term = searchInput.value.trim().toLowerCase();
+            filteredCards = cards.filter(c => (c.dataset.search || '').includes(term));
+            currentPage = 1;
+            renderCards();
+        });
+        renderCards();
+    }
+
+    function confirmDelete(form, message) {
+        openAdminDeleteConfirm(message, function() {
+            form.submit();
+        });
+        return false;
+    }
 
     function showProducts(btn) {
         const id = btn.getAttribute('data-id');
