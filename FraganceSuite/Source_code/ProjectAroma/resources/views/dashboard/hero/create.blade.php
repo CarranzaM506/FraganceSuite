@@ -5,7 +5,7 @@
 @section('content')
 <main class="content-wrap">
     <div class="container-fluid py-4">
-        <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
             <h2 class="mb-0">
                 <i class="fas fa-plus-circle me-2 text-primary"></i>
                 Agregar Imagen Hero
@@ -105,7 +105,7 @@
                         </div>
                     </div>
 
-                    <div class="d-flex justify-content-end gap-2 mt-5 pt-3 border-top">
+                    <div class="d-flex justify-content-end gap-2 mt-5 pt-3 border-top flex-wrap">
                         <a href="{{ route('hero.index') }}" class="btn btn-outline-secondary px-4">
                             <i class="fas fa-times me-2"></i>Cancelar
                         </a>
@@ -126,6 +126,18 @@
     .upload-area:hover {
         background-color: #e9ecef !important;
         border-color: #927a1b !important;
+    }
+    
+    @media (max-width: 767.98px) {
+        .upload-area {
+            padding: 1rem !important;
+        }
+        .upload-area h6 {
+            font-size: 0.9rem;
+        }
+        .upload-area p {
+            font-size: 0.7rem;
+        }
     }
 </style>
 

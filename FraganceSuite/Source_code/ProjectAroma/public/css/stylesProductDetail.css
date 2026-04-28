@@ -574,3 +574,67 @@ body {
         font-size: 11px;
     }
 }
+
+.review-item {
+    background: #fff;
+    border: 1px solid var(--medium-gray);
+    padding: 10px 12px; /* 🔥 menos espacio */
+}
+
+.review-header {
+    margin-bottom: 5px; /* 🔥 menos separación */
+}
+
+.review-stars .star {
+    --star-size: 20px; /* 🔥 más pequeñas */
+}
+
+.review-comment {
+    font-size: 13px;
+    margin: 0; /* 🔥 quita espacio extra */
+}
+
+.reviews-list {
+    margin-top: 25px;
+    display: grid;
+    gap: 15px;
+
+    max-height: 400px; /* 🔥 altura máxima */
+    overflow-y: auto;  /* 🔥 scroll */
+    padding-right: 5px;
+}
+
+.reviews-section {
+    padding: 30px 5%;
+    max-width: 700px; /* 🔥 antes 900px */
+    margin: 0 auto;
+}
+
+.no-reviews {
+    text-align: center;
+    padding: 20px;
+    border: 1px dashed var(--medium-gray);
+    border-radius: 6px;
+    background: var(--light-bg);
+}
+
+.no-reviews-title {
+    font-weight: 500;
+    color: var(--dark);
+    margin-bottom: 5px;
+}
+
+.no-reviews-text {
+    font-size: 13px;
+    color: #777;
+}
+
+.review-user {
+    display: flex;
+    flex-direction: column;
+}
+
+.review-date {
+    font-size: 12px;
+    color: #999;
+}

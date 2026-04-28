@@ -86,7 +86,7 @@
                                 <div class="col-12 col-md-6 mb-2">
                                     <input id="productSearch" class="form-control" placeholder="Buscar productos por nombre, marca o categoría">
                                 </div>
-                                <div class="col-12 col-md-6 d-flex gap-2">
+                                <div class="col-12 col-md-6 d-flex gap-2 flex-wrap">
                                     <div class="dropdown">
                                         <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="catDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                             Categorías
@@ -122,7 +122,7 @@
                                 <div id="productsLoading" class="text-center text-muted">Cargando productos...</div>
                             </div>
 
-                            <div class="d-flex justify-content-end gap-2">
+                            <div class="d-flex justify-content-end gap-2 flex-wrap">
                                 <a href="{{ route('discount.index') }}" class="btn btn-outline-secondary">Cancelar</a>
                                 <button type="submit" class="btn btn-dark px-4">Actualizar promoción</button>
                             </div>
@@ -139,6 +139,24 @@
 @endsection
 
 @section('scripts')
+    <style>
+        @media (max-width: 767.98px) {
+            .dropdown-menu {
+                max-width: 280px;
+                left: 0 !important;
+                right: auto !important;
+            }
+            
+            .product-card .card-body {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .product-card img {
+                margin-bottom: 0.5rem;
+            }
+        }
+    </style>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const search = document.getElementById('productSearch');

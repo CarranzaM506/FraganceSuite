@@ -75,7 +75,7 @@
 
         <p>💰 Total pagado:
             <span class="highlight">
-                ₡{{ number_format($order->total * 520, 2, '.', ',') }}
+                ₡{{ number_format($order->total, 2, '.', ',') }}
             </span>
         </p>
 
@@ -97,3 +97,4 @@
 </div>
 
 @endsection
+

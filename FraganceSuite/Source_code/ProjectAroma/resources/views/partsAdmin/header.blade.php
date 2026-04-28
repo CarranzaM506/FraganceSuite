@@ -5,23 +5,22 @@
 
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <title>AROMA | Dashboard</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
-
 </head>
 
-<body>
+<body class="{{ request()->is('promotionCode*') ? 'promo-codes-admin-mode' : '' }}">
 
     <!-- Header negro -->
     <div class="topbar">
         <div class="container-fluid py-2 px-3 d-flex align-items-center justify-content-between text-white">
             <!-- Hamburguesa (solo móvil) -->
             <button class="btn btn-outline-light only-mobile" type="button" data-bs-toggle="offcanvas"
-                data-bs-target="#sidebar" aria-controls="sidebar" aria-label="Abrir menú">
+                data-bs-target="#sidebar" aria-controls="sidebar">
                 ☰
             </button>
 
@@ -37,9 +36,9 @@
 
     <div class="layout">
 
-        <!-- Sidebar -->
+        <!-- Sidebar (Offcanvas) -->
         <div class="offcanvas offcanvas-start aroma-offcanvas" tabindex="-1" id="sidebar"
-            aria-labelledby="sidebarLabel">
+            aria-labelledby="sidebarLabel" data-bs-backdrop="true" data-bs-keyboard="true">
 
             <div class="offcanvas-header p-0">
                 <div class="sidebar-logo w-100">
@@ -85,7 +84,7 @@
                         <a class="nav-link" href="{{ route('product.index') }}">Ver</a>
                     </div>
 
-                    <!-- === HERO PRINCIPAL (REEMPLAZA SLIDER) === -->
+                    <!-- Hero -->
                     <a class="nav-link {{ request()->is('hero*') ? 'active' : '' }}" href="{{ route('hero.index') }}">
                         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <rect x="2" y="2" width="20" height="20" rx="2.18" />
@@ -96,7 +95,7 @@
                     </a>
 
                     <!-- Promociones -->
-                    <a class="nav-link d-flex align-items-center justify-content-between {{ request()->is('discount') ? 'active' : '' }}"
+                    <a class="nav-link d-flex align-items-center justify-content-between {{ request()->is('discount*') || request()->is('promotionCode*') ? 'active' : '' }}"
                         data-bs-toggle="collapse" href="#submenuPromociones" role="button" aria-expanded="false"
                         aria-controls="submenuPromociones">
                         <span>
@@ -111,16 +110,17 @@
                         <span class="ms-2" aria-hidden="true">▾</span>
                     </a>
 
-                    <div class="collapse submenu" id="submenuPromociones">
-                        <a class="nav-link" href="{{ route('discount.create') }}">Crear promoción</a>
-                        <a class="nav-link" href="{{ route('discount.index') }}">Ver promoción</a>
+                    <div class="collapse submenu {{ request()->is('discount*') || request()->is('promotionCode*') ? 'show' : '' }}" id="submenuPromociones">
+                        <a class="nav-link {{ request()->routeIs('discount.create') ? 'active' : '' }}" href="{{ route('discount.create') }}">Crear promoción</a>
+                        <a class="nav-link {{ request()->routeIs('discount.index') ? 'active' : '' }}" href="{{ route('discount.index') }}">Ver promoción</a>
 
                         <hr class="border-light opacity-25 my-3 mx-4" />
 
-                        <a class="nav-link" href="{{ route('promotionCode.create') }}">Crear código</a>
+                        <a class="nav-link {{ request()->routeIs('promotionCode.create') ? 'active' : '' }}" href="{{ route('promotionCode.create') }}">Crear código</a>
+                        <a class="nav-link {{ request()->routeIs('promotionCode.index') ? 'active' : '' }}" href="{{ route('promotionCode.index') }}">Ver código</a>
                     </div>
 
-                    <!-- ========== MARCAS (LOGO CARRUSEL) ========== -->
+                    <!-- Marcas -->
                     <a class="nav-link {{ request()->is('brands*') ? 'active' : '' }}" href="{{ route('brands.index') }}">
                         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M12 2L2 7l10 5 10-5-10-5z"/>
@@ -129,6 +129,30 @@
                         </svg>
                         Logos de Marcas
                     </a>
+
+                    <!-- Ventas -->
+                    <a class="nav-link d-flex align-items-center justify-content-between {{ request()->is('sales*') ? 'active' : '' }}"
+                        data-bs-toggle="collapse" href="#submenuVentas" role="button" aria-expanded="false"
+                        aria-controls="submenuVentas">
+                        <span>
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M3 3v18h18" />
+                                <path d="M7 14l4-4 4 4 5-5" />
+                            </svg>
+                            Ventas
+                        </span>
+                        <span class="ms-2">▾</span>
+                    </a>
+
+                    <div class="collapse submenu" id="submenuVentas">
+                        <a class="nav-link" href="{{ route('orders.index') }}">
+                            Ventas Mensuales
+                        </a>
+                        <a class="nav-link" href="{{route('dailySales')}}">
+                            Ventas Diarias
+                        </a>
+                    </div>
 
                     <hr class="border-light opacity-25 my-3" />
 
@@ -157,6 +181,21 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Forzar que el offcanvas se cierre correctamente en móvil
+        document.addEventListener('DOMContentLoaded', function() {
+            var offcanvasElement = document.getElementById('sidebar');
+            if (offcanvasElement) {
+                var bsOffcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
+                if (!bsOffcanvas) {
+                    bsOffcanvas = new bootstrap.Offcanvas(offcanvasElement, {
+                        backdrop: true,
+                        keyboard: true
+                    });
+                }
+            }
+        });
+    </script>
     @yield('scripts')
 </body>
 

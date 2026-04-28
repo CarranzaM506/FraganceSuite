@@ -1473,3 +1473,160 @@ footer {
         gap: 15px;
     }
 }
+
+/* ========== MEJORAS PARA MÓVIL ========== */
+
+/* Logo más grande en móvil */
+@media (max-width: 768px) {
+    .logo {
+        font-size: 28px !important;
+        letter-spacing: 4px !important;
+    }
+    
+    /* Todos los iconos del mismo tamaño */
+    .menu-toggle svg,
+    .icon svg,
+    .search-icon-btn svg,
+    .icon i,
+    .search-icon-btn i {
+        width: 15px !important;
+        height: 15px !important;
+        font-size: 15px !important;
+    }
+    
+    .icon .far,
+    .icon .fas {
+        font-size: 15px !important;
+    }
+    
+    /* En móvil: ocultar input expandible, mostrar botón modal */
+    .search-icon-form {
+        display: none !important;
+    }
+    
+    .search-icon-btn#mobileSearchBtn {
+        display: flex !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .logo {
+        font-size: 24px !important;
+        letter-spacing: 3px !important;
+    }
+    
+    .menu-toggle svg,
+    .icon svg,
+    .search-icon-btn svg,
+    .icon i,
+    .search-icon-btn i {
+        width: 13px !important;
+        height: 13px !important;
+        font-size: 13px !important;
+    }
+    
+    .icon .far,
+    .icon .fas {
+        font-size: 13px !important;
+    }
+}
+
+/* Desktop: ocultar botón modal, mostrar input expandible */
+@media (min-width: 769px) {
+    .search-icon-btn#mobileSearchBtn {
+        display: none !important;
+    }
+    
+    .search-icon-form {
+        display: flex !important;
+    }
+}
+
+/* Modal de búsqueda (solo móvil) */
+.search-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    z-index: 2000;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 80px;
+}
+
+.search-modal.active {
+    display: flex;
+}
+
+.search-modal-content {
+    width: 90%;
+    max-width: 400px;
+    background: white;
+    border-radius: 0px;
+    overflow: hidden;
+    animation: modalSlideDown 0.3s ease;
+}
+
+@keyframes modalSlideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.search-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.search-modal-header h3 {
+    font-size: 18px;
+    margin: 0;
+}
+
+.search-modal-close {
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    color: #666;
+}
+
+.search-modal-form {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.search-modal-form input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 0px;
+    font-size: 16px;
+}
+
+.search-modal-form button {
+    background: #000;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 0px;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}

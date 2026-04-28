@@ -20,8 +20,7 @@
 
             <div class="cart-items-section">
 
-                <!--DIRECCIONES-->
-                <h3 class="summary-title">Dirección de envío</h3>
+                <h3 class="summary-title">Direccion de envio</h3>
 
                 <div class="row g-3" id="addressList">
 
@@ -29,11 +28,8 @@
                         <div class="col-md-6 col-lg-4">
 
                             <label class="address-card-select w-100">
-
-                                <!-- RADIO (oculto visualmente) -->
                                 <input type="radio" name="address_id" value="{{ $address->idlocation }}" class="address-radio">
 
-                                <!-- CARD -->
                                 <div class="address-card">
                                     <div class="address-card-body">
 
@@ -52,7 +48,7 @@
                                         </p>
 
                                         <span class="select-label">
-                                            Seleccionar dirección
+                                            Seleccionar direccion
                                         </span>
 
                                     </div>
@@ -69,8 +65,7 @@
 
                 <hr>
 
-                <!-- NUEVA DIRECCIÓN -->
-                <h4 class="summary-title">Nueva dirección</h4>
+                <h4 class="summary-title">Nueva direccion</h4>
 
                 <div id="addressMessage" class="alert d-none" role="alert">
                     <span id="addressMessageText"></span>
@@ -87,7 +82,7 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label">Cantón</label>
+                            <label class="form-label">Canton</label>
                             <input type="text" name="canton" class="form-control" required>
                         </div>
 
@@ -97,12 +92,12 @@
                         </div>
 
                         <div class="col-12">
-                            <label class="form-label">Dirección exacta</label>
+                            <label class="form-label">Direccion exacta</label>
                             <textarea name="detail" class="form-control" rows="2" required></textarea>
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label">Código Postal</label>
+                            <label class="form-label">Codigo Postal</label>
                             <input type="text" name="zipcode" maxlength="5" class="form-control" required>
                         </div>
 
@@ -110,47 +105,69 @@
 
                     <div class="mt-3">
                         <button type="submit" class="btn-checkout">
-                            Guardar dirección
+                            Guardar direccion
                         </button>
                     </div>
                 </form>
 
             </div>
 
-            <!-- CARRITO A LA DERECHA -->
             <div class="cart-summary">
                 <div class="summary-card">
 
                     <h3 class="summary-title">Resumen del Pedido</h3>
 
-                    <!-- MINI CARRITO -->
                     <div id="checkoutItems"></div>
 
                     <div class="summary-item">
                         <span>Subtotal:</span>
-                        <span id="subtotalPrice">₡0.00</span>
+                        <span id="subtotalPrice">CRC 0.00</span>
                     </div>
 
                     <div class="summary-item">
                         <span>Descuentos:</span>
-                        <span id="discountAmount" class="discount-text">-₡0.00</span>
+                        <span id="discountAmount" class="discount-text">-CRC 0.00</span>
                     </div>
 
                     <div class="summary-divider"></div>
 
                     <div class="summary-total">
                         <span>Total:</span>
-                        <span id="totalPrice">₡0.00</span>
+                        <span id="totalPrice">CRC 0.00</span>
                     </div>
 
-                    <!-- PAYPAL -->
-                    <div id="paypal-button-container"></div>
+                    <div id="currencyCompatibilityNotice" class="alert alert-warning" role="alert" style="font-size: 12px; margin-bottom: 12px;">
+                        Por compatibilidad de la pasarela, el cobro puede mostrarse en USD.
+                        <div id="currencyEquivalence" style="margin-top: 6px; font-weight: 600;">
+                            Equivalencia estimada: CRC 0.00 ≈ USD 0.00
+                        </div>
+                    </div>
+
+                    <div id="paymentStatus" class="alert alert-info d-none" role="alert" style="font-size: 13px; margin-bottom: 12px;"></div>
+
+                    <div style="position: relative;">
+                        <div id="paypal-button-container"></div>
+                        <div id="paypalProcessingOverlay"
+                             style="display:none; position:absolute; inset:0; background:rgba(255,255,255,.75); z-index:10; align-items:center; justify-content:center; text-align:center; padding:12px;">
+                            <div style="display:flex; flex-direction:column; gap:8px; align-items:center;">
+                                <div class="spinner-border text-dark" role="status" style="width:1.6rem; height:1.6rem;">
+                                    <span class="visually-hidden">Procesando</span>
+                                </div>
+                                <span class="overlay-text" style="font-size:13px; font-weight:600;">Procesando pago...</span>
+                            </div>
+                        </div>
+                    </div>
 
                 </div>
             </div>
 
         </div>
     </div>
-    <div id="toast-container" style="position: fixed;top: 20px;right: 20px;z-index: 9999;"></div>
-    <script src="https://www.paypal.com/sdk/js?client-id={{ env('PAYPAL_CLIENT_ID') }}"></script>
+    <div id="toast-container" style="position: fixed; top: 20px; right: 20px; z-index: 9999;"></div>
+    @php
+        $paypalClientId = config('paypal.mode') === 'live'
+            ? config('paypal.live.client_id')
+            : config('paypal.sandbox.client_id');
+    @endphp
+    <script src="https://www.paypal.com/sdk/js?client-id={{ $paypalClientId }}"></script>
 @endsection

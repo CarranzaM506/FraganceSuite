@@ -57,7 +57,7 @@
 
 /* AJUSTE DE PADDING PARA EL BODY EN CATÁLOGO */
 .catalog-body {
-    padding-top: 120px !important; 
+    padding-top: 70px !important; 
 }
 
 /* CONTENIDO PRINCIPAL */
@@ -78,6 +78,7 @@
     padding: 20px;
     background: #ffffff;
     border-radius: 0px;
+    padding-top: -5px;
 }
 
 .filter-left {
@@ -548,26 +549,68 @@
     margin-top: 20px;
 }
 
-/* RESPONSIVE */
+/* Para tablets (768px) */
 @media (max-width: 768px) {
-    .catalog-body .black-navbar {
-        top: 70px;
-        padding: 10px 0;
-    }
-    
     .catalog-body {
-        padding-top: 110px !important;
+        padding-top: 80px !important;
     }
     
-    .catalog-filters {
-        flex-direction: column;
-        gap: 15px;
-        padding: 15px;
+    .catalog-page {
+        padding: 60px 15px 20px !important;
     }
     
-    .filter-left {
-        width: 100%;
-        justify-content: space-between;
+    
+    /* SOLO hacer el botón más pequeño */
+    .filter-btn {
+        padding: 6px 18px;
+        font-size: 12px;
+    }
+    
+    /* Contador más pequeño */
+    .product-count {
+        font-size: 12px;
+    }
+    
+    /* Contenedor de filtros activos */
+    .filter-tags-container {
+        flex-wrap: wrap;
+        gap: 8px !important;
+        padding: 0 15px !important;
+        margin-bottom: 15px !important;
+    }
+    
+    .filter-tags-container > div {
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+    }
+    
+    /* Tags más pequeños */
+    .filter-tag {
+        font-size: 11px !important;
+        padding: 4px 10px !important;
+        gap: 6px !important;
+    }
+    
+    .filter-tag button {
+        font-size: 14px !important;
+        width: 16px !important;
+        height: 16px !important;
+    }
+    
+    /* Texto "Filtros aplicados:" */
+    .filter-tags-container span:first-child {
+        font-size: 12px !important;
+        display: block !important;
+        width: 100% !important;
+        margin-bottom: 5px !important;
+    }
+    
+    /* Botón "Limpiar todos" */
+    .clear-all-btn {
+        font-size: 12px !important;
+        margin-left: 0 !important;
+        margin-top: 5px !important;
+        display: inline-block !important;
     }
     
     .catalog-grid {
@@ -578,6 +621,76 @@
     .pagination-arrows {
         margin-top: 40px;
         padding-top: 20px;
+    }
+}
+
+/* Para móviles pequeños (480px) */
+@media (max-width: 480px) {
+    .catalog-body {
+        padding-top: 70px !important;
+    }
+    
+    .catalog-page {
+        padding: 50px 12px 15px !important;
+    }
+    
+    /* Botón aún más pequeño */
+    .filter-btn {
+        padding: 5px 15px;
+        font-size: 11px;
+    }
+    
+    .product-count {
+        font-size: 11px;
+    }
+    
+    /* Tags más pequeños */
+    .filter-tag {
+        font-size: 10px !important;
+        padding: 3px 8px !important;
+    }
+    
+    .filter-tag button {
+        font-size: 12px !important;
+        width: 14px !important;
+        height: 14px !important;
+    }
+    
+    .clear-all-btn {
+        font-size: 11px !important;
+    }
+    
+    .catalog-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 15px;
+    }
+
+
+}
+
+/* Para móviles muy pequeños (375px) */
+@media (max-width: 375px) {
+    .catalog-body {
+        padding-top: 65px !important;
+    }
+    
+    .catalog-page {
+        padding: 45px 10px 15px !important;
+    }
+    
+    /* Botón más pequeño */
+    .filter-btn {
+        padding: 4px 12px;
+        font-size: 10px;
+    }
+    
+    .product-count {
+        font-size: 10px;
+    }
+    
+    .catalog-grid {
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+        gap: 12px;
     }
 }
 /* ====== ESTILOS ADICIONALES PARA FILTROS ====== */
@@ -615,3 +728,17 @@
     background: rgba(255, 255, 255, 0.2);
 }
 
+/* Título más pequeño en móvil */
+@media (max-width: 768px) {
+    .nav-title {
+        font-size: 12px !important;
+        letter-spacing: 1.5px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .nav-title {
+        font-size: 12px !important;
+        letter-spacing: 1px !important;
+    }
+}
