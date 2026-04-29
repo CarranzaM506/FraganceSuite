@@ -3,10 +3,10 @@
 @section('body-class', 'cart-body')
 
 @section('styles')
-     @parent
+    @parent
     <link rel="stylesheet" href="{{ asset('css/cart.css') }}">
     <style>
-        /* Ocultar el contenido hasta que JS cargue */
+        /* Ocultar el contenido hasta que cargue - SOLO AGREGADO */
         .cart-page {
             opacity: 0;
             transition: opacity 0.2s ease;
@@ -15,6 +15,7 @@
             opacity: 1;
         }
     </style>
+@endsection
 
 @section('content')
 <!-- Barra negra pegada al header -->
@@ -180,6 +181,8 @@ if (header && blackNavbar) {
             
             if (response.status === 401) {
                 cartContainer.innerHTML = `<div class="empty-cart"><i class="fas fa-exclamation-triangle"></i><p>Debes iniciar sesión para ver tu carrito</p><a href="/login" class="btn-continue-shopping">INICIAR SESIÓN</a></div>`;
+                // Mostrar página aunque haya error - SOLO AGREGADO
+                document.querySelector('.cart-page').classList.add('loaded');
                 return;
             }
             if (!response.ok) throw new Error('Error al cargar');
@@ -190,31 +193,64 @@ if (header && blackNavbar) {
             if (currentItems.length === 0) {
                 cartContainer.innerHTML = `<div class="empty-cart"><i class="fas fa-shopping-bag"></i><p>Tu carrito está vacío</p><a href="{{ route('catalog.index') }}" class="btn-continue-shopping">CONTINUAR COMPRANDO</a></div>`;
                 updateTotals(0, 0, 0);
+                // Mostrar página - SOLO AGREGADO
+                document.querySelector('.cart-page').classList.add('loaded');
                 return;
             }
             
             renderCartItems();
             calculateTotals();
+            
+            // Mostrar página después de cargar TODO - SOLO AGREGADO
+            document.querySelector('.cart-page').classList.add('loaded');
+            
         } catch (error) {
             cartContainer.innerHTML = `<div class="empty-cart"><i class="fas fa-exclamation-triangle"></i><p>Error al cargar el carrito</p><button onclick="location.reload()" class="btn-continue-shopping">REINTENTAR</button></div>`;
+            // Mostrar página aunque haya error - SOLO AGREGADO
+            document.querySelector('.cart-page').classList.add('loaded');
         }
     }
     
     function renderCartItems() {
-        let html = '';
-        currentItems.forEach((item, index) => {
-            const discountedPrice = getDiscountedPrice(item.price, item.discount);
-            const itemTotal = discountedPrice * item.quantity;
-            html += `<div class="cart-item-row" data-product-id="${item.id}" style="${index > 0 ? 'border-top: 1px solid #eee; margin-top: 20px; padding-top: 20px;' : ''}">
-                <div class="cart-item-product"><img src="${item.image || '/images/placeholder.jpg'}" onerror="this.src='/images/placeholder.jpg'"><div class="cart-item-info"><div class="cart-item-name">${escapeHtml(item.name)}</div><div class="cart-item-brand">${escapeHtml(item.brand || '')}</div></div></div>
-                <div class="cart-item-price">${item.discount > 0 ? `<span class="original-price">₡${formatCurrency(item.price)}</span>` : ''}<span class="final-price">₡${formatCurrency(discountedPrice)}</span>${item.discount > 0 ? `<span class="discount-badge">-${item.discount}%</span>` : ''}</div>
-                <div class="cart-item-quantity"><button class="qty-btn" onclick="updateQty(${item.id}, ${item.quantity - 1})">-</button><span>${item.quantity}</span><button class="qty-btn" onclick="updateQty(${item.id}, ${item.quantity + 1})" ${item.quantity >= item.stock ? 'disabled' : ''}>+</button></div>
-                <div class="cart-item-total">₡${formatCurrency(itemTotal)}</div>
-                <div class="cart-item-remove"><button class="remove-btn" onclick="showRemoveConfirm(${item.id})"><i class="fas fa-trash-alt"></i></button></div>
-            </div>`;
-        });
-        cartContainer.innerHTML = html;
-    }
+    let html = `
+        <div class="cart-header">
+            <span>Producto</span>
+            <span>Precio</span>
+            <span>Cantidad</span>
+            <span>Total</span>
+            <span></span>
+        </div>
+    `;
+    
+    currentItems.forEach((item, index) => {
+        const discountedPrice = getDiscountedPrice(item.price, item.discount);
+        const itemTotal = discountedPrice * item.quantity;
+        html += `<div class="cart-item-row" data-product-id="${item.id}">
+            <div class="cart-item-product">
+                <img src="${item.image || '/images/placeholder.jpg'}" onerror="this.src='/images/placeholder.jpg'">
+                <div class="cart-item-info">
+                    <div class="cart-item-name">${escapeHtml(item.name)}</div>
+                    <div class="cart-item-brand">${escapeHtml(item.brand || '')}</div>
+                </div>
+            </div>
+            <div class="cart-item-price">
+                ${item.discount > 0 ? `<span class="original-price">₡${formatCurrency(item.price)}</span><br>` : ''}
+                <span class="final-price">₡${formatCurrency(discountedPrice)}</span>
+                ${item.discount > 0 ? `<span class="discount-badge">-${item.discount}%</span>` : ''}
+            </div>
+            <div class="cart-item-quantity">
+                <button class="qty-btn" onclick="updateQty(${item.id}, ${item.quantity - 1})">-</button>
+                <span>${item.quantity}</span>
+                <button class="qty-btn" onclick="updateQty(${item.id}, ${item.quantity + 1})" ${item.quantity >= item.stock ? 'disabled' : ''}>+</button>
+            </div>
+            <div class="cart-item-total">₡${formatCurrency(itemTotal)}</div>
+            <div class="cart-item-remove">
+                <button class="remove-btn" onclick="showRemoveConfirm(${item.id})"><i class="fas fa-trash-alt"></i></button>
+            </div>
+        </div>`;
+    });
+    cartContainer.innerHTML = html;
+}
     
     window.showRemoveConfirm = function(productId) { showConfirmModal(productId); };
     
@@ -275,9 +311,6 @@ if (header && blackNavbar) {
     if (checkoutBtn) checkoutBtn.addEventListener('click', function() { if (currentItems.length === 0) alert('Tu carrito está vacío'); else window.location.href = '/checkout'; });
     
     loadCart();
-
-    // Al final de la función loadCart(), después de renderizar todo
-    document.querySelector('.cart-page').classList.add('loaded');
 });
 </script>
 @endsection

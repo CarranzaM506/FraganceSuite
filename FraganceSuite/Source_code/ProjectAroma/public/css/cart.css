@@ -52,18 +52,18 @@
 
 /* PÁGINA PRINCIPAL */
 .cart-page {
-    padding: 140px 15px 50px;
+    padding: 210px 15px 50px;
     max-width: 1200px;
     margin: 0 auto;
     min-height: 100vh;
 }
 
 @media (max-width: 768px) {
-    .cart-page { padding: 120px 15px 30px; }
+    .cart-page { padding: 140px 15px 30px; }
 }
 
 @media (max-width: 480px) {
-    .cart-page { padding: 100px 10px 20px; }
+    .cart-page { padding: 120px 10px 20px; }
 }
 
 /* CONTENEDOR PRINCIPAL */
@@ -554,5 +554,30 @@
     
     .cart-summary .summary-card {
         padding: 12px !important;
+    }
+}
+
+
+
+
+/* Títulos de la tabla en desktop */
+.cart-header {
+    display: grid;
+    grid-template-columns: 2.5fr 1fr 1.2fr 1.2fr 0.5fr;
+    gap: 20px;
+    padding: 15px 0 12px 0;
+    margin-bottom: 10px;
+    border-bottom: 2px solid #eee;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #555;
+}
+
+/* Ocultar títulos en móvil */
+@media (max-width: 768px) {
+    .cart-header {
+        display: none;
     }
 }
