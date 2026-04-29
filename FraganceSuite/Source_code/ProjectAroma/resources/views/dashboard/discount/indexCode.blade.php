@@ -25,7 +25,7 @@
                     </div>
                 @endif
 
-                <div class="table-responsive">
+                <div class="table-responsive d-none d-md-block">
                     <table id="promotionCodesTable" class="table table-striped table-hover table-bordered">
                         <thead class="table-dark">
                             <tr>
@@ -63,11 +63,8 @@
                                     <td class="text-center">
                                         <div class="d-flex gap-1 flex-wrap justify-content-center">
                                             <button type="button" class="btn btn-sm btn-warning">Editar</button>
-                                            <button type="button" class="btn btn-danger btn-sm" 
-                                                data-bs-toggle="modal" 
-                                                data-bs-target="#deleteModal" 
-                                                data-id="{{ $code->idcode_promotion }}" 
-                                                data-code="{{ $code->code_promotion }}">
+                                            <button type="button" class="btn btn-danger btn-sm"
+                                                onclick="confirmDeleteById('{{ $code->idcode_promotion }}', '{{ $code->code_promotion }}')">
                                                 Eliminar
                                             </button>
                                         </div>
@@ -81,24 +78,54 @@
                         </tbody>
                     </table>
                 </div>
+
+                <div class="d-md-none mobile-records-list">
+                    <div class="mobile-records-toolbar">
+                        <input type="text" id="codeSearch" class="form-control" placeholder="Buscar código o fecha...">
+                    </div>
+                    <div id="codeCards">
+                        @foreach ($codes as $code)
+                            @php
+                                $start = $code->startdate ?? $code->start_date;
+                                $end = $code->enddate ?? $code->end_date;
+                                $now = \Carbon\Carbon::now();
+                                $startDate = $start ? \Carbon\Carbon::parse($start) : null;
+                                $endDate = $end ? \Carbon\Carbon::parse($end) : null;
+                                $status = ($startDate && $startDate->gt($now)) ? 'Próximo' : (($endDate && $endDate->lt($now)) ? 'Vencido' : 'Activo');
+                            @endphp
+                            <article class="mobile-record-card" data-search="{{ strtolower($code->code_promotion . ' ' . ($startDate ? $startDate->format('d/m/Y') : '') . ' ' . ($endDate ? $endDate->format('d/m/Y') : '')) }}">
+                                <h5 class="mobile-record-title">{{ $code->code_promotion }}</h5>
+                                <p class="mobile-record-meta"><strong>Descuento:</strong> {{ number_format($code->value, 2) }}%</p>
+                                <p class="mobile-record-meta"><strong>Inicio:</strong> {{ $startDate ? $startDate->format('d/m/Y') : 'N/A' }}</p>
+                                <p class="mobile-record-meta"><strong>Fin:</strong> {{ $endDate ? $endDate->format('d/m/Y') : 'N/A' }}</p>
+                                <div class="product-mobile-footer">
+                                    <div class="product-mobile-badges">
+                                        <span class="badge {{ $status === 'Activo' ? 'bg-success' : ($status === 'Vencido' ? 'bg-danger' : 'bg-warning text-dark') }}">{{ $status }}</span>
+                                    </div>
+                                    <div class="product-mobile-actions">
+                                        <button type="button" class="btn btn-success btn-sm icon-btn" aria-label="Editar código">
+                                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>
+                                            </svg>
+                                        </button>
+                                        <button type="button" class="btn btn-danger btn-sm icon-btn"
+                                            onclick="confirmDeleteById('{{ $code->idcode_promotion }}', '{{ $code->code_promotion }}')"
+                                            aria-label="Eliminar código">
+                                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </article>
+                        @endforeach
+                    </div>
+                    <div class="mobile-records-pagination" id="codePagination"></div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal de confirmación para eliminar -->
-    <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-sm modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-body text-center py-4">
-                    <p class="mb-0" id="deleteModalMessage">¿Estás seguro de que deseas eliminar este código de promoción?</p>
-                </div>
-                <div class="modal-footer d-flex justify-content-center gap-2 border-0 pt-0 pb-4">
-                    <button type="button" class="btn btn-secondary btn-sm px-4" data-bs-dismiss="modal">No</button>
-                    <button type="button" class="btn btn-danger btn-sm px-4" id="confirmDeleteBtn">Sí, eliminar</button>
-                </div>
-            </div>
-        </div>
-    </div>
 @endsection
 
 @section('scripts')
@@ -141,26 +168,62 @@ $.fn.dataTable.ext.errMode = 'none';
             $(window).resize(function() {
                 initDataTable();
             });
+            initMobilePager('codeSearch', 'codeCards', 'codePagination');
         });
 
-        // Modal de confirmación para eliminar
-        let deleteId = null;
+        function initMobilePager(searchId, cardsId, paginationId) {
+            const searchInput = document.getElementById(searchId);
+            const cardsContainer = document.getElementById(cardsId);
+            const paginationContainer = document.getElementById(paginationId);
+            if (!searchInput || !cardsContainer || !paginationContainer) return;
+            const cards = Array.from(cardsContainer.querySelectorAll('.mobile-record-card'));
+            const pageSize = 10;
+            let currentPage = 1;
+            let filteredCards = cards;
 
-        $('#deleteModal').on('show.bs.modal', function(event) {
-            const button = $(event.relatedTarget);
-            deleteId = button.data('id');
-            const code = button.data('code');
-            
-            const modal = $(this);
-            modal.find('#deleteModalMessage').html(`¿Eliminar "${code}" de los códigos promocionales?`);
-        });
-        
-        $('#confirmDeleteBtn').on('click', function() {
-            if (deleteId) {
-                // Crear formulario y enviar
+            function renderPagination(totalPages) {
+                paginationContainer.innerHTML = '';
+                if (totalPages <= 1) return;
+                const prevBtn = document.createElement('button');
+                prevBtn.className = 'btn btn-outline-secondary btn-sm';
+                prevBtn.textContent = '←';
+                prevBtn.disabled = currentPage === 1;
+                prevBtn.onclick = () => { if (currentPage > 1) { currentPage--; renderCards(); } };
+                const label = document.createElement('span');
+                label.className = 'mobile-page-label';
+                label.textContent = `Página ${currentPage} de ${totalPages}`;
+                const nextBtn = document.createElement('button');
+                nextBtn.className = 'btn btn-outline-secondary btn-sm';
+                nextBtn.textContent = '→';
+                nextBtn.disabled = currentPage === totalPages;
+                nextBtn.onclick = () => { if (currentPage < totalPages) { currentPage++; renderCards(); } };
+                paginationContainer.append(prevBtn, label, nextBtn);
+            }
+
+            function renderCards() {
+                const totalPages = Math.max(1, Math.ceil(filteredCards.length / pageSize));
+                if (currentPage > totalPages) currentPage = totalPages;
+                const start = (currentPage - 1) * pageSize;
+                cards.forEach(c => c.style.display = 'none');
+                filteredCards.slice(start, start + pageSize).forEach(c => c.style.display = '');
+                renderPagination(totalPages);
+            }
+
+            searchInput.addEventListener('input', function () {
+                const term = searchInput.value.trim().toLowerCase();
+                filteredCards = cards.filter(c => (c.dataset.search || '').includes(term));
+                currentPage = 1;
+                renderCards();
+            });
+            renderCards();
+        }
+
+        function confirmDeleteById(id, code) {
+            const safeCode = String(code || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            openAdminDeleteConfirm(`&iquest;Eliminar \"${safeCode}\" de los c&oacute;digos promocionales?`, function() {
                 const form = document.createElement('form');
                 form.method = 'POST';
-                form.action = `/promotionCode/${deleteId}`;
+                form.action = `/promotionCode/${id}`;
                 
                 const csrfInput = document.createElement('input');
                 csrfInput.type = 'hidden';
@@ -176,7 +239,7 @@ $.fn.dataTable.ext.errMode = 'none';
                 
                 document.body.appendChild(form);
                 form.submit();
-            }
-        });
+            });
+        }
     </script>
 @endsection
