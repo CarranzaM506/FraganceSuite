@@ -14,7 +14,11 @@ class CartController extends Controller
 {
     public function index()
     {
-        // Obtener todos los productos para datos que pudiera necesitar
+        // 🟢 CAMBIO 1: Verificar autenticación
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+        
         $products = Product::all();
 
         return view('cart.index', [
@@ -22,10 +26,6 @@ class CartController extends Controller
         ]);
     }
 
-    /**
-     * Obtener datos del producto en formato JSON
-     * Incluye descuento si aplica
-     */
     public function getProductData($id)
     {
         $product = Product::with('discount')->find($id);
@@ -48,15 +48,8 @@ class CartController extends Controller
         ]);
     }
 
-    /**
-     * Obtener preview del carrito con los productos actuales
-     * Devuelve HTML con los productos en miniatura
-     */
     public function getCartPreview(Request $request)
     {
-        // Los datos del carrito vienen del localStorage en el cliente (JavaScript)
-        // Este endpoint sirve para cualquier lógica del servidor si es necesaria
-        // Por ahora devolvemos un mensaje de éxito simple
         return response()->json([
             'status' => 'success',
             'message' => 'Preview cargado'
@@ -71,14 +64,12 @@ class CartController extends Controller
                 return response()->json(['error' => 'Unauthorized', 'items' => [], 'total' => 0], 401);
             }
 
-            // Obtener carrito del usuario
             $cart = Cart::where('iduser', $user->id)->first();
 
             if (!$cart) {
                 return response()->json(['items' => [], 'total' => 0]);
             }
 
-            // Cargar cartDetails con eager loading (relaciones precargadas)
             $cartDetails = CartDetail::where('idcart', $cart->idcart)
                 ->with('product.discount')
                 ->get();
@@ -120,6 +111,7 @@ class CartController extends Controller
             return response()->json(['error' => $e->getMessage(), 'items' => [], 'total' => 0], 500);
         }
     }
+    
     public function add(Request $request)
     {
         try {
@@ -146,13 +138,11 @@ class CartController extends Controller
                 return response()->json(['error' => 'No hay unidades disponibles'], 422);
             }
 
-            // Obtener o crear carrito
             $cart = Cart::firstOrCreate(
                 ['iduser' => $user->id],
                 ['created_at' => now(), 'updated_at' => now()]
             );
 
-            // Buscar detalle del carrito
             $cartDetail = CartDetail::where('idcart', $cart->idcart)
                 ->where('idproduct', $productId)
                 ->first();
@@ -165,7 +155,6 @@ class CartController extends Controller
                         'available' => $stock
                     ], 422);
                 }
-                // Si existe, sumar cantidad
                 $cartDetail->increment('quantity', $quantity);
             } else {
                 if ($quantity > $stock) {
@@ -174,7 +163,6 @@ class CartController extends Controller
                         'available' => $stock
                     ], 422);
                 }
-                // Si no existe, crear
                 CartDetail::create([
                     'idcart' => $cart->idcart,
                     'idproduct' => $productId,
@@ -224,12 +212,10 @@ class CartController extends Controller
             }
 
             if ($quantity <= 0) {
-                // Eliminar si cantidad es 0 o negativa
                 CartDetail::where('idcart', $cart->idcart)
                     ->where('idproduct', $productId)
                     ->delete();
             } else {
-                // Actualizar cantidad
                 CartDetail::where('idcart', $cart->idcart)
                     ->where('idproduct', $productId)
                     ->update(['quantity' => $quantity]);
@@ -261,7 +247,6 @@ class CartController extends Controller
                 return response()->json(['error' => 'Cart not found'], 404);
             }
 
-            // Eliminar en una sola query
             CartDetail::where('idcart', $cart->idcart)
                 ->where('idproduct', $productId)
                 ->delete();
