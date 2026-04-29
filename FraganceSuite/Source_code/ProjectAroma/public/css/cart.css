@@ -290,6 +290,51 @@
     background: #333;
 }
 
+/* Responsive para carrito vacío */
+@media (max-width: 768px) {
+    .empty-cart {
+        padding: 40px 20px;
+    }
+    
+    .empty-cart i {
+        font-size: 48px;
+        margin-bottom: 15px;
+    }
+    
+    .empty-cart p {
+        font-size: 14px;
+        margin-bottom: 20px;
+    }
+    
+    .btn-continue-shopping {
+        padding: 10px 25px;
+        font-size: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .empty-cart {
+        padding: 30px 15px;
+    }
+    
+    .empty-cart i {
+        font-size: 40px;
+        margin-bottom: 12px;
+    }
+    
+    .empty-cart p {
+        font-size: 13px;
+        margin-bottom: 15px;
+    }
+    
+    .btn-continue-shopping {
+        padding: 9px 20px;
+        font-size: 8px;
+    }
+}
+
+
+
 .cart-loading {
     text-align: center;
     padding: 60px 20px;
