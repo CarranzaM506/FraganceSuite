@@ -29,7 +29,9 @@
 
     @include('partials.footer')
     @include('partials.whatsapp')
+    @if(!request()->routeIs('checkout'))
     @include('partials.debug-cart')
+@endif
 
 @vite(['resources/js/favorites.js'])
 
