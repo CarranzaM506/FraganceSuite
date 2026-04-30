@@ -57,7 +57,7 @@
                             </div>
                         @endif
 
-                        <form method="POST" action="{{ route('discount.update', $discount->iddiscount) }}">
+                        <form method="POST" action="{{ route('discount.update', $discount->iddiscount) }}" data-confirm-message="&iquest;Deseas guardar los cambios de la promoci&oacute;n?">
                             @csrf
                             @method('PUT')
                             <div class="row g-3">

@@ -8,7 +8,7 @@
         <div class="card-body">
             <h4 class="mb-3">{{ $brand->brand_name }}</h4>
             
-            <form action="{{ route('brands.update', $brand->id) }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('brands.update', $brand->id) }}" method="POST" enctype="multipart/form-data" data-confirm-message="&iquest;Deseas guardar los cambios de esta marca?">
                 @csrf
                 @method('PUT')
 
