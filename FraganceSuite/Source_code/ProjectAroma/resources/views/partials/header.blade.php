@@ -155,6 +155,29 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // ========== SCROLL PARA OCULTAR HEADER ==========
+        const header = document.querySelector('header');
+        let lastScroll = 0;
+        
+        if (header) {
+            header.style.transition = 'transform 0.3s ease-in-out';
+            
+            window.addEventListener('scroll', function() {
+                const currentScroll = window.pageYOffset;
+                
+                if (currentScroll > lastScroll && currentScroll > 100) {
+                    // Scroll hacia abajo - ocultar header
+                    header.style.transform = 'translateY(-100%)';
+                } else if (currentScroll < lastScroll) {
+                    // Scroll hacia arriba - mostrar header
+                    header.style.transform = 'translateY(0)';
+                }
+                
+                lastScroll = currentScroll;
+            });
+        }
+        
+        // ========== MENÚ LATERAL ==========
         const menuToggle = document.getElementById('menuToggle');
         const sideMenu = document.getElementById('sideMenu');
         const closeMenuBtn = document.getElementById('closeMenuBtn');
@@ -181,7 +204,7 @@
             link.addEventListener('click', closeMenu);
         });
 
-        // Modal de búsqueda para móvil
+        // ========== MODAL DE BÚSQUEDA ==========
         const mobileSearchBtn = document.getElementById('mobileSearchBtn');
         const searchModal = document.getElementById('searchModal');
         const searchModalClose = document.querySelector('.search-modal-close');
