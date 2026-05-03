@@ -1,0 +1,243 @@
+/* ========== ESTILOS PARA PERFIL ========== */
+
+.profile-body {
+    background: white !important;
+}
+
+#aroma-profile-page {
+    max-width: 1000px;
+    margin: 50px auto 50px;
+    padding: 0 20px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+}
+
+/* Tarjeta de edición - estilo flotante */
+#aroma-profile-page .edit-card {
+    background: white;
+    border: none;
+    border-radius: 0px;
+    padding: 40px;
+    margin-bottom: 40px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+#aroma-profile-page .edit-card:hover {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+#aroma-profile-page .edit-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+#aroma-profile-page .edit-header h1 {
+    font-size: 20px;
+    font-weight: 500;
+    color: #000;
+    margin: 0 0 5px 0;
+}
+
+#aroma-profile-page .edit-header p {
+    font-size: 12px;
+    color: #666;
+    margin: 0;
+}
+
+#aroma-profile-page .edit-btn {
+    background: transparent;
+    border: 1px solid #ccc;
+    padding: 8px 25px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 500;
+}
+
+#aroma-profile-page .edit-btn:hover {
+    border-color: #000;
+}
+
+/* Formulario - Campos SOLO con línea inferior */
+#aroma-profile-page .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+}
+
+#aroma-profile-page .form-group {
+    margin-bottom: 0;
+}
+
+#aroma-profile-page .form-group label {
+    display: block;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #999;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+#aroma-profile-page .form-group input {
+    width: 100%;
+    padding: 10px 0;
+    border: none;
+    border-bottom: 1px solid #e0e0e0;
+    font-size: 14px;
+    background: transparent;
+    transition: all 0.2s;
+}
+
+#aroma-profile-page .form-group input:focus {
+    outline: none;
+    border-bottom-color: #000;
+}
+
+#aroma-profile-page .form-group input:disabled {
+    border-bottom-color: #e0e0e0;
+    color: #666;
+    background: transparent;
+}
+
+/* Select desplegable para teléfono (si lo usas) */
+#aroma-profile-page .form-group select {
+    width: 100%;
+    padding: 10px 0;
+    border: none;
+    border-bottom: 1px solid #e0e0e0;
+    font-size: 14px;
+    background: transparent;
+}
+
+#aroma-profile-page .form-group select:focus {
+    outline: none;
+    border-bottom-color: #000;
+}
+
+#aroma-profile-page .save-btn {
+    margin-top: 35px;
+    padding: 14px 30px;
+    background: #000;
+    color: white;
+    border: none;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s;
+    width: 100%;
+}
+
+#aroma-profile-page .save-btn:hover {
+    background: #333;
+}
+
+
+#aroma-profile-page .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 20px;
+}
+
+#aroma-profile-page .card-link {
+    background: white;
+    border: none;  /* ← Sin borde */
+    border-radius: 0px;  
+    padding: 30px 20px;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);  /* ← Sombra sutil */
+}
+
+#aroma-profile-page .card-link:hover {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);  /* ← Sombra más grande al hover */
+    transform: translateY(-5px);
+}
+
+#aroma-profile-page .card-link i {
+    font-size: 32px;
+    color: #000;
+    margin-bottom: 15px;
+}
+
+#aroma-profile-page .card-link h3 {
+    font-size: 12px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 5px 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+#aroma-profile-page .card-link p {
+    font-size: 11px;
+    color: #999;
+    margin: 0;
+}
+
+/* Alertas */
+#aroma-profile-page .alert {
+    padding: 12px;
+    margin-bottom: 20px;
+    font-size: 12px;
+}
+
+#aroma-profile-page .alert-success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+#aroma-profile-page .alert-danger {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    #aroma-profile-page {
+        margin: 30px auto 40px;
+    }
+    
+    #aroma-profile-page .form-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    #aroma-profile-page .cards-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    #aroma-profile-page .edit-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    #aroma-profile-page .edit-card {
+        padding: 25px;
+    }
+}
+
+@media (max-width: 480px) {
+    #aroma-profile-page {
+        margin: 10px auto 30px;
+    }
+    
+    #aroma-profile-page .edit-card {
+        padding: 20px;
+    }
+}
+
