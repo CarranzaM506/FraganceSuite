@@ -6,9 +6,9 @@
 
 class CartPreview {
     constructor() {
-        this.listenersAttached = false; // Bandera para evitar duplicados
+        this.listenersAttached = false;
+        this.cachedCart = {}; // Cache del carrito para respuesta inmediata
         
-        // Siempre intentar inicializar en DOMContentLoaded
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => this.init());
         } else {
@@ -16,45 +16,65 @@ class CartPreview {
         }
     }
 
-    // Inicializar event listeners
     init() {
-        // Re-obtener elementos cada vez que se inicializa
         this.container = document.getElementById('cartIconContainer');
         this.preview = document.getElementById('cartPreview');
         this.itemsContainer = document.getElementById('cartPreviewItems');
         this.totalElement = document.getElementById('cartPreviewTotal');
         this.hideTimeout = null;
         
-        // Solo proceder si existen los elementos necesarios
         if (!this.container || !this.preview) {
             return;
         }
-        this.attachListeners();
-        this.attachItemListeners(); // Agregar listeners una sola vez
+        
+        // Detectar si es móvil (por ancho de pantalla)
+        this.esMovil = window.matchMedia('(max-width: 768px)').matches;
+        
+        // Solo cargar caché y listeners si es desktop
+        if (!this.esMovil) {
+            this.refreshCache();
+            this.attachListeners();
+            this.attachItemListeners();
+        }
     }
 
-    // Adjuntar listeners al contenedor del carrito
+    // Refrescar la caché del carrito
+    async refreshCache() {
+        try {
+            const response = await fetch('/api/cart');
+            if (response.ok) {
+                const data = await response.json();
+                this.cachedCart = data.items.reduce((acc, item) => {
+                    acc[item.id] = item;
+                    return acc;
+                }, {});
+            }
+        } catch (error) {
+            console.error('[CartPreview] Error refreshing cache:', error);
+        }
+    }
+
     attachListeners() {
+        // SOLO para desktop: usar hover
         this.container.addEventListener('mouseenter', () => this.showPreview());
         this.container.addEventListener('mouseleave', () => this.hidePreview());
         
-        // También escuchar cambios en el carrito
-        window.addEventListener('cartUpdated', () => this.updatePreview());
+        window.addEventListener('cartUpdated', () => {
+            this.refreshCache();
+            this.updatePreview();
+        });
     }
 
-    // Mostrar el preview del carrito
     showPreview() {
         clearTimeout(this.hideTimeout);
         this.updatePreview();
         this.preview.style.display = 'block';
-        // Pequeña animación
         this.preview.style.animation = 'none';
         setTimeout(() => {
             this.preview.style.animation = 'fadeIn 0.2s ease-in-out';
         }, 10);
     }
 
-    // Ocultar el preview del carrito
     hidePreview() {
         this.hideTimeout = setTimeout(() => {
             this.preview.style.animation = 'fadeOut 0.2s ease-in-out';
@@ -64,9 +84,8 @@ class CartPreview {
         }, 200);
     }
 
-    // Actualizar el contenido del preview
-    async updatePreview() {
-        const cart = await this.getCart();
+    updatePreview() {
+        const cart = this.cachedCart;
         
         if (Object.keys(cart).length === 0) {
             this.itemsContainer.innerHTML = '<p class="empty-cart">Tu carrito está vacío</p>';
@@ -74,7 +93,6 @@ class CartPreview {
             return;
         }
 
-        // Construir HTML de los items
         let html = '';
         let total = 0;
 
@@ -84,8 +102,6 @@ class CartPreview {
             const discountPercent = item.discount || 0;
             const stock = parseInt(item.stock ?? -1);
             const disablePlus = stock > -1 && qty >= stock;
-            
-            // Calcular precio con descuento
             const finalPrice = discountPercent > 0 ? price * (1 - discountPercent / 100) : price;
             const itemTotal = finalPrice * qty;
             total += itemTotal;
@@ -122,80 +138,64 @@ class CartPreview {
 
         this.itemsContainer.innerHTML = html;
         this.totalElement.textContent = '₡' + total.toLocaleString('es-CR', {minimumFractionDigits: 0});
-        // Los listeners ya están agregados una sola vez en init()
     }
 
-    // Adjuntar listeners a los botones de cantidad y eliminación
     attachItemListeners() {
-        // Si ya se agregaron listeners, no hacer nada
         if (this.listenersAttached) return;
-        
-        if (!this.itemsContainer) {
-            return;
-        }
+        if (!this.itemsContainer) return;
         
         this.listenersAttached = true;
         
-        // Usar un único listener con event delegation
         this.itemsContainer.addEventListener('click', (e) => {
             const btn = e.target.closest('button');
             if (!btn) return;
 
             const productId = parseInt(btn.dataset.productId);
-            if (!productId) {
-                return;
-            }
+            if (!productId) return;
 
-            // Botón de aumentar cantidad
             if (btn.classList.contains('qty-plus')) {
                 this.increaseQuantity(productId);
-            }
-            // Botón de disminuir cantidad
-            else if (btn.classList.contains('qty-minus')) {
+            } else if (btn.classList.contains('qty-minus')) {
                 this.decreaseQuantity(productId);
-            }
-            // Botón de eliminar
-            else if (btn.classList.contains('btn-delete')) {
+            } else if (btn.classList.contains('btn-delete')) {
                 this.deleteProduct(productId);
             }
         });
     }
 
-    // Aumentar cantidad - RÁPIDO Y RESPONSIVO
+    async updateQuantityInCache(productId, newQty) {
+        if (this.cachedCart[productId]) {
+            if (newQty <= 0) {
+                delete this.cachedCart[productId];
+            } else {
+                this.cachedCart[productId].quantity = newQty;
+            }
+            this.updatePreview();
+        }
+    }
+
     async increaseQuantity(productId) {
+        const item = this.itemsContainer?.querySelector(`.cart-preview-item[data-product-id="${productId}"]`);
+        if (!item) return;
+        
+        const stock = parseInt(item.getAttribute('data-stock') || '-1');
+        const qtySpan = item.querySelector('.item-quantity');
+        const currentQty = parseInt(qtySpan.textContent);
+        
+        if (stock > -1 && currentQty + 1 > stock) return;
+        
+        const newQty = currentQty + 1;
+        
+        qtySpan.textContent = newQty;
+        const plusBtn = item.querySelector('.qty-plus');
+        if (plusBtn && stock > -1) {
+            plusBtn.disabled = newQty >= stock;
+        }
+        
+        await this.updateQuantityInCache(productId, newQty);
+        
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
         try {
-            // 1. Actualizar el DOM inmediatamente (feedback visual)
-            const item = this.itemsContainer?.querySelector(`.cart-preview-item[data-product-id="${productId}"]`);
-            if (!item) {
-                return;
-            }
-            const stock = parseInt(item.getAttribute('data-stock') || '-1');
-            const qtySpan = item.querySelector('.item-quantity');
-            const currentQty = parseInt(qtySpan.textContent);
-            if (stock > -1 && currentQty + 1 > stock) {
-                return;
-            }
-            const newQty = currentQty + 1;
-            
-            qtySpan.textContent = newQty;
-            const plusBtn = item.querySelector('.qty-plus');
-            if (plusBtn && stock > -1) {
-                plusBtn.disabled = newQty >= stock;
-            }
-            this.updatePreviewTotal();
-            
-            // Actualizar total del item
-            const itemTotalEl = item.querySelector('.item-total');
-            const basePrice = parseFloat(itemTotalEl?.dataset.basePrice) || 0;
-            const discount = parseFloat(itemTotalEl?.dataset.discount) || 0;
-            const finalPrice = discount > 0 ? basePrice * (1 - discount / 100) : basePrice;
-            const newTotal = finalPrice * newQty;
-            if (itemTotalEl) {
-                itemTotalEl.textContent = '₡' + newTotal.toLocaleString('es-CR', {minimumFractionDigits: 0});
-            }
-            
-            // 2. Ahora actualizar la BD en background
-            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
             const response = await fetch('/api/cart/update', {
                 method: 'POST',
                 headers: {
@@ -205,68 +205,44 @@ class CartPreview {
                 body: JSON.stringify({ productId, quantity: newQty })
             });
             
-            if (response.redirected || response.status === 401) {
-                window.location.href = response.url || '/login';
-                return;
-            }
             if (!response.ok) {
-                // Si falla, revertir el cambio en el DOM
                 qtySpan.textContent = currentQty;
-                if (plusBtn && stock > -1) {
-                    plusBtn.disabled = currentQty >= stock;
-                }
-                if (itemTotalEl) {
-                    itemTotalEl.textContent = '₡' + (finalPrice * currentQty).toLocaleString('es-CR', {minimumFractionDigits: 0});
-                }
-                console.error('[CartPreview] Error al agregar cantidad:', await response.json());
+                await this.updateQuantityInCache(productId, currentQty);
             } else {
-                // Actualizar total general
-                this.updatePreviewTotal();
                 window.dispatchEvent(new CustomEvent('cartUpdated'));
             }
         } catch (error) {
             console.error('Error:', error);
+            qtySpan.textContent = currentQty;
+            await this.updateQuantityInCache(productId, currentQty);
         }
     }
 
-    // Disminuir cantidad - RÁPIDO Y RESPONSIVO
     async decreaseQuantity(productId) {
+        const item = this.itemsContainer?.querySelector(`.cart-preview-item[data-product-id="${productId}"]`);
+        if (!item) return;
+        
+        const qtySpan = item.querySelector('.item-quantity');
+        const currentQty = parseInt(qtySpan.textContent);
+        
+        if (currentQty <= 1) {
+            await this.deleteProduct(productId);
+            return;
+        }
+        
+        const newQty = currentQty - 1;
+        
+        qtySpan.textContent = newQty;
+        const plusBtn = item.querySelector('.qty-plus');
+        const stock = parseInt(item.getAttribute('data-stock') || '-1');
+        if (plusBtn && stock > -1) {
+            plusBtn.disabled = newQty >= stock;
+        }
+        
+        await this.updateQuantityInCache(productId, newQty);
+        
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
         try {
-            const item = this.itemsContainer?.querySelector(`.cart-preview-item[data-product-id="${productId}"]`);
-            if (!item) {
-                return;
-            }
-            const qtySpan = item.querySelector('.item-quantity');
-            const currentQty = parseInt(qtySpan.textContent);
-            
-            if (currentQty <= 1) {
-                // Si es 1, eliminar
-                await this.deleteProduct(productId);
-                return;
-            }
-            
-            // 1. Actualizar el DOM inmediatamente
-            const newQty = currentQty - 1;
-            qtySpan.textContent = newQty;
-            const plusBtn = item.querySelector('.qty-plus');
-            const stock = parseInt(item.getAttribute('data-stock') || '-1');
-            if (plusBtn && stock > -1) {
-                plusBtn.disabled = newQty >= stock;
-            }
-            this.updatePreviewTotal();
-            
-            // Actualizar total del item
-            const itemTotalEl = item.querySelector('.item-total');
-            const basePrice = parseFloat(itemTotalEl?.dataset.basePrice) || 0;
-            const discount = parseFloat(itemTotalEl?.dataset.discount) || 0;
-            const finalPrice = discount > 0 ? basePrice * (1 - discount / 100) : basePrice;
-            const newTotal = finalPrice * newQty;
-            if (itemTotalEl) {
-                itemTotalEl.textContent = '₡' + newTotal.toLocaleString('es-CR', {minimumFractionDigits: 0});
-            }
-            
-            // 2. Actualizar la BD en background
-            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
             const response = await fetch('/api/cart/update', {
                 method: 'POST',
                 headers: {
@@ -276,45 +252,33 @@ class CartPreview {
                 body: JSON.stringify({ productId, quantity: newQty })
             });
             
-            if (response.redirected || response.status === 401) {
-                window.location.href = response.url || '/login';
-                return;
-            }
             if (!response.ok) {
-                // Si falla, revertir
                 qtySpan.textContent = currentQty;
-                if (plusBtn && stock > -1) {
-                    plusBtn.disabled = currentQty >= stock;
-                }
-                if (itemTotalEl) {
-                    itemTotalEl.textContent = '₡' + (finalPrice * currentQty).toLocaleString('es-CR', {minimumFractionDigits: 0});
-                }
-                console.error('[CartPreview] Error al decrementar cantidad:', await response.json());
+                await this.updateQuantityInCache(productId, currentQty);
             } else {
-                // Actualizar total general
-                this.updatePreviewTotal();
                 window.dispatchEvent(new CustomEvent('cartUpdated'));
             }
         } catch (error) {
             console.error('Error:', error);
+            qtySpan.textContent = currentQty;
+            await this.updateQuantityInCache(productId, currentQty);
         }
     }
 
-    // Eliminar producto - RÁPIDO Y RESPONSIVO
     async deleteProduct(productId) {
+        const item = this.itemsContainer?.querySelector(`.cart-preview-item[data-product-id="${productId}"]`);
+        if (!item) return;
+        
+        item.style.opacity = '0';
+        item.style.transition = 'opacity 0.2s';
+        
+        delete this.cachedCart[productId];
+        this.updatePreview();
+        
+        setTimeout(() => item.remove(), 200);
+        
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
         try {
-            // 1. Eliminar del DOM inmediatamente
-            const item = this.itemsContainer?.querySelector(`.cart-preview-item[data-product-id="${productId}"]`);
-            if (!item) {
-                return;
-            }
-            item.style.opacity = '0';
-            item.style.transition = 'opacity 0.2s';
-            
-            setTimeout(() => item.remove(), 200);
-            
-            // 2. Actualizar la BD
-            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
             const response = await fetch('/api/cart/remove', {
                 method: 'POST',
                 headers: {
@@ -324,45 +288,15 @@ class CartPreview {
                 body: JSON.stringify({ productId })
             });
             
-            if (response.redirected || response.status === 401) {
-                window.location.href = response.url || '/login';
-                return;
-            }
             if (response.ok) {
                 this.showDeleteNotification('Producto eliminado');
-                this.updatePreviewTotal();
                 window.dispatchEvent(new CustomEvent('cartUpdated'));
-            } else {
-                // Si falla, volver a mostrar el item
-                item.style.opacity = '1';
-                console.error('[CartPreview] Error al eliminar producto:', await response.json());
             }
         } catch (error) {
             console.error('[CartPreview] Exception:', error);
         }
     }
 
-    // Actualizar solo el total sin re-renderizar todo
-    updatePreviewTotal() {
-        let total = 0;
-        const items = this.itemsContainer ? this.itemsContainer.querySelectorAll('.cart-preview-item') : [];
-        items.forEach(item => {
-            const basePrice = parseFloat(item.querySelector('.item-total').dataset.basePrice) || 0;
-            const discount = parseFloat(item.querySelector('.item-total').dataset.discount) || 0;
-            const quantity = parseInt(item.querySelector('.item-quantity').textContent) || 0;
-            
-            const finalPrice = discount > 0 ? basePrice * (1 - discount / 100) : basePrice;
-            const itemTotal = finalPrice * quantity;
-            
-            // Update the item total display
-            item.querySelector('.item-total').textContent = `₡${itemTotal.toLocaleString('es-CR', {minimumFractionDigits: 0})}`;
-            
-            total += itemTotal;
-        });
-        this.totalElement.textContent = '₡' + total.toLocaleString('es-CR', {minimumFractionDigits: 0});
-    }
-
-    // Mostrar notificación de eliminación
     showDeleteNotification(message) {
         let notification = document.getElementById('cartDeleteNotification');
         if (!notification) {
@@ -384,11 +318,9 @@ class CartPreview {
             `;
             document.body.appendChild(notification);
         }
-
         notification.textContent = message;
         notification.style.display = 'block';
         notification.style.animation = 'slideIn 0.3s ease-in-out';
-
         setTimeout(() => {
             notification.style.animation = 'slideOut 0.3s ease-in-out';
             setTimeout(() => {
@@ -397,45 +329,15 @@ class CartPreview {
         }, 3000);
     }
 
-    // Obtener carrito desde la API
     async getCart() {
-        try {
-            const response = await fetch('/api/cart');
-            if (response.ok) {
-                const data = await response.json();
-                return data.items.reduce((acc, item) => {
-                    acc[item.id] = item;
-                    return acc;
-                }, {});
-            }
-        } catch (error) {
-            console.error('[CartPreview] Error al obtener carrito:', error);
-        }
-        return {};
-    }
-
-    // Guardar carrito (no necesario con DB)
-    saveCart(cart) {
-        // Disparar evento personalizado
-        window.dispatchEvent(new CustomEvent('cartUpdated'));
+        return this.cachedCart;
     }
 }
 
-// Inicializar cuando el carrito se actualice
-if (typeof window.cartManager !== 'undefined') {
-    const originalSaveCart = window.cartManager.saveCart.bind(window.cartManager);
-    
-    window.cartManager.saveCart = function(cart) {
-        originalSaveCart(cart);
-        // Disparar evento personalizado cuando el carrito se actualiza
-        window.dispatchEvent(new CustomEvent('cartUpdated'));
-    };
-}
-
-// Inicializar el CartPreview cuando se cargue la página
+// Inicializar el CartPreview solo en desktop
 window.cartPreview = new CartPreview();
 
-// Agregar estilos de animación
+// Agregar estilos (sin border radius)
 const style = document.createElement('style');
 style.textContent = `
     @keyframes fadeIn {
@@ -504,7 +406,7 @@ style.textContent = `
         margin-top: 10px;
         background: white;
         border: 1px solid #e0e0e0;
-        border-radius: 8px;
+        border-radius: 0px !important;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
         z-index: 1000;
         width: 420px;
@@ -555,7 +457,7 @@ style.textContent = `
         flex-shrink: 0;
         width: 55px;
         height: 55px;
-        border-radius: 4px;
+        border-radius: 0px !important;
         overflow: hidden;
         background: #f5f5f5;
     }
@@ -633,7 +535,7 @@ style.textContent = `
         cursor: pointer;
         font-size: 12px;
         font-weight: 600;
-        border-radius: 2px;
+        border-radius: 0px !important;
         transition: all 0.2s ease;
         display: flex;
         align-items: center;
@@ -677,7 +579,7 @@ style.textContent = `
         background: #ffe6e6;
         cursor: pointer;
         font-size: 10px;
-        border-radius: 2px;
+        border-radius: 0px !important;
         transition: all 0.2s ease;
         padding: 0;
         display: flex;
@@ -715,7 +617,6 @@ style.textContent = `
         padding: 12px;
         border-top: 1px solid #f0f0f0;
         background-color: #f9f9f9;
-        border-radius: 0 0 4px 4px;
     }
 
     .cart-total {
@@ -736,7 +637,7 @@ style.textContent = `
         color: white;
         text-align: center;
         text-decoration: none;
-        border-radius: 3px;
+        border-radius: 0px !important;
         font-size: 11px;
         font-weight: 600;
         letter-spacing: 0.5px;
@@ -760,18 +661,16 @@ style.textContent = `
 
     .cart-preview-items::-webkit-scrollbar-thumb {
         background: #d0d0d0;
-        border-radius: 3px;
     }
 
     .cart-preview-items::-webkit-scrollbar-thumb:hover {
         background: #b0b0b0;
     }
 
-    /* Responsive para móviles */
+    /* Responsive para móviles - ocultar el preview */
     @media (max-width: 768px) {
         .cart-preview-dropdown {
-            width: 90vw;
-            max-width: 350px;
+            display: none !important;
         }
     }
 `;
