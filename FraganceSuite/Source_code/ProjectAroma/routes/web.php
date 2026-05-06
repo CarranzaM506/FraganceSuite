@@ -22,6 +22,10 @@ use Illuminate\Support\Facades\Route;
 // RUTA PRINCIPAL
 Route::get('/', [MainPageController::class, 'index'])->name('mainPage');
 
+// PÁGINAS LEGALES
+Route::get('/terminos-y-condiciones', fn() => view('legal.terms'))->name('legal.terms');
+Route::get('/politica-de-privacidad', fn() => view('legal.privacy'))->name('legal.privacy');
+
 // CATÁLOGO
 Route::get('/catalog', [CatalogController::class, 'index'])->name('catalog.index');
 Route::get('/catalogo', [CatalogController::class, 'index'])->name('catalog');
