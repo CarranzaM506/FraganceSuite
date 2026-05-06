@@ -15,7 +15,7 @@
     <div class="edit-card">
         <div class="edit-header">
             <div>
-                <h1>Bienvenida, {{ Auth::user()->name }}</h1>
+                <h1>Hola, {{ Auth::user()->name }}</h1>
                 <p>{{ now()->translatedFormat('l, d F Y') }}</p>
             </div>
             <button class="edit-btn" onclick="toggleEditMode()">
