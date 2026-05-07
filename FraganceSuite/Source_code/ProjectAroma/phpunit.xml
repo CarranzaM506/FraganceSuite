@@ -23,7 +23,7 @@
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="BROADCAST_CONNECTION" value="null"/>
         <env name="CACHE_STORE" value="array"/>
-        <!-- DB_CONNECTION y DB_DATABASE comentados para usar MySQL real del .env -->
+        <!-- DB_CONNECTION y DB_DATABASE se toman del .env del proyecto (MySQL real) -->
         <!-- <env name="DB_CONNECTION" value="sqlite"/> -->
         <!-- <env name="DB_DATABASE" value=":memory:"/> -->
         <env name="MAIL_MAILER" value="array"/>
