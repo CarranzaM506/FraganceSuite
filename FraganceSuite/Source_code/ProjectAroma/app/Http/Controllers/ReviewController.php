@@ -117,8 +117,20 @@ class ReviewController extends Controller
         $review->delete();
 
         return redirect()
-            ->route('dashboard.reviews.index')
+            ->route('dashboard.reviews.index', ['status' => request('status', 'blocked')])
             ->with('status', 'Resena eliminada correctamente.');
+    }
+
+    public function approve(Request $request, $idreview)
+    {
+        $review = Review::findOrFail($idreview);
+        $review->is_blocked = 0;
+        $review->moderation_reason = null;
+        $review->save();
+
+        return redirect()
+            ->route('dashboard.reviews.index', ['status' => $request->query('status', 'blocked')])
+            ->with('status', 'Resena aprobada y publicada.');
     }
 
     private function moderateComment(?string $comment): array

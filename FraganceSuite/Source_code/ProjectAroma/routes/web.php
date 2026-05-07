@@ -59,6 +59,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('brands/sync', [BrandController::class, 'sync'])->name('brands.sync');
     Route::resource('brands', BrandController::class)->only(['index', 'edit', 'update']);
     Route::get('/dashboard/reviews', [ReviewController::class, 'adminIndex'])->name('dashboard.reviews.index');
+    Route::patch('/dashboard/reviews/{idreview}/approve', [ReviewController::class, 'approve'])->name('dashboard.reviews.approve');
     Route::delete('/dashboard/reviews/{idreview}', [ReviewController::class, 'destroy'])->name('dashboard.reviews.destroy');
 });
 

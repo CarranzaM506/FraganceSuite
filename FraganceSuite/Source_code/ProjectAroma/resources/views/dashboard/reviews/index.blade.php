@@ -1,6 +1,6 @@
-@extends('partsAdmin.header')
+ï»¿@extends('partsAdmin.header')
 
-@section('title', 'Moderar Reseñas')
+@section('title', 'Moderar ReseÃ±as')
 
 @section('content')
     <main class="content-wrap p-3 p-md-4">
@@ -57,7 +57,19 @@
                                     <td>{{ $review->moderation_reason ?: '-' }}</td>
                                     <td>{{ optional($review->created_at)->format('d/m/Y H:i') }}</td>
                                     <td class="text-end">
-                                        <form method="POST" action="{{ route('dashboard.reviews.destroy', $review->idreview) }}" class="d-inline delete-review-form">
+                                        @if ((int) $review->is_blocked === 1)
+                                            <form method="POST"
+                                                action="{{ route('dashboard.reviews.approve', ['idreview' => $review->idreview, 'status' => $status]) }}"
+                                                class="d-inline me-1">
+                                                @csrf
+                                                @method('PATCH')
+                                                <button type="submit" class="btn btn-sm btn-outline-success">Aprobar</button>
+                                            </form>
+                                        @endif
+
+                                        <form method="POST"
+                                            action="{{ route('dashboard.reviews.destroy', ['idreview' => $review->idreview, 'status' => $status]) }}"
+                                            class="d-inline delete-review-form">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
@@ -66,7 +78,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="9" class="text-center text-muted py-4">No hay reseñas para este filtro.</td>
+                                    <td colspan="9" class="text-center text-muted py-4">No hay reseÃ±as para este filtro.</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -88,7 +100,7 @@
             document.querySelectorAll('.delete-review-form').forEach(form => {
                 form.addEventListener('submit', function(event) {
                     event.preventDefault();
-                    openAdminDeleteConfirm('¿Eliminar esta reseña?', function() {
+                    openAdminDeleteConfirm('Â¿Eliminar esta reseÃ±a?', function() {
                         form.submit();
                     });
                 });
