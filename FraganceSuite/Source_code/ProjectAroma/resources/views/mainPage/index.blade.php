@@ -12,68 +12,73 @@
 </section>
 @endif
 
-<!-- Productos para Mujer -->
-<section class="store-section">
-    <h2 class="section-title">PARA MUJER</h2>
-    <div class="product-grid">
-        @foreach($productsForWomen as $product)
-        <div class="product-card">
-            <a href="{{ route('product.show', $product->idproduct) }}" style="text-decoration: none; color: inherit; display: block; height: 100%; width: 100%;">
-                <div class="product-image">
-                    @if($product->pathimg)
-                        <img src="{{ $product->pathimg }}" alt="{{ $product->name }}" style="width: 100%; height: 100%; object-fit: cover;">
-                    @else
-                        <i class="fas fa-wine-bottle"></i>
-                    @endif
-                    <div class="product-hover" onclick="event.stopPropagation();">
-<span class="wishlist-icon" data-product="{{ $product->idproduct }}">
-    <i class="far fa-heart"></i>
-</span>                        <span class="add-cart-icon" data-product="{{ $product->idproduct }}"><i class="fas fa-plus"></i></span>
-                    </div>
-                </div>
-                <div class="product-info">
-                    <h3 class="product-name">{{ $product->name }}</h3>
-                    <p class="product-brand">{{ $product->brand }}</p>
-                    <p class="product-category" style="display: none;">{{ $product->category }}</p>
-                    <p class="product-price">₡{{ number_format($product->price, 2) }}</p>
-                </div>
-            </a>
+<!-- ========== MÁS VENDIDOS DEL MES ========== -->
+@if(isset($bestSellers) && $bestSellers->count() > 0)
+<section class="bestsellers-section">
+    <div class="bestsellers-header">
+        <div class="bestsellers-badge">
+            <span class="badge-text">TOP VENTAS</span>
         </div>
-        @endforeach
+        <h2 class="bestsellers-title">MÁS VENDIDOS DEL MES</h2>
+        <p class="bestsellers-subtitle">Los productos favoritos de nuestra comunidad</p>
     </div>
-</section>
 
-<!-- Productos para Hombre -->
-<section class="store-section">
-    <h2 class="section-title">PARA HOMBRE</h2>
-    <div class="product-grid">
-        @foreach($productsForMen as $product)
-        <div class="product-card">
-            <a href="{{ route('product.show', $product->idproduct) }}" style="text-decoration: none; color: inherit; display: block; height: 100%; width: 100%;">
-                <div class="product-image">
-                    @if($product->pathimg)
-                        <img src="{{ $product->pathimg }}" alt="{{ $product->name }}" style="width: 100%; height: 100%; object-fit: cover;">
+    <div class="bestsellers-container">
+        <div class="bestsellers-grid">
+            @foreach($bestSellers as $index => $product)
+            <div class="bestseller-card" data-rank="{{ $index + 1 }}">
+                <div class="rank-badge">
+                    @if($index == 0)
+                    @elseif($index == 1)
+                    @elseif($index == 2)
                     @else
-                        <i class="fas fa-wine-bottle"></i>
+                        <span class="rank-number">{{ $index + 1 }}</span>
                     @endif
-                    <div class="product-hover" onclick="event.stopPropagation();">
-<span class="wishlist-icon" data-product="{{ $product->idproduct }}">
-    <i class="far fa-heart"></i>  
-</span>     
-<span class="add-cart-icon" data-product="{{ $product->idproduct }}"><i class="fas fa-plus"></i></span>
+                </div>
+                
+                <a href="{{ route('product.show', $product->idproduct) }}" class="bestseller-link">
+                    <div class="bestseller-image">
+                        @if($product->pathimg)
+                            <img src="{{ $product->pathimg }}" alt="{{ $product->name }}">
+                        @else
+                            <div class="image-placeholder">
+                                <i class="fas fa-wine-bottle"></i>
+                            </div>
+                        @endif
+                        <div class="bestseller-overlay">
+                            <span class="quick-view">VER DETALLES</span>
+                        </div>
                     </div>
-                </div>
-                <div class="product-info">
-                    <h3 class="product-name">{{ $product->name }}</h3>
-                    <p class="product-brand">{{ $product->brand }}</p>
-                    <p class="product-category" style="display: none;">{{ $product->category }}</p>
-                    <p class="product-price">₡{{ number_format($product->price, 2) }}</p>
-                </div>
-            </a>
+                    <div class="bestseller-info">
+                        <h3 class="bestseller-name">{{ $product->name }}</h3>
+                        <p class="bestseller-brand">{{ $product->brand }}</p>
+                        <div class="bestseller-price">
+                            <span class="price">₡{{ number_format($product->price, 0) }}</span>
+                        </div>
+                        <div class="bestseller-stats">
+                            <div class="sales-count">
+                                <i class="fas fa-chart-line"></i>
+                                <span>Top {{ $index + 1 }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            @endforeach
         </div>
-        @endforeach
     </div>
 </section>
+@else
+<!-- Mensaje si no hay productos -->
+<div style="background: #f8d7da; color: #721c24; padding: 20px; text-align: center; margin: 20px auto; max-width: 600px; border-radius: 0px;">
+    ⚠️ No hay productos más vendidos para mostrar.
+    @if(isset($bestSellers) && $bestSellers->count() == 0)
+        <br><small>La consulta se ejecutó pero no encontró resultados.</small>
+    @elseif(!isset($bestSellers))
+        <br><small>La variable $bestSellers no está llegando a la vista.</small>
+    @endif
+</div>
+@endif
 
 @if(isset($activeBrands) && $activeBrands->count() > 0)
 <section class="brands-section">
@@ -120,6 +125,72 @@
     </div>
 </section>
 @endif
+
+<!-- Productos para Mujer -->
+<section class="store-section">
+    <h2 class="section-title">PARA MUJER</h2>
+    <div class="product-grid">
+        @foreach($productsForWomen as $product)
+        <div class="product-card">
+            <a href="{{ route('product.show', $product->idproduct) }}" style="text-decoration: none; color: inherit; display: block; height: 100%; width: 100%;">
+                <div class="product-image">
+                    @if($product->pathimg)
+                        <img src="{{ $product->pathimg }}" alt="{{ $product->name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                    @else
+                        <i class="fas fa-wine-bottle"></i>
+                    @endif
+                    <div class="product-hover" onclick="event.stopPropagation();">
+                        <span class="wishlist-icon" data-product="{{ $product->idproduct }}">
+                            <i class="far fa-heart"></i>
+                        </span>
+                        <span class="add-cart-icon" data-product="{{ $product->idproduct }}"><i class="fas fa-plus"></i></span>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <h3 class="product-name">{{ $product->name }}</h3>
+                    <p class="product-brand">{{ $product->brand }}</p>
+                    <p class="product-category" style="display: none;">{{ $product->category }}</p>
+                    <p class="product-price">₡{{ number_format($product->price, 2) }}</p>
+                </div>
+            </a>
+        </div>
+        @endforeach
+    </div>
+</section>
+
+<!-- Productos para Hombre -->
+<section class="store-section">
+    <h2 class="section-title">PARA HOMBRE</h2>
+    <div class="product-grid">
+        @foreach($productsForMen as $product)
+        <div class="product-card">
+            <a href="{{ route('product.show', $product->idproduct) }}" style="text-decoration: none; color: inherit; display: block; height: 100%; width: 100%;">
+                <div class="product-image">
+                    @if($product->pathimg)
+                        <img src="{{ $product->pathimg }}" alt="{{ $product->name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                    @else
+                        <i class="fas fa-wine-bottle"></i>
+                    @endif
+                    <div class="product-hover" onclick="event.stopPropagation();">
+                        <span class="wishlist-icon" data-product="{{ $product->idproduct }}">
+                            <i class="far fa-heart"></i>  
+                        </span>     
+                        <span class="add-cart-icon" data-product="{{ $product->idproduct }}"><i class="fas fa-plus"></i></span>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <h3 class="product-name">{{ $product->name }}</h3>
+                    <p class="product-brand">{{ $product->brand }}</p>
+                    <p class="product-category" style="display: none;">{{ $product->category }}</p>
+                    <p class="product-price">₡{{ number_format($product->price, 2) }}</p>
+                </div>
+            </a>
+        </div>
+        @endforeach
+    </div>
+</section>
+
+
 
 <!-- Promoción Activa -->
 @if($activePromotion && $promotionProduct)
@@ -175,8 +246,6 @@
             });
         });
 
-        
-        
         // Carrito icons
         document.querySelectorAll('.add-cart-icon').forEach(icon => {
             icon.addEventListener('click', function(e) {
