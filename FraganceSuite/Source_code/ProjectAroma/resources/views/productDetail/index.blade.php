@@ -109,7 +109,8 @@
             Agregar reseña
         </button>
 
-        <form class="review-form is-hidden" id="reviewForm" onsubmit="return false;">
+        <form class="review-form is-hidden" id="reviewForm" method="POST" action="/api/reviews" onsubmit="return false;">
+            @csrf
             <div class="review-field">
                 <label class="review-label">Calificación</label>
                 <div class="star-rating" id="ratingStars" data-max="5" aria-label="Calificación">
