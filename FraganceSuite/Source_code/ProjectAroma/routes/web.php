@@ -57,7 +57,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('products/search', [ControllerDiscount::class, 'searchProducts'])->name('products.search');
     Route::resource('promotionCode', CodePromotionController::class);
     Route::get('brands/sync', [BrandController::class, 'sync'])->name('brands.sync');
-    Route::resource('brands', BrandController::class)->only(['index', 'edit', 'update']);});
+    Route::resource('brands', BrandController::class)->only(['index', 'edit', 'update']);
+    Route::get('/dashboard/reviews', [ReviewController::class, 'adminIndex'])->name('dashboard.reviews.index');
+    Route::delete('/dashboard/reviews/{idreview}', [ReviewController::class, 'destroy'])->name('dashboard.reviews.destroy');
+});
 
 // RUTAS PROTEGIDAS USUARIOS (Requieren autenticación)
 Route::middleware('auth')->group(function () {
@@ -98,4 +101,3 @@ Route::middleware('auth')->group(function () {
 
 
 require __DIR__ . '/auth.php';
-

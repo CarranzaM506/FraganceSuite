@@ -448,7 +448,8 @@
                                 return;
                             }
 
-                            notify('Reseña guardada', 'success');
+                            const payload = await response.json().catch(() => ({}));
+                            notify(payload.message || 'Reseña guardada', payload.blocked ? 'error' : 'success');
 
                             reviewForm.reset();
                             selectedValue = 0;
