@@ -1630,3 +1630,283 @@ footer {
     justify-content: center;
     gap: 8px;
 }
+
+/* ========== MÁS VENDIDOS DEL MES - MINIMALISTA ========== */
+.bestsellers-section {
+    padding: 30px 30px;
+    background: transparent;
+    margin: 0;
+    overflow: hidden;
+}
+
+.bestsellers-header {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.bestsellers-badge {
+    display: inline-block;
+    margin-bottom: 15px;
+}
+
+.fire-icon {
+    font-size: 24px;
+    display: inline-block;
+}
+
+.badge-text {
+    font-size: 11px;
+    letter-spacing: 3px;
+    font-weight: 500;
+    color: #927a1b;
+    text-transform: uppercase;
+}
+
+.bestsellers-title {
+    font-size: 28px;
+    font-weight: 300;
+    color: #1a1a1a;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+}
+
+.bestsellers-subtitle {
+    font-size: 13px;
+    color: #999;
+    letter-spacing: 1px;
+    font-weight: 300;
+}
+
+.bestsellers-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.bestsellers-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 50px;
+    max-width: 1000px;  
+    margin: 0 auto;
+}
+
+.bestseller-card {
+    position: relative;
+    background: transparent;
+    transition: all 0.4s ease;
+    opacity: 0;
+    transform: translateX(80px);
+}
+
+/* La animación se activará con JavaScript al hacer scroll */
+.bestseller-card.animate-in {
+    animation: slideInFromRight 0.6s ease forwards;
+}
+
+@keyframes slideInFromRight {
+    from {
+        opacity: 0;
+        transform: translateX(80px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+
+
+.bestseller-card:hover {
+    transform: translateY(-5px);
+}
+
+.rank-badge {
+    position: absolute;
+    top: -12px;
+    left: -12px;
+    z-index: 10;
+}
+
+.rank-medal {
+    font-size: 28px;
+    display: inline-block;
+}
+
+.rank-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: #1a1a1a;
+    color: white;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.bestseller-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.bestseller-image {
+    position: relative;
+    height: 350px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bestseller-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;  
+    transition: transform 0.5s ease;
+}
+
+.bestseller-card:hover .bestseller-image img {
+    transform: scale(1.03);
+}
+
+.bestseller-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.bestseller-card:hover .bestseller-overlay {
+    opacity: 1;
+}
+
+.quick-view {
+    color: white;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 8px 16px;
+    transform: translateY(15px);
+    transition: transform 0.3s ease;
+}
+
+.bestseller-card:hover .quick-view {
+    transform: translateY(0);
+}
+
+.bestseller-info {
+    padding: 0;
+    text-align: center;
+}
+
+.bestseller-name {
+    font-size: 13px;
+    font-weight: 400;
+    color: #333;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    line-height: 1.4;
+    white-space: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    max-height: 36px;
+}
+
+.bestseller-brand {
+    font-size: 11px;
+    color: #999;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.bestseller-price {
+    margin-bottom: 8px;
+}
+
+.bestseller-price .price {
+    font-size: 15px;
+    font-weight: 500;
+    color: #1a1a1a;
+}
+
+.bestseller-stats {
+    display: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .bestsellers-section {
+        padding: 20px 20px;
+    }
+    
+    .bestsellers-title {
+        font-size: 22px;
+        letter-spacing: 3px;
+    }
+    
+    .bestsellers-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 30px;
+    }
+    
+    .bestseller-image {
+        height: 240px;
+    }
+}
+
+@media (max-width: 480px) {
+    .bestsellers-section {
+        padding: 10px 15px;
+    }
+    
+    .bestsellers-title {
+        font-size: 18px;
+        letter-spacing: 2px;
+    }
+    
+    .bestsellers-subtitle {
+        font-size: 11px;
+    }
+    
+    .bestsellers-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+    
+    .bestseller-image {
+        height: 180px;
+        margin-bottom: 12px;
+    }
+    
+    .bestseller-name {
+        font-size: 11px;
+    }
+    
+    .bestseller-brand {
+        font-size: 10px;
+    }
+    
+    .bestseller-price .price {
+        font-size: 13px;
+    }
+    
+    .rank-medal {
+        font-size: 22px;
+    }
+}
+

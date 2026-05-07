@@ -12,6 +12,7 @@
 </section>
 @endif
 
+
 <!-- Productos para Mujer -->
 <section class="store-section">
     <h2 class="section-title">PARA MUJER</h2>
@@ -26,9 +27,10 @@
                         <i class="fas fa-wine-bottle"></i>
                     @endif
                     <div class="product-hover" onclick="event.stopPropagation();">
-<span class="wishlist-icon" data-product="{{ $product->idproduct }}">
-    <i class="far fa-heart"></i>
-</span>                        <span class="add-cart-icon" data-product="{{ $product->idproduct }}"><i class="fas fa-plus"></i></span>
+                        <span class="wishlist-icon" data-product="{{ $product->idproduct }}">
+                            <i class="far fa-heart"></i>
+                        </span>
+                        <span class="add-cart-icon" data-product="{{ $product->idproduct }}"><i class="fas fa-plus"></i></span>
                     </div>
                 </div>
                 <div class="product-info">
@@ -57,10 +59,10 @@
                         <i class="fas fa-wine-bottle"></i>
                     @endif
                     <div class="product-hover" onclick="event.stopPropagation();">
-<span class="wishlist-icon" data-product="{{ $product->idproduct }}">
-    <i class="far fa-heart"></i>  
-</span>     
-<span class="add-cart-icon" data-product="{{ $product->idproduct }}"><i class="fas fa-plus"></i></span>
+                        <span class="wishlist-icon" data-product="{{ $product->idproduct }}">
+                            <i class="far fa-heart"></i>  
+                        </span>     
+                        <span class="add-cart-icon" data-product="{{ $product->idproduct }}"><i class="fas fa-plus"></i></span>
                     </div>
                 </div>
                 <div class="product-info">
@@ -74,6 +76,7 @@
         @endforeach
     </div>
 </section>
+
 
 @if(isset($activeBrands) && $activeBrands->count() > 0)
 <section class="brands-section">
@@ -116,6 +119,53 @@
                 </div>
                 @endforeach
             </div>
+        </div>
+    </div>
+</section>
+@endif
+
+<!-- ========== MÁS VENDIDOS DEL MES ========== -->
+@if(isset($bestSellers) && $bestSellers->count() > 0)
+<section class="bestsellers-section">
+    <div class="bestsellers-header">
+        <div class="bestsellers-badge">
+            <span class="badge-text">TOP VENTAS</span>
+        </div>
+        <h2 class="bestsellers-title">MÁS VENDIDOS DEL MES</h2>
+    </div>
+
+    <div class="bestsellers-container">
+        <div class="bestsellers-grid">
+            @foreach($bestSellers as $index => $product)
+            <div class="bestseller-card" data-rank="{{ $index + 1 }}">
+                <div class="rank-badge">
+                    @if($index == 0)
+                    @elseif($index == 1)
+                    @elseif($index == 2)
+                    @else
+                        <span class="rank-number">{{ $index + 1 }}</span>
+                    @endif
+                </div>
+                
+                <a href="{{ route('product.show', $product->idproduct) }}" class="bestseller-link">
+                    <div class="bestseller-image">
+                        @if($product->pathimg)
+                            <img src="{{ $product->pathimg }}" alt="{{ $product->name }}">
+                        @else
+                            <div class="image-placeholder">
+                                <i class="fas fa-wine-bottle"></i>
+                            </div>
+                        @endif
+                        <div class="bestseller-overlay">
+                            <span class="quick-view">VER DETALLES</span>
+                        </div>
+                    </div>
+                    <div class="bestseller-info">
+                        <h3 class="bestseller-name">{{ $product->name }}</h3>
+                    </div>
+                </a>
+            </div>
+            @endforeach
         </div>
     </div>
 </section>
@@ -175,8 +225,6 @@
             });
         });
 
-        
-        
         // Carrito icons
         document.querySelectorAll('.add-cart-icon').forEach(icon => {
             icon.addEventListener('click', function(e) {
@@ -366,6 +414,34 @@
             setTimeout(checkSplitScroll, 100);
             window.addEventListener('scroll', checkSplitScroll);
         }
+    });
+
+    // ===== ANIMACIÓN DE MÁS VENDIDOS AL HACER SCROLL =====
+    document.addEventListener('DOMContentLoaded', function() {
+        const bestsellerCards = document.querySelectorAll('.bestseller-card');
+        
+        if (bestsellerCards.length === 0) return;
+        
+        function checkBestsellerScroll() {
+            bestsellerCards.forEach((card, index) => {
+                const rect = card.getBoundingClientRect();
+                const windowHeight = window.innerHeight;
+                
+                // Si la tarjeta está visible en el viewport
+                if (rect.top < windowHeight - 100 && rect.bottom > 0) {
+                    // Agregar un pequeño retraso para cada tarjeta (efecto cascada)
+                    setTimeout(() => {
+                        card.classList.add('animate-in');
+                    }, index * 150);
+                }
+            });
+        }
+        
+        // Ejecutar al cargar la página
+        setTimeout(checkBestsellerScroll, 100);
+        
+        // Ejecutar al hacer scroll
+        window.addEventListener('scroll', checkBestsellerScroll);
     });
 
 </script>
