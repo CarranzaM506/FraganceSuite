@@ -46,9 +46,7 @@ Route::get('/api/reviews/{productId}', [ReviewController::class, 'getByProduct']
 
 // RUTAS DE ADMINISTRACIÓN (PROTEGIDAS)
 Route::middleware(['auth', 'admin'])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard.main');
-    })->name('dashboard');
+    Route::get('/dashboard', [OrderController::class, 'dashboard'])->name('dashboard');
     Route::post('/import', [ControllerImportProducts::class, 'import'])->name('product.import');
     Route::resource('product', ControllerProduct::class);
     Route::resource('hero', HeroController::class)->except(['show']);
