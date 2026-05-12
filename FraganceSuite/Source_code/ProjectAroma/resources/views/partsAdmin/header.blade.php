@@ -84,6 +84,14 @@
                         <a class="nav-link" href="{{ route('product.index') }}">Ver</a>
                     </div>
 
+                    <!-- Videos -->
+                    <a class="nav-link {{ request()->is('video*') ? 'active' : '' }}" href="{{ route('video.index') }}">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="5 3 19 12 5 21 5 3"/>
+                        </svg>
+                        Videos
+                    </a>
+
                     <!-- Hero -->
                     <a class="nav-link {{ request()->is('hero*') ? 'active' : '' }}" href="{{ route('hero.index') }}">
                         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
