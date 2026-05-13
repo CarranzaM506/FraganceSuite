@@ -752,7 +752,7 @@ table.dataTable thead th.sorting:before {
 }
 
 
-/* Vista admin de códigos promocionales: todo cuadrado */
+/* Vista admin de cï¿½digos promocionales: todo cuadrado */
 body.promo-codes-admin-mode,
 body.promo-codes-admin-mode * {
   border-radius: 0 !important;
@@ -964,4 +964,105 @@ body.promo-codes-admin-mode * {
   justify-content: center;
   gap: 0.5rem;
   margin-top: 0.9rem;
+}
+
+/* ========== ADMIN BESTSELLERS STYLES ========== */
+.admin-bestsellers-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+}
+
+.admin-bestsellers-grid.single-product {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.admin-bestsellers-grid.single-product .admin-bestseller-card {
+    max-width: 400px;
+    width: 100%;
+}
+
+.admin-bestseller-card {
+    background: white;
+    border: 1px solid var(--aroma-gray-200);
+    padding: 20px;
+    position: relative;
+    transition: transform 0.2s ease;
+}
+
+.admin-bestseller-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+}
+
+.admin-rank-badge {
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    font-size: 32px;
+    background: white;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.admin-bestseller-image {
+    width: 100%;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.admin-bestseller-image img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.admin-bestseller-info {
+    text-align: center;
+}
+
+.admin-bestseller-info h4 {
+    font-size: 14px;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.admin-bestseller-info .brand {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+.admin-bestseller-info .price {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.admin-bestseller-info .sold-count {
+    font-size: 12px;
+    color: #927a1b;
+    margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+    .admin-bestsellers-grid {
+        grid-template-columns: 1fr;
+        gap: 25px;
+    }
+    
+    .admin-bestseller-image {
+        height: 180px;
+    }
 }
