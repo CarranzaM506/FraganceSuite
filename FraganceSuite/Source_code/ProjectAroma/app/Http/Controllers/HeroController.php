@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Hero;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class HeroController extends Controller
 {
@@ -13,7 +12,8 @@ class HeroController extends Controller
      */
     public function index()
     {
-        $heroes = Hero::all(); // Sin order, solo todas
+        $heroes = Hero::all();
+
         return view('dashboard.hero.index', compact('heroes'));
     }
 
@@ -40,17 +40,21 @@ class HeroController extends Controller
             Hero::where('active', 1)->update(['active' => 0]);
         }
 
-        // Guardar imagen
-        $imagePath = null;
+        $fileName = null;
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('hero', 'public');
+            if (!is_dir(public_path('img-hero'))) {
+                mkdir(public_path('img-hero'), 0755, true);
+            }
+
+            $file     = $request->file('image');
+            $fileName = time() . '_' . str_replace(' ', '_', $file->getClientOriginalName());
+            $file->move(public_path('img-hero'), $fileName);
         }
 
-        // Crear registro
         Hero::create([
-            'title' => $request->title,
-            'image' => $imagePath,
-            'active' => $request->has('active') ? 1 : 0
+            'title'  => $request->title,
+            'image'  => $fileName,
+            'active' => $request->has('active') ? 1 : 0,
         ]);
 
         return redirect()->route('hero.index')
@@ -66,9 +70,11 @@ class HeroController extends Controller
     {
         $hero = Hero::findOrFail($id);
         
-        // Eliminar archivo de imagen
         if ($hero->image) {
-            Storage::disk('public')->delete($hero->image);
+            $path = public_path('img-hero/' . $hero->image);
+            if (file_exists($path)) {
+                unlink($path);
+            }
         }
         
         // Si el hero eliminado estaba activo, no pasa nada (ya no hay hero visible)

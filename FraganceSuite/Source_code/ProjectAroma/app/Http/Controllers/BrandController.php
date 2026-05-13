@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Brand;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class BrandController extends Controller
 {
@@ -18,7 +17,7 @@ class BrandController extends Controller
             ->pluck('brand');
         
         $brands = Brand::orderBy('order')->orderBy('brand_name')->get();
-        
+
         return view('dashboard.brands.index', compact('brands', 'existingBrands'));
     }
 
@@ -38,14 +37,22 @@ class BrandController extends Controller
             'active' => 'boolean'
         ]);
 
-        // Subir nuevo logo
         if ($request->hasFile('logo')) {
-            // Eliminar logo anterior
-            if ($brand->logo && Storage::disk('public')->exists($brand->logo)) {
-                Storage::disk('public')->delete($brand->logo);
+            if ($brand->logo) {
+                $oldPath = public_path('img-brands/' . $brand->logo);
+                if (file_exists($oldPath)) {
+                    unlink($oldPath);
+                }
             }
-            $path = $request->file('logo')->store('brands', 'public');
-            $brand->logo = $path;
+
+            if (!is_dir(public_path('img-brands'))) {
+                mkdir(public_path('img-brands'), 0755, true);
+            }
+
+            $file     = $request->file('logo');
+            $fileName = time() . '_' . str_replace(' ', '_', $file->getClientOriginalName());
+            $file->move(public_path('img-brands'), $fileName);
+            $brand->logo = $fileName;
         }
 
         $brand->order = $request->order ?? 0;
