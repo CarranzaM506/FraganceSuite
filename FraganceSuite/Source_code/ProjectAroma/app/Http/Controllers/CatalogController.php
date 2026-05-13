@@ -4,12 +4,22 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
+use Carbon\Carbon;
 
 class CatalogController extends Controller
 {
     public function index(Request $request)
     {
         $query = Product::query()->where('active', 1);
+        $now = Carbon::now();
+
+        // Filtrar productos con descuento activo
+        if ($request->boolean('offers')) {
+            $query->whereHas('discount', function ($discountQuery) use ($now) {
+                $discountQuery->where('startdate', '<=', $now)
+                    ->where('enddate', '>=', $now);
+            });
+        }
         
         // Manejar categorías desde el header (mujer, hombre, unisex, kids)
         $categoryFromHeader = strtolower($request->get('category', ''));

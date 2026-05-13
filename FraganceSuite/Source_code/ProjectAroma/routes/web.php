@@ -22,6 +22,10 @@ use Illuminate\Support\Facades\Route;
 // RUTA PRINCIPAL
 Route::get('/', [MainPageController::class, 'index'])->name('mainPage');
 
+// PÁGINAS LEGALES
+Route::get('/terminos-y-condiciones', fn() => view('legal.terms'))->name('legal.terms');
+Route::get('/politica-de-privacidad', fn() => view('legal.privacy'))->name('legal.privacy');
+
 // CATÁLOGO
 Route::get('/catalog', [CatalogController::class, 'index'])->name('catalog.index');
 Route::get('/catalogo', [CatalogController::class, 'index'])->name('catalog');
@@ -42,9 +46,7 @@ Route::get('/api/reviews/{productId}', [ReviewController::class, 'getByProduct']
 
 // RUTAS DE ADMINISTRACIÓN (PROTEGIDAS)
 Route::middleware(['auth', 'admin'])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard.main');
-    })->name('dashboard');
+    Route::get('/dashboard', [OrderController::class, 'dashboard'])->name('dashboard');
     Route::post('/import', [ControllerImportProducts::class, 'import'])->name('product.import');
     Route::resource('product', ControllerProduct::class);
     Route::resource('hero', HeroController::class)->except(['show']);
@@ -53,7 +55,11 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('products/search', [ControllerDiscount::class, 'searchProducts'])->name('products.search');
     Route::resource('promotionCode', CodePromotionController::class);
     Route::get('brands/sync', [BrandController::class, 'sync'])->name('brands.sync');
-    Route::resource('brands', BrandController::class)->only(['index', 'edit', 'update']);});
+    Route::resource('brands', BrandController::class)->only(['index', 'edit', 'update']);
+    Route::get('/dashboard/reviews', [ReviewController::class, 'adminIndex'])->name('dashboard.reviews.index');
+    Route::patch('/dashboard/reviews/{idreview}/approve', [ReviewController::class, 'approve'])->name('dashboard.reviews.approve');
+    Route::delete('/dashboard/reviews/{idreview}', [ReviewController::class, 'destroy'])->name('dashboard.reviews.destroy');
+});
 
 // RUTAS PROTEGIDAS USUARIOS (Requieren autenticación)
 Route::middleware('auth')->group(function () {
@@ -94,4 +100,3 @@ Route::middleware('auth')->group(function () {
 
 
 require __DIR__ . '/auth.php';
-

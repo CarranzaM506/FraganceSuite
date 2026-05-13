@@ -6,8 +6,7 @@ use App\Models\Product;
 use App\Models\Hero; 
 use App\Models\Discount;
 use App\Models\Brand;
-
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
 class MainPageController extends Controller
@@ -17,32 +16,28 @@ class MainPageController extends Controller
         // OBTENER HERO ACTIVO - SOLO 1 IMAGEN
         $heroImage = Hero::where('active', true)->first();
 
-        // Si NO hay hero activo, usar un producto como respaldo
         if (!$heroImage) {
             $product = Product::where('active', true)
                 ->where('decant', true)
                 ->inRandomOrder()
                 ->first();
                 
-            // Crear objeto hero virtual con la imagen del producto
             $heroImage = (object)[
                 'image' => $product ? str_replace('public/storage/', '', $product->pathimg) : null,
                 'title' => 'AROMA'
             ];
         }
 
-// Obtener marcas que tienen logo
-$brandsWithLogo = Brand::where('active', true)
-    ->whereNotNull('logo')
-    ->where('logo', '!=', '')
-    ->orderBy('order')
-    ->orderBy('brand_name')
-    ->get();
+        // Obtener marcas que tienen logo
+        $brandsWithLogo = Brand::where('active', true)
+            ->whereNotNull('logo')
+            ->where('logo', '!=', '')
+            ->orderBy('order')
+            ->orderBy('brand_name')
+            ->get();
 
-// Solo pasar las marcas a la vista si hay al menos 20
-$activeBrands = $brandsWithLogo->count() >= 20 ? $brandsWithLogo : collect();
+        $activeBrands = $brandsWithLogo->count() >= 20 ? $brandsWithLogo : collect();
     
-
         // Obtener productos para MUJER
         $productsForWomen = Product::where(function($query) {
                 $query->where('category', 'like', '%mujer%')
@@ -63,13 +58,43 @@ $activeBrands = $brandsWithLogo->count() >= 20 ? $brandsWithLogo : collect();
             ->limit(4)
             ->get();
 
+        // ========== MÁS VENDIDOS DEL MES ==========
+        $bestSellers = collect();
+
+        try {
+            $bestSellers = Product::select(
+                    'product.idproduct',
+                    'product.name',
+                    'product.price',
+                    'product.brand',
+                    'product.pathimg',
+                    DB::raw('SUM(orderdetail.quantity) as total_sold')
+                )
+                ->join('orderdetail', 'product.idproduct', '=', 'orderdetail.idproduct')
+                ->join('order', 'orderdetail.idorder', '=', 'order.idorder')
+                ->whereMonth('order.date', now()->month)
+                ->whereYear('order.date', now()->year)
+                ->groupBy(
+                    'product.idproduct',
+                    'product.name',
+                    'product.price',
+                    'product.brand',
+                    'product.pathimg'
+                )
+                ->orderByDesc('total_sold')
+                ->limit(2)
+                ->get();
+                
+        } catch (\Exception $e) {
+            \Log::error('Error en más vendidos: ' . $e->getMessage());
+        }
+
         // Obtener promoción activa
         $activePromotion = Discount::where('startdate', '<=', now())
             ->where('enddate', '>=', now())
             ->orderBy('enddate', 'asc')
             ->first();
 
-        // Producto de la promoción
         $promotionProduct = null;
         if ($activePromotion) {
             $promotionProduct = Product::where('iddiscount', $activePromotion->iddiscount)
@@ -88,8 +113,8 @@ $activeBrands = $brandsWithLogo->count() >= 20 ? $brandsWithLogo : collect();
             'productsForMen',
             'activePromotion',
             'promotionProduct',
-            'activeBrands' 
-
+            'activeBrands',
+            'bestSellers'  
         ));
     }
 }

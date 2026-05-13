@@ -109,7 +109,8 @@
             Agregar reseña
         </button>
 
-        <form class="review-form is-hidden" id="reviewForm" onsubmit="return false;">
+        <form class="review-form is-hidden" id="reviewForm" method="POST" action="/api/reviews" onsubmit="return false;">
+            @csrf
             <div class="review-field">
                 <label class="review-label">Calificación</label>
                 <div class="star-rating" id="ratingStars" data-max="5" aria-label="Calificación">
@@ -144,6 +145,21 @@
         let currentQuantity = 1;
         const maxStock = {{ $product->stock }};
 
+        function notifyUser(message, type = 'success') {
+            if (window.cartManager && typeof window.cartManager.showNotification === 'function') {
+                window.cartManager.showNotification(message, type);
+                return;
+            }
+            const existing = document.querySelector('.aroma-notification');
+            if (existing) existing.remove();
+            const notification = document.createElement('div');
+            notification.className = 'aroma-notification';
+            notification.textContent = message;
+            notification.style.cssText = 'position:fixed;bottom:80px;right:20px;background:#000;color:#fff;padding:12px 20px;z-index:9999;font-size:13px;box-shadow:0 2px 10px rgba(0,0,0,.2);';
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+        }
+
         // Función para actualizar cantidad
         function updateQuantity(change) {
             const newQuantity = currentQuantity + change;
@@ -160,11 +176,17 @@
         // Función para añadir al carrito
         async function addToCart(productId) {
             try {
+                if (window.isAuthenticated === false) {
+                    notifyUser('Debes iniciar sesion para agregar al carrito', 'error');
+                    setTimeout(() => {
+                        window.location.href = '/login';
+                    }, 1500);
+                    return;
+                }
+
                 const csrfTokenElement = document.querySelector('meta[name="csrf-token"]');
                 if (!csrfTokenElement) {
-                    if (window.favoritesSystem) {
-                        window.favoritesSystem.showNotification('Error: CSRF token no encontrado', 'error');
-                    }
+                    notifyUser('Error: CSRF token no encontrado', 'error');
                     return;
                 }
 
@@ -186,9 +208,7 @@
                 }
 
                 if (response.ok) {
-                    if (window.favoritesSystem) {
-                        window.favoritesSystem.showNotification('Producto añadido al carrito', 'success');
-                    }
+                    notifyUser('Producto añadido al carrito', 'success');
                     if (window.cartPreview) {
                         setTimeout(() => {
                             window.cartPreview.updatePreview();
@@ -196,16 +216,11 @@
                     }
                 } else {
                     const errorData = await response.json();
-                    if (window.favoritesSystem) {
-                        window.favoritesSystem.showNotification(
-                            `Error: ${errorData.error || 'Error al añadir al carrito'}`, 'error');
-                    }
+                    notifyUser(`Error: ${errorData.error || 'Error al añadir al carrito'}`, 'error');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                if (window.favoritesSystem) {
-                    window.favoritesSystem.showNotification('Error al añadir al carrito', 'error');
-                }
+                notifyUser('Error al añadir al carrito', 'error');
             }
         }
 
@@ -230,17 +245,7 @@
 
         // Inicializar al cargar la página
         document.addEventListener('DOMContentLoaded', function() {
-            const notify = (message, type = 'success') => {
-                if (window.favoritesSystem && typeof window.favoritesSystem.showNotification === 'function') {
-                    window.favoritesSystem.showNotification(message, type);
-                    return;
-                }
-                if (window.cartManager && typeof window.cartManager.showNotification === 'function') {
-                    window.cartManager.showNotification(message, type);
-                    return;
-                }
-                console.warn(message);
-            };
+            const notify = (message, type = 'success') => notifyUser(message, type);
 
             if (maxStock > 0) {
                 document.getElementById('decrementQty').disabled = true;
@@ -444,7 +449,8 @@
                                 return;
                             }
 
-                            notify('Reseña guardada', 'success');
+                            const payload = await response.json().catch(() => ({}));
+                            notify(payload.message || 'Reseña guardada', payload.blocked ? 'error' : 'success');
 
                             reviewForm.reset();
                             selectedValue = 0;

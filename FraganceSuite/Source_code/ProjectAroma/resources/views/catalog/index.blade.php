@@ -110,7 +110,7 @@
         <div class="filter-left">
             <button class="filter-btn" id="openFilter">
                 <i class="fas fa-sliders-h"></i> Filtrar
-                @if(request('category') || request('brand') || request('price') || request('search') || (request('sort') && request('sort') != 'newest'))
+                @if(request('offers') || request('category') || request('brand') || request('price') || request('search') || (request('sort') && request('sort') != 'newest'))
                 @endif
             </button>
             <span class="product-count">{{ $products->total() }} productos</span>
@@ -118,10 +118,17 @@
     </div>
     
     <!-- Filtros activos -->
-    @if(request('category') || request('brand') || request('price') || request('search') || (request('sort') && request('sort') != 'newest'))
+    @if(request('offers') || request('category') || request('brand') || request('price') || request('search') || (request('sort') && request('sort') != 'newest'))
     <div style="margin-bottom: 20px; padding: 0 20px;">
         <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center;">
             <span style="font-size: 14px; color: #666;">Filtros aplicados:</span>
+
+            @if(request('offers'))
+                <span class="filter-tag">
+                    Ofertas especiales
+                    <button onclick="removeFilter('offers')" style="background: none; border: none; color: white; cursor: pointer; margin-left: 5px;">Ã—</button>
+                </span>
+            @endif
             
             @if(request('sort') && request('sort') != 'newest')
                 <span class="filter-tag">
@@ -176,7 +183,7 @@
                 </span>
             @endif
             
-            @if(request('category') || request('brand') || request('price') || request('search') || (request('sort') && request('sort') != 'newest'))
+            @if(request('offers') || request('category') || request('brand') || request('price') || request('search') || (request('sort') && request('sort') != 'newest'))
                 <button onclick="clearAllFilters()" style="background: none; border: none; color: #666; cursor: pointer; font-size: 14px; margin-left: 10px;">
                     <i class="fas fa-times"></i> Limpiar todos
                 </button>
@@ -442,6 +449,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const brand = document.getElementById('modalBrand').value;
         const price = document.getElementById('modalPrice').value;
         const search = document.getElementById('modalSearch').value;
+        const isOffers = new URLSearchParams(window.location.search).has('offers');
         
         // Construir URL con parámetros
         const params = new URLSearchParams();
@@ -452,6 +460,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (brand !== 'all') params.append('brand', brand);
         if (price !== 'all') params.append('price', price);
         if (search.trim() !== '') params.append('search', search.trim());
+        if (isOffers) params.append('offers', '1');
         
         // Quitar página actual al filtrar
         params.delete('page');

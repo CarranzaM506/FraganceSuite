@@ -8,6 +8,62 @@ use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
+    public function dashboard()
+    {
+        $currentYear = now()->year;
+
+        $monthlySalesRaw = Order::select(
+            DB::raw('MONTH(date) as month'),
+            DB::raw('SUM(total) as totalSales'),
+            DB::raw('COUNT(*) as totalOrders')
+        )
+            ->where('state', 1)
+            ->whereYear('date', $currentYear)
+            ->groupBy(DB::raw('MONTH(date)'))
+            ->orderBy('month', 'asc')
+            ->get()
+            ->keyBy('month');
+
+        $meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+        $monthlySales = [];
+        for ($i = 1; $i <= 12; $i++) {
+            $monthlySales[] = isset($monthlySalesRaw[$i]) ? (float) $monthlySalesRaw[$i]->totalSales : 0;
+        }
+
+        $dailySalesRaw = Order::select(
+            DB::raw('DATE(date) as day'),
+            DB::raw('SUM(total) as totalSales'),
+            DB::raw('COUNT(*) as totalOrders')
+        )
+            ->where('state', 1)
+            ->where('date', '>=', now()->subDays(29)->startOfDay())
+            ->groupBy(DB::raw('DATE(date)'))
+            ->orderBy('day', 'asc')
+            ->get()
+            ->keyBy('day');
+
+        $dailyLabels = [];
+        $dailySales = [];
+        for ($i = 29; $i >= 0; $i--) {
+            $date = now()->subDays($i)->format('Y-m-d');
+            $dailyLabels[] = now()->subDays($i)->format('d/m');
+            $dailySales[] = isset($dailySalesRaw[$date]) ? (float) $dailySalesRaw[$date]->totalSales : 0;
+        }
+
+        $totalVentasAnio  = (float) Order::where('state', 1)->whereYear('date', $currentYear)->sum('total');
+        $totalPedidosAnio = Order::where('state', 1)->whereYear('date', $currentYear)->count();
+        $totalVentasMes   = (float) Order::where('state', 1)->whereYear('date', $currentYear)->whereMonth('date', now()->month)->sum('total');
+        $totalPedidosMes  = Order::where('state', 1)->whereYear('date', $currentYear)->whereMonth('date', now()->month)->count();
+
+        return view('dashboard.main', compact(
+            'meses', 'monthlySales',
+            'dailyLabels', 'dailySales',
+            'totalVentasAnio', 'totalPedidosAnio',
+            'totalVentasMes', 'totalPedidosMes',
+            'currentYear'
+        ));
+    }
+
     public function index(Request $request)
     {
         $year = $request->year;

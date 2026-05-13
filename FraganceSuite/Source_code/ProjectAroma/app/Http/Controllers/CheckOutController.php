@@ -9,10 +9,10 @@ class CheckOutController extends Controller
 {
     public function index()
     {
-        $user =  Auth::user();
+        $user = Auth::user();
 
-        // traer direcciones del usuario
-        $addresses = $user->locations;
+        // traer direcciones del usuario SIN duplicados
+        $addresses = $user->locations()->distinct()->get();
 
         return view('cart.checkout', compact('addresses'));
     }

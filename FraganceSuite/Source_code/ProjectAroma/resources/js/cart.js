@@ -1,5 +1,4 @@
-﻿
-class CartManager {
+﻿class CartManager {
     constructor() {
         this.storageKey = 'aroma_cart';
         this.pendingProduct = null;
@@ -12,7 +11,7 @@ class CartManager {
 
     // Inicializar event listeners
     init() {
-        // Ejecutar solo una vez cuando el DOM estÃƒÂ© listo
+        // Ejecutar solo una vez cuando el DOM esté listo
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => this.attachAddToCartListeners());
         } else {
@@ -54,7 +53,7 @@ class CartManager {
             }
             const csrfTokenElement = document.querySelector('meta[name="csrf-token"]');
             if (!csrfTokenElement) {
-                this.showNotification('Error: CSRF token no encontrado. Recarga la pÃƒÂ¡gina.', 'error');
+                this.showNotification('Error: CSRF token no encontrado. Recarga la página.', 'error');
                 console.error('CSRF token meta tag not found');
                 return false;
             }
@@ -86,14 +85,14 @@ class CartManager {
             }
             this.emitCartUpdated();
 
-            // Actualizar el preview si estÃƒÂ¡ disponible
+            // Actualizar el preview si está disponible
             if (window.cartPreview) {
                 window.cartPreview.updatePreview();
             }
             return true;
         } catch (error) {
             console.error('Error adding to cart:', error);
-            this.showNotification(`Error al aÃƒÂ±adir al carrito: ${error.message}`, 'error');
+            this.showNotification(`Error al añadir al carrito: ${error.message}`, 'error');
             return false;
         }
     }
@@ -169,13 +168,12 @@ class CartManager {
     // Obtener datos del producto (fallback seguro)
     async fetchProductData(productId) {
         try {
-            // Si existe un endpoint pÃºblico, reemplazar la URL aquÃ­
             const response = await fetch(`/api/products/${productId}`);
             if (response.ok) {
                 return await response.json();
             }
         } catch (error) {
-            // Silently fail: usamos el backend del carrito como fuente de verdad
+            // Silently fail
         }
         return {};
     }
@@ -194,16 +192,14 @@ class CartManager {
                 const productCard = button.closest('.product-card');
 
                 if (productCard && productId) {
-                    // Obtener datos del producto de la tarjeta
                     const productImage = productCard.querySelector('img')?.src || '';
                     const productName = productCard.querySelector('.product-name')?.textContent || 'Producto';
                     const productBrand = productCard.querySelector('.product-brand')?.textContent || '';
                     const productCategory = productCard.querySelector('.product-category')?.textContent || '';
-                    const productPrice = productCard.querySelector('.product-price')?.textContent?.replace('Ã¢â€šÂ¡', '').replace(/,/g, '').trim() || '0';
+                    const productPrice = productCard.querySelector('.product-price')?.textContent?.replace('₡', '').replace(/,/g, '').trim() || '0';
 
                     console.log('Producto capturado:', { productId, productName, productPrice });
 
-                    // Obtener datos completos del producto incluyendo descuento
                     const productData = await this.fetchProductData(productId);
                     const discount = productData?.discount || 0;
                     const stock = parseInt(productData?.stock ?? -1);
@@ -222,7 +218,6 @@ class CartManager {
                         }
                     }
 
-                    // Agregar directamente al carrito
                     const added = await this.addToCart(
                         productId,
                         productName,
@@ -241,7 +236,7 @@ class CartManager {
         });
     }
 
-    // Mostrar notificaciÃƒÂ³n
+    // Mostrar notificación
     showNotification(message, type = 'success') {
         const colors = {
             success: '#000',
@@ -289,7 +284,6 @@ class CartManager {
         `;
         document.body.appendChild(notification);
 
-        // Ocultar despuÃƒÂ©s de 3 segundos
         setTimeout(() => {
             notification.style.animation = 'slideOutDown 0.3s ease';
             setTimeout(() => {
@@ -298,15 +292,6 @@ class CartManager {
                 }
             }, 300);
         }, 3000);
-    }
-    // Actualizar preview del carrito
-    updateCartPreview() {
-        // FunciÃƒÂ³n removida
-    }
-
-    // Inicializar eventos del preview
-    initCartPreview() {
-        // FunciÃƒÂ³n removida
     }
 }
 
@@ -319,17 +304,14 @@ class CartPageManager {
         this.codeDiscountPercent = 0;
         this.appliedCode = null;
 
-        // Siempre intentar inicializar en DOMContentLoaded
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => this.init());
         } else {
-            // Si el DOM ya estÃƒÂ¡ listo cuando se carga el script
             this.init();
         }
     }
 
     init() {
-        // Re-obtener elementos cada vez que se inicializa
         this.container = document.getElementById('cartItemsContainer');
         this.emptyMessage = document.getElementById('emptyCartMessage');
         this.subtotalEl = document.getElementById('subtotalPrice');
@@ -340,44 +322,27 @@ class CartPageManager {
         this.promoBtn = document.getElementById('applyPromoBtn');
         this.promoMessage = document.getElementById('promoCodeMessage');
 
-        // Solo proceder si estamos en la página del carrito
         if (!this.container) {
             console.log('[CartPageManager] No cart page detected - skipping initialization');
             return;
         }
 
         console.log('[CartPageManager] Cart page detected - initializing');
-        console.log('[CartPageManager] Elements:', {
-            container: !!this.container,
-            subtotal: !!this.subtotalEl,
-            discount: !!this.discountEl,
-            total: !!this.totalEl,
-            checkout: !!this.checkoutBtn
-        });
         this.renderCart();
         this.attachListeners();
         window.addEventListener('cartUpdated', () => this.renderCart());
     }
 
     async renderCart() {
-        if (!this.container) {
-            console.log('[renderCart] Container not found, aborting');
-            return;
-        }
+        if (!this.container) return;
 
         console.log('[renderCart] Starting to fetch cart data...');
         try {
             const response = await fetch('/api/cart');
-            console.log('[renderCart] Response status:', response.status, response.statusText);
-
             const data = await response.json();
-            console.log('[renderCart] Cart API response:', data);
-
             const items = data.items || [];
-            console.log('[renderCart] Number of items:', items.length);
 
             if (items.length === 0) {
-                console.log('[renderCart] Cart is empty, showing empty message');
                 this.container.innerHTML = `
                     <div class="empty-cart">
                         <i class="fas fa-shopping-bag"></i>
@@ -390,7 +355,6 @@ class CartPageManager {
                 return;
             }
 
-            console.log('[renderCart] Rendering', items.length, 'items');
             if (this.checkoutBtn) this.checkoutBtn.disabled = false;
 
             let itemsHTML = `
@@ -409,18 +373,10 @@ class CartPageManager {
                     <tbody>
             `;
 
-            items.forEach((item, index) => {
+            items.forEach((item) => {
                 const price = parseFloat(item.price);
                 const qty = parseInt(item.quantity);
                 const discount = parseFloat(item.discount || 0);
-                console.log(`[renderCart] Item ${index + 1}:`, {
-                    id: item.id,
-                    name: item.name,
-                    price,
-                    qty,
-                    discount
-                });
-
                 const finalPrice = discount > 0 ? price * (1 - discount / 100) : price;
                 const lineTotal = finalPrice * qty;
 
@@ -478,7 +434,6 @@ class CartPageManager {
             `;
 
             this.container.innerHTML = itemsHTML;
-            console.log('[renderCart] All items rendered successfully');
             this.updateTotals();
         } catch (error) {
             console.error('[renderCart] Error:', error);
@@ -526,7 +481,6 @@ class CartPageManager {
                 window.location.href = '/checkout';
             });
         }
-        
     }
 
     async decreaseQty(productId, qtySpan, cartItem) {
@@ -655,17 +609,15 @@ class CartPageManager {
         const qtySpan = item.querySelector('.qty-value');
         const qty = parseInt(qtySpan.textContent);
         const itemTotal = item.querySelector('.total-cell');
-        if (!itemTotal) {
-            return;
-        }
+        if (!itemTotal) return;
+        
         const basePrice = parseFloat(itemTotal.getAttribute('data-base-price'));
         const discount = parseFloat(itemTotal.getAttribute('data-discount')) || 0;
-
         const finalPrice = discount > 0 ? basePrice * (1 - discount / 100) : basePrice;
         const total = finalPrice * qty;
-
         const totalText = `₡${total.toFixed(2)}`;
         const totalStrong = itemTotal.querySelector('strong');
+        
         if (totalStrong) {
             totalStrong.textContent = totalText;
         } else {
@@ -687,12 +639,10 @@ class CartPageManager {
         document.querySelectorAll('.cart-item').forEach(item => {
             const qty = parseInt(item.querySelector('.qty-value').textContent);
             const itemTotal = item.querySelector('.total-cell');
-            if (!itemTotal) {
-                return;
-            }
+            if (!itemTotal) return;
+            
             const basePrice = parseFloat(itemTotal.getAttribute('data-base-price'));
             const discount = parseFloat(itemTotal.getAttribute('data-discount')) || 0;
-
             const itemSubtotal = basePrice * qty;
             subtotal += itemSubtotal;
             totalDiscount += itemSubtotal * (discount / 100);
@@ -726,36 +676,11 @@ class CartPageManager {
             `;
 
             modal.innerHTML = `
-                <div style="
-                    background: white;
-                    padding: 30px;
-                    max-width: 300px;
-                    width: 90%;
-                    text-align: center;
-                    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-                ">
+                <div style="background: white; padding: 30px; max-width: 300px; width: 90%; text-align: center;">
                     <p style="margin: 0 0 25px 0; color: #666; font-size: 14px;">¿Eliminar del carrito?</p>
                     <div style="display: flex; gap: 10px;">
-                        <button class="modal-cancel" style="
-                            flex: 1;
-                            padding: 10px;
-                            background: #f5f5f5;
-                            color: #666;
-                            border: 1px solid #ddd;
-                            cursor: pointer;
-                            font-weight: 600;
-                            font-size: 12px;
-                        ">No</button>
-                        <button class="modal-confirm" style="
-                            flex: 1;
-                            padding: 10px;
-                            background: #cc0000;
-                            color: white;
-                            border: none;
-                            cursor: pointer;
-                            font-weight: 600;
-                            font-size: 12px;
-                        ">SÃƒÂ­, eliminar</button>
+                        <button class="modal-cancel" style="flex:1; padding:10px; background:#f5f5f5; color:#666; border:1px solid #ddd; cursor:pointer;">No</button>
+                        <button class="modal-confirm" style="flex:1; padding:10px; background:#cc0000; color:white; border:none; cursor:pointer;">Sí, eliminar</button>
                     </div>
                 </div>
             `;
@@ -792,19 +717,16 @@ class CartPageManager {
                 right: 20px;
                 background: #cc0000;
                 color: white;
-                padding: 15px 25px;
-                border-radius: 0px;
+                padding: 12px 20px;
                 z-index: 9999;
                 font-size: 13px;
                 font-weight: 500;
-                letter-spacing: 0.5px;
                 box-shadow: 0 2px 10px rgba(0,0,0,0.2);
             `;
             document.body.appendChild(notification);
         }
 
         notification.textContent = message;
-        notification.style.background = colors[type] || colors.success;
         notification.style.display = 'block';
 
         setTimeout(() => {
@@ -813,8 +735,29 @@ class CartPageManager {
     }
 }
 
-// Inicializar CartPageManager si estamos en la pÃƒÂ¡gina del carrito
-window.cartPageManager = new CartPageManager();
+// ============================================
+// INICIALIZACIÓN CONDICIONAL - NO EN CHECKOUT
+// ============================================
+const isCheckoutPage = document.body.classList.contains('checkout-body');
 
-// Inicializar el CartManager cuando se cargue la pÃƒÂ¡gina
-window.cartManager = new CartManager();
+if (!isCheckoutPage) {
+    // Solo inicializar si NO es checkout
+    window.cartPageManager = new CartPageManager();
+    window.cartManager = new CartManager();
+    console.log('[cart.js] Initialized for cart/catalog pages');
+} else {
+    console.log('[cart.js] Checkout page detected - skipping initialization');
+    // Crear funciones vacías para que no haya errores
+    window.cartManager = {
+        addToCart: () => false,
+        updateQuantity: () => false,
+        removeFromCart: () => false,
+        showNotification: () => {},
+        getCart: () => {},
+        emitCartUpdated: () => {},
+        saveCart: () => {},
+        getCartCount: () => 0,
+        fetchProductData: () => {}
+    };
+    window.cartPageManager = null;
+}

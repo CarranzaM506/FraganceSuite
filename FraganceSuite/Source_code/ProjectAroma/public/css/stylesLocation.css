@@ -1,0 +1,362 @@
+/* ========== ESTILOS PARA DIRECCIONES ========== */
+
+.location-body {
+    background: white !important;
+}
+
+#aroma-location-page {
+    max-width: 1000px;
+    margin: 50px auto 50px;
+    padding: 0 20px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    
+}
+
+/* Header de la página */
+.location-page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.location-page-header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.location-page-header h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #000;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.location-back-btn {
+    background: transparent;
+    border: 1px solid #ccc;
+    padding: 8px 20px;
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    color: #333;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.location-back-btn:hover {
+    border-color: #000;
+    color: #000;
+}
+
+.location-add-btn {
+    background: #000;
+    color: white !important;
+    border: none;
+    padding: 10px 25px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s;
+    white-space: nowrap;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.location-add-btn:hover {
+    background: #333;
+    color: white !important;
+}
+
+/* Tarjeta de dirección */
+.address-card {
+    background: white;
+    border: none;
+    border-radius: 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    height: 100%;
+}
+
+.address-card:hover {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    transform: translateY(-3px);
+}
+
+.address-card-body {
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.address-card-icon {
+    font-size: 20px;
+    color: #000;
+    margin-bottom: 14px;
+}
+
+.address-province {
+    font-size: 12px;
+    font-weight: 700;
+    color: #000;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+}
+
+.address-subtitle {
+    font-size: 11px;
+    color: #999;
+    letter-spacing: 0.3px;
+    margin-bottom: 0;
+}
+
+.address-detail {
+    font-size: 13px;
+    color: #555;
+    line-height: 1.6;
+    flex-grow: 1;
+    margin-bottom: 0;
+    border-top: 1px solid #f0f0f0;
+    padding-top: 14px;
+    margin-top: 14px;
+}
+
+.address-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.address-edit-btn {
+    background: transparent;
+    border: 1px solid #ccc;
+    padding: 8px 0;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #333;
+    flex: 1;
+    text-align: center;
+}
+
+.address-edit-btn:hover {
+    border-color: #000;
+    color: #000;
+}
+
+.address-delete-btn {
+    background: transparent;
+    border: 1px solid #e8d5d5;
+    padding: 8px 0;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #bbb;
+    flex: 1;
+    text-align: center;
+}
+
+.address-delete-btn:hover {
+    border-color: #c0392b;
+    color: #c0392b;
+}
+
+/* Estado vacío */
+.location-empty {
+    text-align: center;
+    padding: 80px 20px;
+    color: #999;
+    width: 100%;
+}
+
+.location-empty i {
+    font-size: 48px;
+    color: #e0e0e0;
+    margin-bottom: 20px;
+    display: block;
+}
+
+.location-empty p {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 25px;
+}
+
+.location-empty-btn {
+    background: #000;
+    color: white !important;
+    border: none;
+    padding: 12px 30px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.location-empty-btn:hover {
+    background: #333;
+}
+
+/* Alertas */
+#aroma-location-page .alert {
+    padding: 12px;
+    margin-bottom: 30px;
+    font-size: 12px;
+    border-radius: 0;
+}
+
+#aroma-location-page .alert-success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+#aroma-location-page .alert-danger {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Modales de confirmación */
+.confirm-modal-body {
+    padding: 40px 30px;
+    text-align: center;
+}
+
+.confirm-modal-icon {
+    font-size: 40px;
+    margin-bottom: 18px;
+    display: block;
+}
+
+.confirm-modal-icon.danger  { color: #c0392b; }
+.confirm-modal-icon.neutral { color: #000; }
+
+.confirm-modal-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #000;
+    margin-bottom: 6px;
+}
+
+.confirm-modal-subtitle {
+    font-size: 12px;
+    color: #999;
+    margin: 0;
+}
+
+.confirm-modal-footer {
+    border-top: 1px solid #e0e0e0;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.confirm-cancel-btn {
+    background: transparent;
+    border: 1px solid #ccc;
+    padding: 10px 28px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    color: #555;
+    transition: all 0.2s;
+}
+
+.confirm-cancel-btn:hover {
+    border-color: #000;
+    color: #000;
+}
+
+.confirm-action-btn {
+    background: #000;
+    border: none;
+    padding: 10px 28px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    color: white;
+    transition: background 0.2s;
+}
+
+.confirm-action-btn:hover {
+    background: #333;
+}
+
+.confirm-action-btn.danger {
+    background: #c0392b;
+}
+
+.confirm-action-btn.danger:hover {
+    background: #a93226;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    #aroma-location-page {
+        margin: 30px auto 40px;
+    }
+
+    .location-page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .location-add-btn {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    #aroma-location-page {
+        margin: 10px auto 30px;
+        padding: 0 15px;
+    }
+
+    .address-card-body {
+        padding: 20px;
+    }
+
+    .location-page-header-left {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+}

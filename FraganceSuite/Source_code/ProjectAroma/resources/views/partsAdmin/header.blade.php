@@ -154,6 +154,14 @@
                         </a>
                     </div>
 
+                    <a class="nav-link {{ request()->is('dashboard/reviews*') ? 'active' : '' }}"
+                        href="{{ route('dashboard.reviews.index') }}">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                        </svg>
+                        Moderar Reseñas
+                    </a>
+
                     <hr class="border-light opacity-25 my-3" />
 
                     @if (Auth::check())
@@ -180,6 +188,32 @@
 
     </div>
 
+    <div class="modal fade" id="adminDeleteConfirmModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-sm modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center py-4">
+                    <p class="mb-0" id="adminDeleteConfirmMessage">&iquest;Est&aacute;s seguro de eliminar este registro?</p>
+                </div>
+                <div class="modal-footer d-flex justify-content-center gap-2 border-0 pt-0 pb-4">
+                    <button type="button" class="btn btn-secondary btn-sm px-4" data-bs-dismiss="modal">No</button>
+                    <button type="button" class="btn btn-danger btn-sm px-4" id="adminDeleteConfirmBtn">S&iacute;, eliminar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="adminUpdateConfirmModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-sm modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center py-4">
+                    <p class="mb-0" id="adminUpdateConfirmMessage">&iquest;Deseas guardar los cambios?</p>
+                </div>
+                <div class="modal-footer d-flex justify-content-center gap-2 border-0 pt-0 pb-4">
+                    <button type="button" class="btn btn-secondary btn-sm px-4" data-bs-dismiss="modal">No</button>
+                    <button type="button" class="btn btn-dark btn-sm px-4" id="adminUpdateConfirmBtn">S&iacute;, actualizar</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Forzar que el offcanvas se cierre correctamente en móvil
@@ -194,6 +228,98 @@
                     });
                 }
             }
+        });
+        window.openAdminDeleteConfirm = function(message, onConfirm) {
+            const modalEl = document.getElementById('adminDeleteConfirmModal');
+            const messageEl = document.getElementById('adminDeleteConfirmMessage');
+            const confirmBtn = document.getElementById('adminDeleteConfirmBtn');
+            if (!modalEl || !messageEl || !confirmBtn || typeof bootstrap === 'undefined') {
+                const fallback = window.confirm('Estas seguro de eliminar este registro?');
+                if (fallback && typeof onConfirm === 'function') onConfirm();
+                return;
+            }
+
+            messageEl.innerHTML = message || '&iquest;Est&aacute;s seguro de eliminar este registro?';
+            const modal = new bootstrap.Modal(modalEl);
+            const previousActive = document.activeElement;
+
+            const onHidden = function() {
+                const focused = document.activeElement;
+                if (focused && modalEl.contains(focused) && typeof focused.blur === 'function') {
+                    focused.blur();
+                }
+                if (previousActive && typeof previousActive.focus === 'function') {
+                    previousActive.focus();
+                }
+            };
+
+            modalEl.addEventListener('hidden.bs.modal', onHidden, { once: true });
+            confirmBtn.onclick = function() {
+                if (document.activeElement && typeof document.activeElement.blur === 'function') {
+                    document.activeElement.blur();
+                }
+                modal.hide();
+                if (typeof onConfirm === 'function') onConfirm();
+            };
+            modal.show();
+        };
+
+        window.openAdminUpdateConfirm = function(message, onConfirm) {
+            const modalEl = document.getElementById('adminUpdateConfirmModal');
+            const messageEl = document.getElementById('adminUpdateConfirmMessage');
+            const confirmBtn = document.getElementById('adminUpdateConfirmBtn');
+            if (!modalEl || !messageEl || !confirmBtn || typeof bootstrap === 'undefined') {
+                const fallback = window.confirm('Deseas guardar los cambios?');
+                if (fallback && typeof onConfirm === 'function') onConfirm();
+                return;
+            }
+
+            messageEl.innerHTML = message || '&iquest;Deseas guardar los cambios?';
+            const modal = new bootstrap.Modal(modalEl);
+            const previousActive = document.activeElement;
+
+            const onHidden = function() {
+                const focused = document.activeElement;
+                if (focused && modalEl.contains(focused) && typeof focused.blur === 'function') {
+                    focused.blur();
+                }
+                if (previousActive && typeof previousActive.focus === 'function') {
+                    previousActive.focus();
+                }
+            };
+
+            modalEl.addEventListener('hidden.bs.modal', onHidden, { once: true });
+            confirmBtn.onclick = function() {
+                if (document.activeElement && typeof document.activeElement.blur === 'function') {
+                    document.activeElement.blur();
+                }
+                modal.hide();
+                if (typeof onConfirm === 'function') onConfirm();
+            };
+            modal.show();
+        };
+
+        document.addEventListener('submit', function(event) {
+            const form = event.target;
+            if (!(form instanceof HTMLFormElement)) return;
+
+            const message = form.dataset.confirmMessage;
+            if (!message) return;
+
+            if (form.dataset.confirmed === 'true') {
+                form.dataset.confirmed = 'false';
+                return;
+            }
+
+            event.preventDefault();
+            openAdminUpdateConfirm(message, function() {
+                form.dataset.confirmed = 'true';
+                if (typeof form.requestSubmit === 'function') {
+                    form.requestSubmit();
+                } else {
+                    form.submit();
+                }
+            });
         });
     </script>
     @yield('scripts')

@@ -36,7 +36,7 @@
                         @endif
 
                         {{-- FORM EDITAR --}}
-                        <form method="POST" action="{{ route('product.update', $product->idproduct) }}">
+                        <form method="POST" action="{{ route('product.update', $product->idproduct) }}" data-confirm-message="&iquest;Deseas guardar los cambios del producto?">
                             @csrf
                             @method('PUT')
 

@@ -42,7 +42,7 @@
                     <div class="table-responsive">
                         <table class="table table-hover align-middle">
                             <thead class="table-light">
-                                32
+                                <tr>
                                     <th>ID</th>
                                     <th>Imagen</th>
                                     <th>Título</th>
@@ -162,3 +162,5 @@
     });
 </script>
 @endsection
+
+

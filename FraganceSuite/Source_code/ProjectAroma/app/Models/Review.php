@@ -14,10 +14,17 @@ class Review extends Model
         'iduser',
         'rating',
         'comment',
+        'is_blocked',
+        'moderation_reason',
     ];
 
     public function user()
     {
         return $this->belongsTo(User::class, 'iduser');
+    }
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class, 'idproduct', 'idproduct');
     }
 }
