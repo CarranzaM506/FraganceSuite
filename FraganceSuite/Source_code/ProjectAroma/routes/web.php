@@ -85,6 +85,12 @@ Route::middleware('auth')->group(function () {
     Route::resource('orders', OrderController::class);
     Route::get('/dailySales', [OrderController::class, "dailysales"])->name('dailySales');
 
+    // Venta física (temporal: sin controller aún)
+    Route::get('/physical-sales', function () {
+        $products = \App\Models\Product::where('active', true)->where('stock', '>', 0)->orderBy('name')->get();
+        return view('dashboard.sales.physical-sales', compact('products'));
+    })->name('physicalSales');
+
     Route::post('/api/address', [LocationController::class, 'storeApi']);
     Route::get('/checkout', [CheckOutController::class, 'index'])->name('checkout');
 

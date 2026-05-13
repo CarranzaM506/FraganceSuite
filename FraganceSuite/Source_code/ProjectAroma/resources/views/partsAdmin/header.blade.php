@@ -131,8 +131,9 @@
                     </a>
 
                     <!-- Ventas -->
-                    <a class="nav-link d-flex align-items-center justify-content-between {{ request()->is('sales*') ? 'active' : '' }}"
-                        data-bs-toggle="collapse" href="#submenuVentas" role="button" aria-expanded="false"
+                    <a class="nav-link d-flex align-items-center justify-content-between {{ request()->is('sales*') || request()->is('physical-sales*') || request()->is('orders*') || request()->is('dailySales*') ? 'active' : '' }}"
+                        data-bs-toggle="collapse" href="#submenuVentas" role="button"
+                        aria-expanded="{{ request()->is('physical-sales*') || request()->is('orders*') || request()->is('dailySales*') ? 'true' : 'false' }}"
                         aria-controls="submenuVentas">
                         <span>
                             <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -145,7 +146,10 @@
                         <span class="ms-2">▾</span>
                     </a>
 
-                    <div class="collapse submenu" id="submenuVentas">
+                    <div class="collapse submenu {{ request()->is('physical-sales*') ? 'show' : '' }}" id="submenuVentas">
+                        <a class="nav-link {{ request()->routeIs('physicalSales') ? 'active' : '' }}" href="{{ route('physicalSales') }}">
+                            Nueva Venta
+                        </a>
                         <a class="nav-link" href="{{ route('orders.index') }}">
                             Ventas Mensuales
                         </a>
