@@ -6,8 +6,10 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>AROMA | Dashboard</title>
 
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.4.0/css/all.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
@@ -130,10 +132,20 @@
                         Logos de Marcas
                     </a>
 
+                    <!-- Nueva Venta (acceso directo) -->
+                    <a class="nav-link {{ request()->routeIs('physicalSales') ? 'active' : '' }}"
+                        href="{{ route('physicalSales') }}">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1V2l-2 1-2-1-2 1-2-1-2 1-2-1z"/>
+                            <path d="M14 8H8"/><path d="M16 12H8"/><path d="M11 16H8"/>
+                        </svg>
+                        Nueva Venta
+                    </a>
+
                     <!-- Ventas -->
-                    <a class="nav-link d-flex align-items-center justify-content-between {{ request()->is('sales*') || request()->is('physical-sales*') || request()->is('orders*') || request()->is('dailySales*') ? 'active' : '' }}"
+                    <a class="nav-link d-flex align-items-center justify-content-between {{ request()->is('orders*') || request()->is('dailySales*') ? 'active' : '' }}"
                         data-bs-toggle="collapse" href="#submenuVentas" role="button"
-                        aria-expanded="{{ request()->is('physical-sales*') || request()->is('orders*') || request()->is('dailySales*') ? 'true' : 'false' }}"
+                        aria-expanded="{{ request()->is('orders*') || request()->is('dailySales*') ? 'true' : 'false' }}"
                         aria-controls="submenuVentas">
                         <span>
                             <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -146,14 +158,11 @@
                         <span class="ms-2">▾</span>
                     </a>
 
-                    <div class="collapse submenu {{ request()->is('physical-sales*') ? 'show' : '' }}" id="submenuVentas">
-                        <a class="nav-link {{ request()->routeIs('physicalSales') ? 'active' : '' }}" href="{{ route('physicalSales') }}">
-                            Nueva Venta
-                        </a>
-                        <a class="nav-link" href="{{ route('orders.index') }}">
+                    <div class="collapse submenu {{ request()->is('orders*') || request()->is('dailySales*') ? 'show' : '' }}" id="submenuVentas">
+                        <a class="nav-link {{ request()->routeIs('orders.index') ? 'active' : '' }}" href="{{ route('orders.index') }}">
                             Ventas Mensuales
                         </a>
-                        <a class="nav-link" href="{{route('dailySales')}}">
+                        <a class="nav-link {{ request()->routeIs('dailySales') ? 'active' : '' }}" href="{{ route('dailySales') }}">
                             Ventas Diarias
                         </a>
                     </div>

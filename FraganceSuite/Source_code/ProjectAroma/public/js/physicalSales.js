@@ -14,12 +14,17 @@ let invoiceCounter = Math.floor(Math.random() * 9000) + 1000;
 document.addEventListener('DOMContentLoaded', function () {
     setInvoiceDate();
     populateFilters();
-    renderProducts(ALL_PRODUCTS);
+    renderProducts([]);
 
     document.getElementById('searchInput').addEventListener('input', applyFilters);
     document.getElementById('brandFilter').addEventListener('change', applyFilters);
     document.getElementById('categoryFilter').addEventListener('change', applyFilters);
     document.getElementById('discountInput').addEventListener('input', updateCheckoutTotals);
+    document.getElementById('cashReceivedInput').addEventListener('input', () => {
+        const safePct = Math.max(0, Math.min(100, parseFloat(document.getElementById('discountInput').value) || 0));
+        const total   = getSubtotal() * (1 - safePct / 100);
+        updateChange(total);
+    });
 });
 
 function setInvoiceDate() {
@@ -57,9 +62,14 @@ function applyFilters() {
     const brand  = document.getElementById('brandFilter').value;
     const cat    = document.getElementById('categoryFilter').value;
 
+    if (!search) {
+        renderProducts([]);
+        return;
+    }
+
     const filtered = ALL_PRODUCTS.filter(p => {
-        const matchName  = !search || p.name.toLowerCase().includes(search);
-        const matchBrand = !brand  || p.brand === brand;
+        const matchName  = p.name.toLowerCase().includes(search);
+        const matchBrand = !brand || p.brand === brand;
         const matchCat   = !cat   || p.category === cat;
         return matchName && matchBrand && matchCat;
     });
@@ -71,18 +81,31 @@ function applyFilters() {
    RENDERIZADO DE PRODUCTOS
    ===================================================== */
 function renderProducts(products) {
-    const container = document.getElementById('productsContainer');
-    const noResults = document.getElementById('noResults');
-    const noStock   = document.getElementById('noStock');
+    const container    = document.getElementById('productsContainer');
+    const noResults    = document.getElementById('noResults');
+    const noStock      = document.getElementById('noStock');
+    const searchPrompt = document.getElementById('searchPrompt');
+
+    const searching = document.getElementById('searchInput').value.trim().length > 0;
 
     if (ALL_PRODUCTS.length === 0) {
         container.innerHTML = '';
         noStock.classList.remove('d-none');
         noResults.classList.add('d-none');
+        searchPrompt.classList.add('d-none');
         return;
     }
 
     noStock.classList.add('d-none');
+
+    if (!searching) {
+        container.innerHTML = '';
+        searchPrompt.classList.remove('d-none');
+        noResults.classList.add('d-none');
+        return;
+    }
+
+    searchPrompt.classList.add('d-none');
 
     if (products.length === 0) {
         container.innerHTML = '';
@@ -227,8 +250,13 @@ function openCheckout() {
 
     document.getElementById('selectedPaymentMethod').value = '';
     document.getElementById('discountInput').value = '0';
+    document.getElementById('cashReceivedInput').value = '';
+    document.getElementById('cashSection').classList.add('d-none');
+    document.getElementById('changeSection').classList.add('d-none');
     document.getElementById('paymentError').classList.add('d-none');
     document.getElementById('discountError').classList.add('d-none');
+    document.getElementById('cashError').classList.add('d-none');
+    document.getElementById('saleError').classList.add('d-none');
     document.querySelectorAll('.payment-option').forEach(el => el.classList.remove('selected'));
 
     updateCheckoutTotals();
@@ -240,6 +268,16 @@ function selectPayment(el) {
     el.classList.add('selected');
     document.getElementById('selectedPaymentMethod').value = el.dataset.method;
     document.getElementById('paymentError').classList.add('d-none');
+
+    const isCash = el.dataset.method === 'efectivo';
+    document.getElementById('cashSection').classList.toggle('d-none', !isCash);
+    if (!isCash) {
+        document.getElementById('cashReceivedInput').value = '';
+        document.getElementById('changeSection').classList.add('d-none');
+        document.getElementById('cashError').classList.add('d-none');
+    } else {
+        updateCheckoutTotals();
+    }
 }
 
 function updateCheckoutTotals() {
@@ -263,11 +301,41 @@ function updateCheckoutTotals() {
     document.getElementById('checkoutTotal').textContent          = '₡' + fmt(total);
 
     document.getElementById('discountRow').style.display = safePct > 0 ? 'flex' : 'none';
+
+    updateChange(total);
+}
+
+function updateChange(total) {
+    const method = document.getElementById('selectedPaymentMethod').value;
+    if (method !== 'efectivo') return;
+
+    const received    = parseFloat(document.getElementById('cashReceivedInput').value) || 0;
+    const changeEl    = document.getElementById('changeSection');
+    const changeAmt   = document.getElementById('changeAmount');
+    const cashErr     = document.getElementById('cashError');
+
+    if (received <= 0) {
+        changeEl.classList.add('d-none');
+        cashErr.classList.add('d-none');
+        return;
+    }
+
+    if (received < total) {
+        cashErr.classList.remove('d-none');
+        changeEl.classList.add('d-none');
+    } else {
+        cashErr.classList.add('d-none');
+        changeAmt.textContent = '₡' + fmt(received - total);
+        changeEl.style.display = 'flex';
+        changeEl.classList.remove('d-none');
+    }
 }
 
 function confirmSale() {
     const method   = document.getElementById('selectedPaymentMethod').value;
     const discount = parseFloat(document.getElementById('discountInput').value) || 0;
+    const safePct  = Math.max(0, Math.min(100, discount));
+    const total    = getSubtotal() * (1 - safePct / 100);
     let valid = true;
 
     if (!method) {
@@ -278,16 +346,58 @@ function confirmSale() {
         document.getElementById('discountError').classList.remove('d-none');
         valid = false;
     }
+    if (method === 'efectivo') {
+        const received = parseFloat(document.getElementById('cashReceivedInput').value) || 0;
+        if (received < total) {
+            document.getElementById('cashError').classList.remove('d-none');
+            valid = false;
+        }
+    }
     if (!valid) return;
 
-    bootstrap.Modal.getInstance(document.getElementById('checkoutModal')).hide();
-    setTimeout(() => buildInvoice(method, discount), 300);
+    const cashReceived = method === 'efectivo'
+        ? parseFloat(document.getElementById('cashReceivedInput').value) || 0
+        : 0;
+
+    const items = cart.map(({ product, qty }) => ({
+        idproduct: product.idproduct,
+        qty,
+        price: product.price,
+    }));
+
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+    const checkoutModal = bootstrap.Modal.getInstance(document.getElementById('checkoutModal'));
+    const saleError = document.getElementById('saleError');
+
+    fetch('/physical-sales', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken,
+        },
+        body: JSON.stringify({ items, payment_method: method, discount, total }),
+    })
+    .then(res => res.json().then(data => ({ ok: res.ok, data })))
+    .then(({ ok, data }) => {
+        if (!ok || !data.success) {
+            saleError.textContent = data.error || 'Error al procesar la venta. Intenta nuevamente.';
+            saleError.classList.remove('d-none');
+            return;
+        }
+        saleError.classList.add('d-none');
+        checkoutModal.hide();
+        setTimeout(() => buildInvoice(method, discount, cashReceived), 300);
+    })
+    .catch(() => {
+        saleError.textContent = 'Error de conexión. Intenta nuevamente.';
+        saleError.classList.remove('d-none');
+    });
 }
 
 /* =====================================================
    FACTURA
    ===================================================== */
-function buildInvoice(method, discountPct) {
+function buildInvoice(method, discountPct, cashReceived = 0) {
     const subtotal    = getSubtotal();
     const discountAmt = subtotal * discountPct / 100;
     const total       = subtotal - discountAmt;
@@ -321,6 +431,15 @@ function buildInvoice(method, discountPct) {
     document.getElementById('inv-total').textContent           = '₡' + fmt(total);
     document.getElementById('inv-discount-row').style.display  = discountPct > 0 ? 'flex' : 'none';
 
+    const cashRow = document.getElementById('inv-cash-row');
+    if (method === 'efectivo' && cashReceived > 0) {
+        document.getElementById('inv-cash-received').textContent = '₡' + fmt(cashReceived);
+        document.getElementById('inv-vuelto').textContent        = '₡' + fmt(cashReceived - total);
+        cashRow.style.display = 'block';
+    } else {
+        cashRow.style.display = 'none';
+    }
+
     new bootstrap.Modal(document.getElementById('invoiceModal')).show();
 }
 
@@ -334,7 +453,7 @@ function resetSale() {
     document.getElementById('searchInput').value    = '';
     document.getElementById('brandFilter').value    = '';
     document.getElementById('categoryFilter').value = '';
-    renderProducts(ALL_PRODUCTS);
+    renderProducts([]);
     renderCart();
 }
 

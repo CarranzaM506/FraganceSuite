@@ -52,6 +52,14 @@
 
             <div id="productsContainer"></div>
 
+            <div id="searchPrompt" class="text-center py-5">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5" class="mb-3">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="m21 21-4.35-4.35"/>
+                </svg>
+                <p class="text-muted mb-0">Escribe en el buscador para ver productos.</p>
+            </div>
+
             <div id="noResults" class="text-center py-5 d-none">
                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5" class="mb-3">
                     <circle cx="11" cy="11" r="8"/>
@@ -148,17 +156,36 @@
                     <label class="ps-label">Método de Pago</label>
                     <div class="d-flex gap-2">
                         <div class="payment-option flex-fill text-center p-3" data-method="efectivo" onclick="selectPayment(this)">
-                            <div style="font-size: 1.4rem; margin-bottom: 4px;">💵</div>
+                            <i class="fa-solid fa-money-bill-wave" style="font-size: 1.3rem; margin-bottom: 6px; display: block;"></i>
                             <div style="font-size: 0.78rem; font-weight: 500;">Efectivo</div>
                         </div>
                         <div class="payment-option flex-fill text-center p-3" data-method="sinpe" onclick="selectPayment(this)">
-                            <div style="font-size: 1.4rem; margin-bottom: 4px;">📱</div>
+                            <i class="fa-solid fa-mobile-screen-button" style="font-size: 1.3rem; margin-bottom: 6px; display: block;"></i>
                             <div style="font-size: 0.78rem; font-weight: 500;">SINPE</div>
                         </div>
                         <div class="payment-option flex-fill text-center p-3" data-method="transferencia" onclick="selectPayment(this)">
-                            <div style="font-size: 1.4rem; margin-bottom: 4px;">🏦</div>
+                            <i class="fa-solid fa-building-columns" style="font-size: 1.3rem; margin-bottom: 6px; display: block;"></i>
                             <div style="font-size: 0.78rem; font-weight: 500;">Transferencia</div>
                         </div>
+                    </div>
+
+                    {{-- Campo efectivo: solo visible cuando se selecciona "Efectivo" --}}
+                    <div id="cashSection" class="mt-3 d-none">
+                        <label class="ps-label">Con cuánto paga el cliente</label>
+                        <div class="input-group">
+                            <span class="input-group-text" style="font-size: 0.85rem;">₡</span>
+                            <input type="number"
+                                   class="form-control"
+                                   id="cashReceivedInput"
+                                   min="0"
+                                   step="1"
+                                   placeholder="0">
+                        </div>
+                        <div id="changeSection" class="mt-2 d-none" style="background: var(--aroma-gray-100); padding: 0.6rem 1rem; display: flex; justify-content: space-between; align-items: center;">
+                            <span class="text-muted small">Vuelto</span>
+                            <span id="changeAmount" class="fw-bold" style="font-size: 1rem;"></span>
+                        </div>
+                        <div id="cashError" class="text-danger small mt-1 d-none">El monto recibido debe ser mayor o igual al total.</div>
                     </div>
                     <input type="hidden" id="selectedPaymentMethod" value="">
                     <div id="paymentError" class="text-danger small mt-1 d-none">Selecciona un método de pago.</div>
@@ -201,19 +228,22 @@
 
             </div>
 
-            <div class="modal-footer" style="border-top: 1px solid var(--aroma-gray-200); padding: 1rem 1.5rem;">
-                <button type="button"
-                        class="btn btn-outline-secondary"
-                        data-bs-dismiss="modal"
-                        style="font-size: 0.82rem; letter-spacing: 0.5px;">
-                    Cancelar
-                </button>
-                <button type="button"
-                        class="btn btn-dark"
-                        onclick="confirmSale()"
-                        style="font-size: 0.82rem; letter-spacing: 1px;">
-                    CONFIRMAR VENTA
-                </button>
+            <div class="modal-footer flex-column align-items-stretch gap-2" style="border-top: 1px solid var(--aroma-gray-200); padding: 1rem 1.5rem;">
+                <div id="saleError" class="text-danger small d-none"></div>
+                <div class="d-flex gap-2 justify-content-end">
+                    <button type="button"
+                            class="btn btn-outline-secondary"
+                            data-bs-dismiss="modal"
+                            style="font-size: 0.82rem; letter-spacing: 0.5px;">
+                        Cancelar
+                    </button>
+                    <button type="button"
+                            class="btn btn-dark"
+                            onclick="confirmSale()"
+                            style="font-size: 0.82rem; letter-spacing: 1px;">
+                        CONFIRMAR VENTA
+                    </button>
+                </div>
             </div>
 
         </div>
@@ -289,6 +319,23 @@
                             <div style="display:flex; justify-content:space-between; padding:4px 0; font-weight:700; font-size:1rem;">
                                 <span>TOTAL</span>
                                 <span id="inv-total"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Vuelto (efectivo) --}}
+                    <div id="inv-cash-row" style="display:none; margin-top:0.5rem;">
+                        <div style="border-top:1px solid #e0e0e0; margin:8px 0;"></div>
+                        <div style="display:flex; justify-content:flex-end;">
+                            <div style="min-width:240px;">
+                                <div style="display:flex; justify-content:space-between; padding:4px 0; font-size:0.83rem; color:#555;">
+                                    <span>Recibido</span>
+                                    <span id="inv-cash-received"></span>
+                                </div>
+                                <div style="display:flex; justify-content:space-between; padding:4px 0; font-size:0.83rem; font-weight:600; color:#2c7a2e;">
+                                    <span>Vuelto</span>
+                                    <span id="inv-vuelto"></span>
+                                </div>
                             </div>
                         </div>
                     </div>
