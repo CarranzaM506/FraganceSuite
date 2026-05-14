@@ -56,7 +56,7 @@
                                     <td>#{{ $hero->idhero }}</td>
                                     <td>
                                         @if($hero->image)
-                                            <img src="{{ asset('storage/' . $hero->image) }}" 
+                                            <img src="{{ asset('img-hero/' . $hero->image) }}" 
                                                  alt="{{ $hero->title ?? 'Hero' }}" 
                                                  class="img-fluid"
                                                  style="max-width: 100px; height: auto; max-height: 60px; object-fit: cover; border: 1px solid #dee2e6;">

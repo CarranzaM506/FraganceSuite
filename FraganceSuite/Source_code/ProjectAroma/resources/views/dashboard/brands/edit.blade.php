@@ -16,7 +16,7 @@
                     <label class="form-label">Logo de la marca *</label>
                     @if($brand->logo)
                         <div class="mb-2">
-                            <img src="{{ Storage::url($brand->logo) }}" class="img-fluid" style="max-height: 80px; width: auto;">
+                            <img src="{{ asset('img-brands/' . $brand->logo) }}" class="img-fluid" style="max-height: 80px; width: auto;">
                         </div>
                     @endif
                     <input type="file" name="logo" class="form-control @error('logo') is-invalid @enderror" 

@@ -5,8 +5,8 @@
 @if(isset($heroImage) && $heroImage->image)
 <section class="hero-static">
     <div class="hero-image-wrapper">
-        <img src="/storage/{{ $heroImage->image }}" 
-             alt="Hero AROMA" 
+        <img src="{{ asset('img-hero/' . $heroImage->image) }}"
+             alt="Hero AROMA"
              class="hero-image">
     </div>
 </section>
@@ -88,14 +88,14 @@
                 <div class="brand-item" 
                      onclick="window.location.href='{{ route('catalog', ['brand' => $brand->brand_name]) }}'"
                      style="cursor: pointer;">
-                    <img src="{{ Storage::url($brand->logo) }}" alt="{{ $brand->brand_name }}">
+                    <img src="{{ asset('img-brands/' . $brand->logo) }}" alt="{{ $brand->brand_name }}">
                 </div>
                 @endforeach
                 @foreach($activeBrands as $brand)
                 <div class="brand-item" 
                      onclick="window.location.href='{{ route('catalog', ['brand' => $brand->brand_name]) }}'"
                      style="cursor: pointer;">
-                    <img src="{{ Storage::url($brand->logo) }}" alt="{{ $brand->brand_name }}">
+                    <img src="{{ asset('img-brands/' . $brand->logo) }}" alt="{{ $brand->brand_name }}">
                 </div>
                 @endforeach
             </div>
@@ -108,14 +108,14 @@
                 <div class="brand-item" 
                      onclick="window.location.href='{{ route('catalog', ['brand' => $brand->brand_name]) }}'"
                      style="cursor: pointer;">
-                    <img src="{{ Storage::url($brand->logo) }}" alt="{{ $brand->brand_name }}">
+                    <img src="{{ asset('img-brands/' . $brand->logo) }}" alt="{{ $brand->brand_name }}">
                 </div>
                 @endforeach
                 @foreach($activeBrands as $brand)
                 <div class="brand-item" 
                      onclick="window.location.href='{{ route('catalog', ['brand' => $brand->brand_name]) }}'"
                      style="cursor: pointer;">
-                    <img src="{{ Storage::url($brand->logo) }}" alt="{{ $brand->brand_name }}">
+                    <img src="{{ asset('img-brands/' . $brand->logo) }}" alt="{{ $brand->brand_name }}">
                 </div>
                 @endforeach
             </div>
