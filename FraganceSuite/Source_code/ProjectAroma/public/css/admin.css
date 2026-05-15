@@ -1066,3 +1066,13 @@ body.promo-codes-admin-mode * {
         height: 180px;
     }
 }
+
+/* ========== QUITAR FLECHA DEL SELECT ========== */
+.form-select,
+select.form-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: none;
+    padding-right: 0.75rem;
+}
