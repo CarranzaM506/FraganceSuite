@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -55,12 +56,45 @@ class OrderController extends Controller
         $totalVentasMes   = (float) Order::where('state', 1)->whereYear('date', $currentYear)->whereMonth('date', now()->month)->sum('total');
         $totalPedidosMes  = Order::where('state', 1)->whereYear('date', $currentYear)->whereMonth('date', now()->month)->count();
 
+        // ========== MÁS VENDIDOS DEL MES ==========
+        $bestSellers = collect();
+        
+        try {
+            $bestSellers = Product::select(
+                    'product.idproduct',
+                    'product.name',
+                    'product.price',
+                    'product.brand',
+                    'product.pathimg',
+                    DB::raw('SUM(orderdetail.quantity) as total_sold')
+                )
+                ->join('orderdetail', 'product.idproduct', '=', 'orderdetail.idproduct')
+                ->join('order', 'orderdetail.idorder', '=', 'order.idorder')
+                ->whereMonth('order.date', now()->month)
+                ->whereYear('order.date', now()->year)
+                ->where('order.state', 1)
+                ->groupBy(
+                    'product.idproduct',
+                    'product.name',
+                    'product.price',
+                    'product.brand',
+                    'product.pathimg'
+                )
+                ->orderByDesc('total_sold')
+                ->limit(2)
+                ->get();
+                
+        } catch (\Exception $e) {
+            \Log::error('Error en más vendidos dashboard: ' . $e->getMessage());
+        }
+
         return view('dashboard.main', compact(
             'meses', 'monthlySales',
             'dailyLabels', 'dailySales',
             'totalVentasAnio', 'totalPedidosAnio',
             'totalVentasMes', 'totalPedidosMes',
-            'currentYear'
+            'currentYear',
+            'bestSellers'
         ));
     }
 

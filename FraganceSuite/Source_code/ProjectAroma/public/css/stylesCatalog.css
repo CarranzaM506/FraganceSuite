@@ -430,11 +430,42 @@
 
 .catalog-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 40px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
     margin-top: 20px;
 }
 
+/* Para pantallas entre 992px y 1200px */
+@media (min-width: 992px) and (max-width: 1199px) {
+    .catalog-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 25px !important;
+    }
+}
+
+/* Para pantallas entre 768px y 991px */
+@media (min-width: 768px) and (max-width: 991px) {
+    .catalog-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 20px !important;
+    }
+}
+
+/* Para móviles */
+@media (max-width: 767px) {
+    .catalog-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 15px !important;
+    }
+}
+
+/* Para pantallas grandes (1600px+) */
+@media (min-width: 1600px) {
+    .catalog-grid {
+        grid-template-columns: repeat(5, 1fr) !important;
+        gap: 35px !important;
+    }
+}
 .catalog-card {
     opacity: 0;
     transform: translateY(20px);
@@ -740,5 +771,30 @@
     .nav-title {
         font-size: 12px !important;
         letter-spacing: 1px !important;
+    }
+}
+
+
+/* ========== FORZAR 4 COLUMNAS EN ESCRITORIO ========== */
+@media (min-width: 992px) {
+    .catalog-grid {
+        display: grid !important;
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 30px !important;
+    }
+}
+
+/* Para pantallas muy grandes */
+@media (min-width: 1600px) {
+    .catalog-grid {
+        grid-template-columns: repeat(5, 1fr) !important;
+        gap: 35px !important;
+    }
+}
+
+/* Anular cualquier regla que ponga 2 columnas en escritorio */
+@media (min-width: 992px) {
+    .catalog-grid {
+        grid-template-columns: repeat(4, 1fr) !important;
     }
 }

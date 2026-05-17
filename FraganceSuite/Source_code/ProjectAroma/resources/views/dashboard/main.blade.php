@@ -47,7 +47,7 @@
         </div>
 
         {{-- Gráfico ventas diarias --}}
-        <div class="card">
+        <div class="card mb-4">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <span>Ventas diarias — últimos 30 días</span>
                 <a href="{{ route('dailySales') }}" class="btn btn-dark btn-sm">Ver detalle</a>
@@ -58,6 +58,38 @@
                 </div>
             </div>
         </div>
+
+        {{-- ========== MÁS VENDIDOS DEL MES ========== --}}
+        @if(isset($bestSellers) && $bestSellers->count() > 0)
+        <div class="card">
+            <div class="card-header">
+                <span>MÁS VENDIDOS DEL MES</span>
+            </div>
+            <div class="card-body">
+                <div class="admin-bestsellers-grid {{ $bestSellers->count() == 1 ? 'single-product' : '' }}">
+                    @foreach($bestSellers as $product)
+                    <div class="admin-bestseller-card">
+                        <div class="admin-bestseller-image">
+                            @if($product->pathimg)
+                                <img src="{{ $product->pathimg }}" alt="{{ $product->name }}">
+                            @else
+                                <div class="image-placeholder">
+                                    <i class="fas fa-wine-bottle"></i>
+                                </div>
+                            @endif
+                        </div>
+                        <div class="admin-bestseller-info">
+                            <h4>{{ $product->name }}</h4>
+                            <p class="brand">{{ $product->brand }}</p>
+                            <p class="price">₡{{ number_format($product->price, 2) }}</p>
+                            <p class="sold-count">📦 {{ $product->total_sold }} unidades vendidas</p>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+        @endif
 
     </main>
 @endsection
