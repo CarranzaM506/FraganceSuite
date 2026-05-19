@@ -77,6 +77,31 @@
     </div>
 </section>
 
+<!-- ========== SECCIÓN DE VIDEOS ========== -->
+@if(isset($activeVideos) && $activeVideos->count() >= 2 && $activeVideos->count() <= 4)
+<section class="videos-section">
+    <h2 class="section-title">VIDEOS</h2>
+    <div class="videos-grid" data-count="{{ $activeVideos->count() }}">
+        @foreach($activeVideos as $video)
+        <div class="video-card">
+            <div class="video-wrapper">
+                <video class="info-video" preload="metadata" playsinline>
+                    <source src="{{ asset('videos/' . $video->route) }}" type="video/mp4">
+                    Tu navegador no soporta videos.
+                </video>
+                <div class="video-overlay">
+                    <i class="fas fa-play-circle"></i>
+                </div>
+            </div>
+            <div class="video-info">
+                <p class="video-title">Video informativo</p>
+            </div>
+        </div>
+        @endforeach
+    </div>
+</section>
+@endif
+
 
 @if(isset($activeBrands) && $activeBrands->count() > 0)
 <section class="brands-section">
@@ -444,5 +469,63 @@
         window.addEventListener('scroll', checkBestsellerScroll);
     });
 
+   // ===== CONTROL DE VIDEOS =====
+document.addEventListener('DOMContentLoaded', function() {
+    const videoWrappers = document.querySelectorAll('.video-wrapper');
+    
+    videoWrappers.forEach(wrapper => {
+        const video = wrapper.querySelector('video');
+        const overlay = wrapper.querySelector('.video-overlay');
+        
+        if (!video || !overlay) return;
+        
+        // Pausar todos los demás videos
+        const pauseAllOthers = () => {
+            videoWrappers.forEach(w => {
+                const otherVideo = w.querySelector('video');
+                const otherOverlay = w.querySelector('.video-overlay');
+                if (otherVideo && otherVideo !== video && !otherVideo.paused) {
+                    otherVideo.pause();
+                    if (otherOverlay) {
+                        otherOverlay.style.opacity = '1';
+                        w.classList.remove('playing');
+                    }
+                }
+            });
+        };
+        
+        // Reproducir o pausar
+        const togglePlay = (e) => {
+            e.stopPropagation();
+            pauseAllOthers();
+            
+            if (video.paused) {
+                video.play().catch(err => console.log('Error:', err));
+                overlay.style.opacity = '0';
+                wrapper.classList.add('playing');
+            } else {
+                video.pause();
+                overlay.style.opacity = '1';
+                wrapper.classList.remove('playing');
+            }
+        };
+        
+        overlay.addEventListener('click', togglePlay);
+        
+        wrapper.addEventListener('click', function(e) {
+            if (e.target === video || video.contains(e.target)) return;
+            togglePlay(e);
+        });
+        
+        video.addEventListener('ended', function() {
+            overlay.style.opacity = '1';
+            wrapper.classList.remove('playing');
+        });
+        
+        video.addEventListener('play', pauseAllOthers);
+    });
+});
 </script>
+
+
 @endpush
