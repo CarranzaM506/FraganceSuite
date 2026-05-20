@@ -8,7 +8,7 @@ use Tests\TestCase;
 class BestSellersLogicTest extends TestCase
 {
     #[Test]
-    public function should_show_centered_class_when_only_one_product()
+    public function deberia_mostrar_clase_centrada_cuando_hay_un_solo_producto()
     {
         // En tu vista: {{ $bestSellers->count() == 1 ? 'single-product' : '' }}
         $productCount = 1;
@@ -18,7 +18,7 @@ class BestSellersLogicTest extends TestCase
     }
 
     #[Test]
-    public function should_not_show_centered_class_when_two_products()
+    public function no_deberia_mostrar_clase_centrada_cuando_hay_dos_productos()
     {
         // En tu vista: {{ $bestSellers->count() == 1 ? 'single-product' : '' }}
         $productCount = 2;
@@ -28,7 +28,7 @@ class BestSellersLogicTest extends TestCase
     }
 
     #[Test]
-    public function should_not_show_centered_class_when_no_products()
+    public function no_deberia_mostrar_clase_centrada_cuando_no_hay_productos()
     {
         $productCount = 0;
         $gridClass = $productCount == 1 ? 'single-product' : '';
@@ -37,7 +37,7 @@ class BestSellersLogicTest extends TestCase
     }
 
     #[Test]
-    public function sold_units_text_format_is_correct()
+    public function formato_texto_unidades_vendidas_es_correcto()
     {
         // En tu vista: {{ $product->total_sold }} unidades vendidas
         $totalSold = 5;
@@ -47,7 +47,7 @@ class BestSellersLogicTest extends TestCase
     }
 
     #[Test]
-    public function sold_units_text_handles_zero()
+    public function texto_unidades_vendidas_maneja_cero()
     {
         $totalSold = 0;
         $text = $totalSold . ' unidades vendidas';
@@ -56,7 +56,7 @@ class BestSellersLogicTest extends TestCase
     }
 
     #[Test]
-    public function sold_units_text_handles_large_numbers()
+    public function texto_unidades_vendidas_maneja_numeros_grandes()
     {
         $totalSold = 999;
         $text = $totalSold . ' unidades vendidas';
@@ -65,7 +65,7 @@ class BestSellersLogicTest extends TestCase
     }
 
     #[Test]
-    public function price_format_is_correct()
+    public function formato_precio_es_correcto()
     {
         // En tu vista: ₡{{ number_format($product->price, 2) }}
         $price = 35500;
@@ -75,7 +75,7 @@ class BestSellersLogicTest extends TestCase
     }
 
     #[Test]
-    public function price_format_handles_zero()
+    public function formato_precio_maneja_cero()
     {
         $price = 0;
         $formattedPrice = '₡' . number_format($price, 2);
@@ -84,7 +84,7 @@ class BestSellersLogicTest extends TestCase
     }
 
     #[Test]
-    public function should_limit_to_top_2_products()
+    public function deberia_limitar_a_los_2_primeros_productos()
     {
         // En tu controlador: ->limit(2)
         $limit = 2;
@@ -102,7 +102,7 @@ class BestSellersLogicTest extends TestCase
     }
 
     #[Test]
-    public function rank_badge_shows_nothing_for_top_2_positions()
+    public function badge_de_posicion_no_muestra_nada_para_los_primeros_2_puestos()
     {
         // En tu vista, para índice 0 y 1 no muestra nada
         $indexes = [0, 1];
