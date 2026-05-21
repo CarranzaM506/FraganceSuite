@@ -159,6 +159,17 @@ class OrderController extends Controller
 
     public function destroy(string $id) {}
 
+    public function pendingShipments()
+    {
+        $orders = Order::with(['user', 'location', 'details.product'])
+            ->where('state', 1)
+            ->whereNotNull('idlocation')
+            ->orderBy('date', 'asc')
+            ->get();
+
+        return view('dashboard.sales.pending-shipments', compact('orders'));
+    }
+
     public function success($id)
     {
         $order = Order::find($id);

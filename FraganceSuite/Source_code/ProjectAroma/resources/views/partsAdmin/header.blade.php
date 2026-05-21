@@ -139,7 +139,7 @@
                     </a>
 
                     <!-- Ventas -->
-                    <a class="nav-link d-flex align-items-center justify-content-between {{ request()->is('sales*') ? 'active' : '' }}"
+                    <a class="nav-link d-flex align-items-center justify-content-between {{ request()->is('orders*') || request()->routeIs('dailySales') || request()->routeIs('pendingShipments') ? 'active' : '' }}"
                         data-bs-toggle="collapse" href="#submenuVentas" role="button" aria-expanded="false"
                         aria-controls="submenuVentas">
                         <span>
@@ -153,12 +153,15 @@
                         <span class="ms-2">▾</span>
                     </a>
 
-                    <div class="collapse submenu" id="submenuVentas">
-                        <a class="nav-link" href="{{ route('orders.index') }}">
+                    <div class="collapse submenu {{ request()->is('orders*') || request()->routeIs('dailySales') || request()->routeIs('pendingShipments') ? 'show' : '' }}" id="submenuVentas">
+                        <a class="nav-link {{ request()->routeIs('orders.index') ? 'active' : '' }}" href="{{ route('orders.index') }}">
                             Ventas Mensuales
                         </a>
-                        <a class="nav-link" href="{{route('dailySales')}}">
+                        <a class="nav-link {{ request()->routeIs('dailySales') ? 'active' : '' }}" href="{{ route('dailySales') }}">
                             Ventas Diarias
+                        </a>
+                        <a class="nav-link {{ request()->routeIs('pendingShipments') ? 'active' : '' }}" href="{{ route('pendingShipments') }}">
+                            Pendientes de Envío
                         </a>
                     </div>
 
