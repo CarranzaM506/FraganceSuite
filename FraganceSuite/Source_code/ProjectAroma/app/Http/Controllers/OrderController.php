@@ -147,6 +147,35 @@ class OrderController extends Controller
         return view('dashboard.sales.daily-sales', compact('ventasDiarias'));
     }
 
+    public function ordersByPeriod(Request $request)
+    {
+        $year  = $request->year;
+        $month = $request->month;
+        $date  = $request->date;
+
+        $orders = Order::with(['details.product'])
+            ->where('state', 1)
+            ->when($year && $month, fn($q) => $q->whereYear('date', $year)->whereMonth('date', $month))
+            ->when($date, fn($q) => $q->whereDate('date', $date))
+            ->orderBy('date', 'desc')
+            ->get()
+            ->map(fn($order) => [
+                'idorder'        => $order->idorder,
+                'date'           => $order->date,
+                'sale_type'      => $order->sale_type ?? 'web',
+                'purchasemethod' => $order->purchasemethod,
+                'total'          => $order->total,
+                'items'          => $order->details->map(fn($d) => [
+                    'name'     => optional($d->product)->name ?? 'Producto eliminado',
+                    'brand'    => optional($d->product)->brand ?? '',
+                    'quantity' => $d->quantity,
+                    'price'    => $d->price,
+                ]),
+            ]);
+
+        return response()->json($orders);
+    }
+
     public function create() {}
 
     public function store(Request $request) {}
