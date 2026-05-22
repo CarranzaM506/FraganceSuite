@@ -18,7 +18,8 @@ class Order extends Model
         'purchasemethod',
         'guidenumber',
         'iduser',
-        'idlocation'
+        'idlocation',
+        'sale_type',
     ];
 
     public function details()
