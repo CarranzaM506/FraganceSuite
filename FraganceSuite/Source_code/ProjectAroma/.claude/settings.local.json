@@ -1,8 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "PowerShell(\\(Get-Content \"C:\\\\Users\\\\andre\\\\OneDrive\\\\Documents\\\\GitHub\\\\FraganceSuite\\\\FraganceSuite\\\\Source_code\\\\ProjectAroma\\\\public\\\\css\\\\stylesCatalog.css\"\\).Count; \\(Get-Content \"C:\\\\Users\\\\andre\\\\OneDrive\\\\Documents\\\\GitHub\\\\FraganceSuite\\\\FraganceSuite\\\\Source_code\\\\ProjectAroma\\\\public\\\\css\\\\stylesMain.css\"\\).Count)",
-      "Bash(mysql *)"
-    ]
-  }
-}
