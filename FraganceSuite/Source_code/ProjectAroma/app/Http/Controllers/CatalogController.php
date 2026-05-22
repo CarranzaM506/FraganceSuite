@@ -119,10 +119,8 @@ class CatalogController extends Controller
                 $query->orderBy('idproduct', 'desc'); // Más recientes
         }
         
-        // Paginación
-        $products = $query->with(['discount' => function ($q) use ($now) {
-            $q->where('startdate', '<=', $now->toDateString())->where('enddate', '>=', $now->toDateString());
-        }])->paginate(12)->withQueryString();
+        // Paginación 
+        $products = $query->paginate(12)->withQueryString();
         
         // Obtener marcas únicas para los filtros
         $brands = Product::where('active', 1)
