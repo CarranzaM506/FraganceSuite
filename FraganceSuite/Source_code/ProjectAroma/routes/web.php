@@ -15,9 +15,11 @@ use App\Http\Controllers\CodePromotionController;
 use App\Http\Controllers\FavoriteController; 
 use App\Http\Controllers\BrandController; 
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PhysicalSaleController;
 use App\Http\Controllers\PayPalController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\VideoController;
+use App\Http\Controllers\InfoCarouselController;  
 use Illuminate\Support\Facades\Route;
 
 // RUTA PRINCIPAL
@@ -66,12 +68,24 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/video', [VideoController::class, 'store'])->name('video.store');
     Route::post('/video/{id}/toggle', [VideoController::class, 'toggle'])->name('video.toggle');
     Route::delete('/video/{id}', [VideoController::class, 'destroy'])->name('video.destroy');
+    
+
+    // Info Carousel
+Route::get('/admin/info-carousel', [InfoCarouselController::class, 'index'])->name('admin.info-carousel.index');
+Route::get('/admin/info-carousel/create', [InfoCarouselController::class, 'create'])->name('admin.info-carousel.create');
+Route::post('/admin/info-carousel', [InfoCarouselController::class, 'store'])->name('admin.info-carousel.store');
+Route::get('/admin/info-carousel/{id}/edit', [InfoCarouselController::class, 'edit'])->name('admin.info-carousel.edit');
+Route::put('/admin/info-carousel/{id}', [InfoCarouselController::class, 'update'])->name('admin.info-carousel.update');
+Route::delete('/admin/info-carousel/{id}', [InfoCarouselController::class, 'destroy'])->name('admin.info-carousel.destroy');
+Route::post('/admin/info-carousel/toggle/{id}', [InfoCarouselController::class, 'toggle'])->name('admin.info-carousel.toggle');
+Route::post('/admin/info-carousel/update-order', [InfoCarouselController::class, 'updateOrder'])->name('admin.info-carousel.update-order');
 });
 
 // RUTAS PROTEGIDAS USUARIOS (Requieren autenticación)
 Route::middleware('auth')->group(function () {
     // Perfil y ubicaciones
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+    Route::get('/profile/orders', [OrderController::class, 'history'])->name('orders.history');
     Route::get('profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('profile/update', [ProfileController::class, 'update'])->name('profile.update');
     Route::get('/location', [LocationController::class, 'index'])->name('location.index');
@@ -89,8 +103,15 @@ Route::middleware('auth')->group(function () {
 
     //Orders
     Route::get('/order/success/{id}', [OrderController::class, 'success']);
+    Route::get('/orders/period', [OrderController::class, 'ordersByPeriod'])->name('orders.period');
     Route::resource('orders', OrderController::class);
     Route::get('/dailySales', [OrderController::class, "dailysales"])->name('dailySales');
+
+    Route::get('/physical-sales', function () {
+        $products = \App\Models\Product::where('active', true)->where('stock', '>', 0)->orderBy('name')->get();
+        return view('dashboard.sales.physical-sales', compact('products'));
+    })->name('physicalSales');
+    Route::post('/physical-sales', [PhysicalSaleController::class, 'store'])->name('physicalSales.store');
 
     Route::post('/api/address', [LocationController::class, 'storeApi']);
     Route::get('/checkout', [CheckOutController::class, 'index'])->name('checkout');
@@ -104,6 +125,5 @@ Route::middleware('auth')->group(function () {
     Route::post('/paypal/create-order', [PayPalController::class, 'createOrder']);
     Route::post('/paypal/capture-order', [PayPalController::class, 'captureOrder']);
 });
-
 
 require __DIR__ . '/auth.php';
