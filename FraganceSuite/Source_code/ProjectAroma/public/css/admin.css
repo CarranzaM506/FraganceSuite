@@ -1076,3 +1076,41 @@ select.form-select {
     background-image: none;
     padding-right: 0.75rem;
 }
+
+
+/* ========== MODAL ELIMINAR ESTILO PRODUCTOS ========== */
+.swal2-popup-custom {
+    border-radius: 0px !important;
+    padding: 1.5rem !important;
+}
+
+.swal2-popup-custom .swal2-title {
+    font-size: 1.3rem !important;
+    font-weight: 500 !important;
+    color: #1a1a1a !important;
+}
+
+.swal2-popup-custom .swal2-html-container {
+    font-size: 0.95rem !important;
+    color: #555 !important;
+}
+
+.swal2-popup-custom .swal2-confirm.btn-danger {
+    background-color: #dc3545 !important;
+    border-color: #dc3545 !important;
+    border-radius: 0px !important;
+    padding: 0.4rem 1.2rem !important;
+    font-size: 0.85rem !important;
+}
+
+.swal2-popup-custom .swal2-cancel.btn-secondary {
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+    border-radius: 0px !important;
+    padding: 0.4rem 1.2rem !important;
+    font-size: 0.85rem !important;
+}
+
+.swal2-popup-custom .swal2-actions {
+    gap: 0.75rem !important;
+}
