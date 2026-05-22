@@ -1,4 +1,4 @@
-* {
+﻿* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -52,7 +52,7 @@ header > .info-carousel {
     position: relative;
 }
 
-/* Botón de menú (hamburguesa) */
+/* BotÃ³n de menÃº (hamburguesa) */
 .menu-toggle {
     background: none;
     border: none;
@@ -108,7 +108,7 @@ header > .info-carousel {
     align-items: center;
 }
 
-/* Todos los iconos uniformes - TAMAÑO 15px */
+/* Todos los iconos uniformes - TAMAÃ‘O 15px */
 .icon,
 .search-icon-btn {
     width: 32px;
@@ -136,7 +136,7 @@ header > .info-carousel {
     color: #927a1b;
 }
 
-/* Formulario de búsqueda expandible - VERSIÓN ANTERIOR */
+/* Formulario de bÃºsqueda expandible - VERSIÃ“N ANTERIOR */
 .search-icon-form {
     display: flex;
     align-items: center;
@@ -167,7 +167,7 @@ header > .info-carousel {
     padding: 8px 10px;
 }
 
-/* ========== MENÚ LATERAL - VERSIÓN DEFINITIVA ========== */
+/* ========== MENÃš LATERAL - VERSIÃ“N DEFINITIVA ========== */
 .side-menu {
     position: fixed;
     top: 0;
@@ -380,7 +380,7 @@ header > .info-carousel {
     }
 }
 
-/* ========== ESTILO CONTEMPORÁNEO SUTIL ========== */
+/* ========== ESTILO CONTEMPORÃNEO SUTIL ========== */
 .split-promo {
     display: flex;
     width: 100%;
@@ -601,7 +601,7 @@ header > .info-carousel {
     }
 }
 
-/* Móviles grandes */
+/* MÃ³viles grandes */
 @media (max-width: 576px) {
     .product-grid {
         grid-template-columns: repeat(2, 1fr);
@@ -613,7 +613,7 @@ header > .info-carousel {
     }
 }
 
-/* Móviles pequeños */
+/* MÃ³viles pequeÃ±os */
 @media (max-width: 400px) {
     .product-grid {
         grid-template-columns: repeat(2, 1fr);
@@ -633,7 +633,7 @@ header > .info-carousel {
     }
 }
 
-/* Asegurar que las imágenes no se deformen */
+/* Asegurar que las imÃ¡genes no se deformen */
 .product-image img {
     width: 100%;
     height: 100%;
@@ -940,7 +940,7 @@ footer {
     font-size: 14px;
 }
 
-/* ========== HERO ESTÁTICO ========== */
+/* ========== HERO ESTÃTICO ========== */
 .hero-static {
     width: 100%;
     height: 500px;
@@ -1239,7 +1239,7 @@ footer {
     }
 }
 
-/* Móviles grandes y tablets pequeñas */
+/* MÃ³viles grandes y tablets pequeÃ±as */
 @media (max-width: 768px) {
     body:not(.catalog-body) {
         padding-top: 60px;
@@ -1340,7 +1340,7 @@ footer {
     }
 }
 
-/* Móviles pequeños */
+/* MÃ³viles pequeÃ±os */
 @media (max-width: 480px) {
     body:not(.catalog-body) {
         padding-top: 55px;
@@ -1477,7 +1477,7 @@ footer {
     }
 }
 
-/* Pantallas muy pequeñas (menos de 360px) */
+/* Pantallas muy pequeÃ±as (menos de 360px) */
 @media (max-width: 360px) {
     .logo {
         font-size: 18px;
@@ -1647,16 +1647,16 @@ footer {
     }
 }
 
-/* ========== MEJORAS PARA MÓVIL ========== */
+/* ========== MEJORAS PARA MÃ“VIL ========== */
 
-/* Logo más grande en móvil */
+/* Logo mÃ¡s grande en mÃ³vil */
 @media (max-width: 768px) {
     .logo {
         font-size: 28px !important;
         letter-spacing: 4px !important;
     }
     
-    /* Todos los iconos del mismo tamaño */
+    /* Todos los iconos del mismo tamaÃ±o */
     .menu-toggle svg,
     .icon svg,
     .search-icon-btn svg,
@@ -1672,7 +1672,7 @@ footer {
         font-size: 15px !important;
     }
     
-    /* En móvil: ocultar input expandible, mostrar botón modal */
+    /* En mÃ³vil: ocultar input expandible, mostrar botÃ³n modal */
     .search-icon-form {
         display: none !important;
     }
@@ -1704,7 +1704,7 @@ footer {
     }
 }
 
-/* Desktop: ocultar botón modal, mostrar input expandible */
+/* Desktop: ocultar botÃ³n modal, mostrar input expandible */
 @media (min-width: 769px) {
     .search-icon-btn#mobileSearchBtn {
         display: none !important;
@@ -1715,7 +1715,7 @@ footer {
     }
 }
 
-/* Modal de búsqueda (solo móvil) */
+/* Modal de bÃºsqueda (solo mÃ³vil) */
 .search-modal {
     display: none;
     position: fixed;
@@ -1804,7 +1804,7 @@ footer {
     gap: 8px;
 }
 
-/* ========== MÁS VENDIDOS DEL MES - MINIMALISTA ========== */
+/* ========== MÃS VENDIDOS DEL MES - MINIMALISTA ========== */
 .bestsellers-section {
     padding: 30px 30px;
     background: transparent;
@@ -1872,7 +1872,7 @@ footer {
     transform: translateX(80px);
 }
 
-/* La animación se activará con JavaScript al hacer scroll */
+/* La animaciÃ³n se activarÃ¡ con JavaScript al hacer scroll */
 .bestseller-card.animate-in {
     animation: slideInFromRight 0.6s ease forwards;
 }
@@ -2103,14 +2103,14 @@ footer {
     margin: 0 auto;
 }
 
-/* Responsive para móvil cuando hay 1 producto */
+/* Responsive para mÃ³vil cuando hay 1 producto */
 @media (max-width: 768px) {
     .bestsellers-grid:has(.bestseller-card:only-child) .bestseller-card {
         max-width: 300px;
     }
 }
 
-/* Cuando hay 2 o más productos, se mantiene la grilla original */
+/* Cuando hay 2 o mÃ¡s productos, se mantiene la grilla original */
 @media (max-width: 768px) {
     .bestsellers-grid {
         grid-template-columns: repeat(2, 1fr);
@@ -2124,7 +2124,7 @@ footer {
         gap: 20px;
     }
     
-    /* Si hay 1 producto en móvil, seguimos centrando */
+    /* Si hay 1 producto en mÃ³vil, seguimos centrando */
     .bestsellers-grid:has(.bestseller-card:only-child) {
         grid-template-columns: 1fr;
     }
@@ -2218,7 +2218,7 @@ border-bottom: 0.3px solid rgba(255,255,255,0.1);
     }
 }
 
-/* ========== COMPENSACIÓN PARA EL HEADER FIJO ========== */
+/* ========== COMPENSACIÃ“N PARA EL HEADER FIJO ========== */
 body {
     padding-top: 100px !important;
 }
@@ -2231,17 +2231,18 @@ body.default-body {
     padding-top: 80px !important;
 }
 
-/* El menú lateral NO debe tener padding-top extra */
+/* El menÃº lateral NO debe tener padding-top extra */
 .side-menu {
     top: 0;
     height: 100vh;
 }
 
-/* Asegurar que el contenido del menú sea scrolleable */
+/* Asegurar que el contenido del menÃº sea scrolleable */
 .side-menu {
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-/* ========== SECCIÓN DE VIDEOS ========== */
+}
+/* ========== SECCIÃ“N DE VIDEOS ========== */
 .videos-section {
     padding: 0px 30px;
     margin: 20px 0;
@@ -2340,7 +2341,7 @@ body.default-body {
     opacity: 1;
 }
 
-/* ========== SLIDER PARA MÓVIL ========== */
+/* ========== SLIDER PARA MÃ“VIL ========== */
 .videos-slider-mobile {
     display: none;
     position: relative;
@@ -2374,7 +2375,7 @@ body.default-body {
     display: block;
 }
 
-/* Flechas de navegación */
+/* Flechas de navegaciÃ³n */
 .video-arrow {
     position: absolute;
     top: 50%;
@@ -2440,7 +2441,7 @@ body.default-body {
 
 @media (max-width: 480px) {
     .videos-section {
-        padding: -10px 10px;
+        padding: 0 10px;
     }
     
     .video-arrow {
