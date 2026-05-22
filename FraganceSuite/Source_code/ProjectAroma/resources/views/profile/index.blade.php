@@ -67,7 +67,7 @@
 
     <!-- Cards cuadradas -->
     <div class="cards-grid">
-        <a href="#" class="card-link">
+        <a href="{{ route('orders.history') }}" class="card-link">
             <i class="fas fa-box"></i>
             <h3>MIS PEDIDOS</h3>
             <p>Historial de compras</p>
