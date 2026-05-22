@@ -2020,9 +2020,41 @@ footer {
         grid-template-columns: repeat(2, 1fr);
         gap: 20px;
     }
-    
+
     /* Si hay 1 producto en móvil, seguimos centrando */
     .bestsellers-grid:has(.bestseller-card:only-child) {
         grid-template-columns: 1fr;
     }
+}
+
+/* ===== PRECIO CON DESCUENTO EN TARJETAS DE PRODUCTOS ===== */
+.product-card .product-price-block {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    margin: 0;
+}
+
+.product-card .old-price {
+    font-size: 11px;
+    color: #aaa;
+    text-decoration: line-through;
+    font-weight: 300;
+}
+
+.product-card .new-price {
+    font-size: 15px;
+    font-weight: 400;
+    color: #222;
+    letter-spacing: normal;
+}
+
+.product-card .discount {
+    font-size: 10px;
+    padding: 1px 5px;
+    background: #f0f0f0;
+    color: #666;
+    display: inline-block;
+    border-radius: 2px;
+    margin-top: 2px;
 }

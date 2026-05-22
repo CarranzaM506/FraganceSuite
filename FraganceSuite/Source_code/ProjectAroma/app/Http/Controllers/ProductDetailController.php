@@ -18,14 +18,14 @@ class ProductDetailController extends Controller
      */
     public function show(string $id)
     {
-        // Cargar el producto con su descuento asociado si existe
-        $product = Product::with('discount')->findOrFail($id);
-        
-        // Calcular precio con descuento si aplica
+        $product = Product::with(['discount' => function ($q) {
+            $q->where('startdate', '<=', now()->toDateString())
+              ->where('enddate', '>=', now()->toDateString());
+        }])->findOrFail($id);
+
         $discountedPrice = null;
-        if ($product->discount && $product->discount->active) {
-            $discountValue = $product->discount->value;
-            $discountedPrice = $product->price * (1 - ($discountValue / 100));
+        if ($product->discount) {
+            $discountedPrice = $product->price * (1 - ($product->discount->value / 100));
         }
         
         // Obtener productos relacionados (misma marca o categoría, excluyendo el actual)
