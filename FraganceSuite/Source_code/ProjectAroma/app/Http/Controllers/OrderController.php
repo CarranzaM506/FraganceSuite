@@ -188,15 +188,6 @@ class OrderController extends Controller
 
     public function destroy(string $id) {}
 
-    public function history()
-    {
-        $orders = Order::where('iduser', auth()->id())
-            ->orderBy('date', 'desc')
-            ->get();
-
-        return view('profile.orders.index', compact('orders'));
-    }
-
     public function success($id)
     {
         $order = Order::find($id);

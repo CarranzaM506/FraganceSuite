@@ -222,16 +222,7 @@
     <div class="product-info">
         <h3 class="product-name">{{ $product->name }}</h3>
         <p class="product-brand">{{ $product->brand }}</p>
-        @if($product->discount)
-            @php $discountedPrice = $product->price * (1 - ($product->discount->value / 100)); @endphp
-            <div class="product-price-block">
-                <span class="old-price">₡{{ number_format($product->price, 2) }}</span>
-                <span class="new-price">₡{{ number_format($discountedPrice, 2) }}</span>
-                <span class="discount">{{ $product->discount->value }}% OFF</span>
-            </div>
-        @else
-            <p class="product-price">₡{{ number_format($product->price, 2) }}</p>
-        @endif
+        <p class="product-price">₡{{ number_format($product->price, 2) }}</p>
     </div>
 </a>
 @endforeach

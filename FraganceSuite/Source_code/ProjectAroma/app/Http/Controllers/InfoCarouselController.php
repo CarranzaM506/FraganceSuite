@@ -102,5 +102,3 @@ class InfoCarouselController extends Controller
         return response()->json(['active' => $item->active]);
     }
 }
-
-//comentario
