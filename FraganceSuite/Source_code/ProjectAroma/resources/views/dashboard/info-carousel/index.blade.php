@@ -39,7 +39,7 @@
                             <th>Mensaje</th>
                             <th>Enlace</th>
                             <th style="width: 80px">Activo</th>
-                            <th style="width: 200px">Acciones</th>
+                            <th style="width: 160px">Acciones</th>
                         </tr>
                     </thead>
                     <tbody id="sortable-items">
@@ -52,9 +52,9 @@
                             <td>{{ Str::limit($item->message, 80) }}</td>
                             <td>
                                 @if($item->link)
-                                    <a href="{{ $item->link }}" target="_blank">{{ $item->link_text ?: 'Ver enlace' }}</a>
+                                    <a href="{{ $item->link }}" target="_blank" class="small">{{ $item->link_text ?: 'Enlace' }}</a>
                                 @else
-                                    —
+                                    <span class="text-muted">—</span>
                                 @endif
                             </td>
                             <td>
@@ -65,13 +65,13 @@
                                 </div>
                             </td>
                             <td>
-                                <a href="{{ route('admin.info-carousel.edit', $item->id) }}" class="btn btn-sm btn-primary">
-                                    <i class="fas fa-edit"></i> Editar
+                                <a href="{{ route('admin.info-carousel.edit', $item->id) }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-edit"></i>
                                 </a>
-                                <button class="btn btn-sm btn-danger delete-btn" 
+                                <button class="btn btn-sm btn-outline-danger delete-btn" 
                                     data-id="{{ $item->id }}"
                                     data-message="{{ $item->message }}">
-                                    <i class="fas fa-trash"></i> Eliminar
+                                    <i class="fas fa-trash"></i>
                                 </button>
                             </td>
                         </tr>
@@ -87,8 +87,7 @@
                         <div class="card-body">
                             <p class="mb-1"><strong>Orden:</strong> {{ $item->order_position }}</p>
                             <p class="mb-1"><strong>Mensaje:</strong> {{ $item->message }}</p>
-                            <p class="mb-1">
-                                <strong>Enlace:</strong> 
+                            <p class="mb-1"><strong>Enlace:</strong> 
                                 @if($item->link)
                                     <a href="{{ $item->link }}" target="_blank">{{ $item->link_text ?: 'Ver enlace' }}</a>
                                 @else
@@ -102,13 +101,13 @@
                                 </span>
                             </p>
                             <div class="d-flex justify-content-end gap-2">
-                                <a href="{{ route('admin.info-carousel.edit', $item->id) }}" class="btn btn-sm btn-primary">
-                                    <i class="fas fa-edit"></i> Editar
+                                <a href="{{ route('admin.info-carousel.edit', $item->id) }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-edit"></i>
                                 </a>
-                                <button class="btn btn-sm btn-danger delete-btn-mobile" 
+                                <button class="btn btn-sm btn-outline-danger delete-btn-mobile" 
                                     data-id="{{ $item->id }}"
                                     data-message="{{ $item->message }}">
-                                    <i class="fas fa-trash"></i> Eliminar
+                                    <i class="fas fa-trash"></i>
                                 </button>
                             </div>
                         </div>
@@ -132,7 +131,7 @@
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // ========== SORTABLE (ORDENAR) ==========
+        // Sortable para ordenar
         const tbody = document.getElementById('sortable-items');
         if (tbody) {
             new Sortable(tbody, {
@@ -144,10 +143,7 @@
                     rows.forEach((row, index) => {
                         const id = row.dataset.id;
                         const position = index + 1;
-                        orders.push({
-                            id: id,
-                            position: position
-                        });
+                        orders.push({ id: id, position: position });
                         row.querySelector('td:first-child').innerHTML = 
                             '<i class="fas fa-grip-vertical text-muted me-2" style="cursor: move;"></i> ' + position;
                     });
@@ -164,7 +160,7 @@
             });
         }
         
-        // ========== TOGGLE ACTIVO ==========
+        // Toggle activo
         document.querySelectorAll('.toggle-active').forEach(toggle => {
             toggle.addEventListener('change', function() {
                 const id = this.dataset.id;
@@ -178,7 +174,7 @@
             });
         });
         
-        // ========== ELIMINAR (USANDO LA FUNCIÓN GLOBAL DEL ADMIN) ==========
+        // Eliminar
         function deleteItem(id, message) {
             openAdminDeleteConfirm(message, function() {
                 const form = document.createElement('form');
@@ -190,23 +186,12 @@
             });
         }
         
-        // Eliminar desktop
-        document.querySelectorAll('.delete-btn').forEach(btn => {
+        document.querySelectorAll('.delete-btn, .delete-btn-mobile').forEach(btn => {
             btn.addEventListener('click', function(e) {
                 e.preventDefault();
                 deleteItem(this.dataset.id, this.dataset.message);
             });
         });
-        
-        // Eliminar mobile
-        document.querySelectorAll('.delete-btn-mobile').forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                e.preventDefault();
-                deleteItem(this.dataset.id, this.dataset.message);
-            });
-        });
-        
-        console.log('✅ Info Carousel JS cargado correctamente');
     });
 </script>
 @endsection

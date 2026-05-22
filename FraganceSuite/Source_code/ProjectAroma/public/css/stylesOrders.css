@@ -1,0 +1,234 @@
+/* ========== ESTILOS PARA HISTORIAL DE PEDIDOS ========== */
+
+#aroma-orders-page {
+    max-width: 1000px;
+    margin: 50px auto 50px;
+    padding: 0 20px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* Header de la página */
+.orders-page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.orders-page-header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.orders-page-header h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #000;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.orders-back-btn {
+    background: transparent;
+    border: 1px solid #ccc;
+    padding: 8px 20px;
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    color: #333;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.orders-back-btn:hover {
+    border-color: #000;
+    color: #000;
+}
+
+/* Tarjeta de pedido */
+.order-card {
+    background: white;
+    border: none;
+    border-radius: 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    margin-bottom: 16px;
+}
+
+.order-card:hover {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.order-card-body {
+    padding: 22px 30px;
+    display: flex;
+    align-items: center;
+    gap: 0;
+}
+
+/* Columnas dentro de la tarjeta */
+.order-col {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.order-col-id    { flex: 0 0 120px; }
+.order-col-date  { flex: 0 0 120px; }
+.order-col-state { flex: 0 0 140px; }
+.order-col-total { flex: 1; }
+.order-col-guide { flex: 0 0 180px; text-align: right; align-items: flex-end; }
+
+/* Etiquetas y valores */
+.order-label {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #999;
+    font-weight: 500;
+}
+
+.order-value {
+    font-size: 13px;
+    color: #333;
+}
+
+.order-number {
+    font-weight: 700;
+    color: #000;
+    font-size: 14px;
+}
+
+.order-total {
+    font-weight: 600;
+    color: #000;
+    font-size: 14px;
+}
+
+.order-guide-empty {
+    color: #bbb;
+    font-style: italic;
+    font-size: 12px;
+}
+
+/* Badges de estado */
+.order-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    width: fit-content;
+}
+
+.order-badge-pending {
+    background: #fff8e1;
+    color: #b8860b;
+    border: 1px solid #f0d060;
+}
+
+.order-badge-sent {
+    background: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #a5d6a7;
+}
+
+/* Estado vacío */
+.orders-empty {
+    text-align: center;
+    padding: 80px 20px;
+    color: #999;
+    width: 100%;
+}
+
+.orders-empty i {
+    font-size: 48px;
+    color: #e0e0e0;
+    margin-bottom: 20px;
+    display: block;
+}
+
+.orders-empty p {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0;
+}
+
+/* Fondo blanco — profile-body ya lo garantiza, esto cubre contenedores intermedios */
+body.profile-body {
+    background: #ffffff !important;
+}
+
+#aroma-orders-page {
+    background: #ffffff !important;
+}
+
+body.profile-body .content-wrap,
+body.profile-body main,
+body.profile-body .container,
+body.profile-body .container-fluid {
+    background: #ffffff !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    #aroma-orders-page {
+        margin: 30px auto 40px;
+    }
+
+    .orders-page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .order-card-body {
+        flex-wrap: wrap;
+        gap: 20px;
+        padding: 20px;
+    }
+
+    .order-col-id,
+    .order-col-date,
+    .order-col-state,
+    .order-col-total,
+    .order-col-guide {
+        flex: 0 0 calc(50% - 10px);
+        text-align: left;
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 480px) {
+    #aroma-orders-page {
+        margin: 10px auto 30px;
+        padding: 0 15px;
+    }
+
+    .order-col-id,
+    .order-col-date,
+    .order-col-state,
+    .order-col-total,
+    .order-col-guide {
+        flex: 0 0 100%;
+    }
+
+    .orders-page-header-left {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+}
