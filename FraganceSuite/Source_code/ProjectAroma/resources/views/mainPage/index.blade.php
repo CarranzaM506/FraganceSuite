@@ -362,41 +362,7 @@
         window.addEventListener('scroll', checkScroll);
     });
 
-    // ===== EFECTO DE HEADER STICKY =====
-    document.addEventListener('DOMContentLoaded', function() {
-        const header = document.querySelector('header');
-        if (!header) return;
-        
-        let lastScrollTop = 0;
-        const headerHeight = header.offsetHeight;
-        
-        document.body.style.paddingTop = headerHeight + 'px';
-        
-        window.addEventListener('scroll', function() {
-            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            
-            if (scrollTop < 100) {
-                header.classList.remove('hidden');
-                header.classList.add('visible');
-                return;
-            }
-            
-            if (scrollTop > lastScrollTop && scrollTop > headerHeight) {
-                header.classList.remove('visible');
-                header.classList.add('hidden');
-            } else if (scrollTop < lastScrollTop) {
-                header.classList.remove('hidden');
-                header.classList.add('visible');
-            }
-            
-            lastScrollTop = scrollTop;
-        });
-        
-        window.addEventListener('resize', function() {
-            document.body.style.paddingTop = header.offsetHeight + 'px';
-        });
-    });
-
+    
     // ===== ANIMACIÓN DEL SPLIT PROMO =====
     document.addEventListener('DOMContentLoaded', function() {
         const splitPromo = document.querySelector('.split-promo');

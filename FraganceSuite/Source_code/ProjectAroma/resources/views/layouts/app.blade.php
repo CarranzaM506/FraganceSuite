@@ -7,21 +7,13 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>AROMA - Perfumería</title>
     
-    <!-- Estilos críticos inline para evitar FOUC -->
     <style>
-        /* Evita el flash de contenido sin estilos */
         body {
             opacity: 0;
             transition: opacity 0.2s ease;
         }
-        
         body.loaded {
             opacity: 1;
-        }
-        
-        /* Estilos mínimos para que no se vea feo mientras carga */
-        .product-grid, .store-section, .videos-section {
-            min-height: 200px;
         }
     </style>
     
@@ -32,16 +24,11 @@
     <link rel="stylesheet" href="{{ asset('css/stylesMain.css') }}">
     @vite(['resources/js/app.js'])
     
-    <!-- Script para variable de autenticación -->
     <script>
         window.isAuthenticated = {{ Auth::check() ? 'true' : 'false' }};
-        
-        // Mostrar el body cuando todo esté listo
         document.addEventListener('DOMContentLoaded', function() {
             document.body.classList.add('loaded');
         });
-        
-        // Fallback por si algo tarda
         setTimeout(function() {
             document.body.classList.add('loaded');
         }, 500);
@@ -52,40 +39,43 @@
 
 <body class="@yield('body-class', 'default-body')">
 
-    <!-- ========== INFO CARROUSEL (ENCIMA DEL HEADER) ========== -->
-    @if(isset($infoCarouselItems) && $infoCarouselItems->count() > 0)
-    <div class="info-carousel" id="infoCarousel">
-        <div class="info-carousel-track" id="infoCarouselTrack">
-            @foreach($infoCarouselItems as $item)
-            <div class="info-carousel-slide">
-                <div class="info-carousel-content">
-                    <span class="info-carousel-message">{{ $item->message }}</span>
-                    @if($item->link)
-                    <a href="{{ $item->link }}" class="info-carousel-link" target="_blank">
-                        {{ $item->link_text ?: 'Saber más' }} →
-                    </a>
-                    @endif
+    <!-- HEADER (con el carrusel dentro como primer elemento) -->
+    <header>
+        <!-- INFO CARROUSEL - PRIMER HIJO DEL HEADER -->
+        @if(isset($infoCarouselItems) && $infoCarouselItems->count() > 0)
+        <div class="info-carousel">
+            <div class="info-carousel-track">
+                @foreach($infoCarouselItems as $item)
+                <div class="info-carousel-slide">
+                    <div class="info-carousel-content">
+                        <span class="info-carousel-message">{{ $item->message }}</span>
+                        @if($item->link)
+                        <a href="{{ $item->link }}" class="info-carousel-link" target="_blank">
+                            {{ $item->link_text ?: 'Saber más' }} →
+                        </a>
+                        @endif
+                    </div>
                 </div>
-            </div>
-            @endforeach
-            <!-- Duplicar para efecto infinito -->
-            @foreach($infoCarouselItems as $item)
-            <div class="info-carousel-slide">
-                <div class="info-carousel-content">
-                    <span class="info-carousel-message">{{ $item->message }}</span>
-                    @if($item->link)
-                    <a href="{{ $item->link }}" class="info-carousel-link" target="_blank">
-                        {{ $item->link_text ?: 'Saber más' }} →
-                    </a>
-                    @endif
+                @endforeach
+                @foreach($infoCarouselItems as $item)
+                <div class="info-carousel-slide">
+                    <div class="info-carousel-content">
+                        <span class="info-carousel-message">{{ $item->message }}</span>
+                        @if($item->link)
+                        <a href="{{ $item->link }}" class="info-carousel-link" target="_blank">
+                            {{ $item->link_text ?: 'Saber más' }} →
+                        </a>
+                        @endif
+                    </div>
                 </div>
+                @endforeach
             </div>
-            @endforeach
         </div>
-    </div>
-    @endif
+        @endif
 
-    @include('partials.header')
+        <!-- Contenido del header (logo, menú, etc.) -->
+        @include('partials.header')
+    </header>
 
     <main>
         @yield('content')
