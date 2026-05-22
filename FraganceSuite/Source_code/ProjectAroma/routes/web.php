@@ -103,6 +103,7 @@ Route::middleware('auth')->group(function () {
     //Orders
     Route::get('/order/success/{id}', [OrderController::class, 'success']);
     Route::get('/orders/period', [OrderController::class, 'ordersByPeriod'])->name('orders.period');
+    Route::get('/orders/history', [OrderController::class, 'history'])->name('orders.history');
     Route::resource('orders', OrderController::class);
     Route::get('/dailySales', [OrderController::class, "dailysales"])->name('dailySales');
 
