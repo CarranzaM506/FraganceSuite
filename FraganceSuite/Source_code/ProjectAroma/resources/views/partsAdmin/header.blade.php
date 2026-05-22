@@ -184,6 +184,17 @@
                         </a>
                     </div>
 
+                    <!-- Pendientes de Envío -->
+                    <a class="nav-link {{ request()->routeIs('pendingShipments') || request()->routeIs('pendingShipments.update') ? 'active' : '' }}"
+                        href="{{ route('pendingShipments') }}">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12H3l9-9 9 9h-2"/>
+                            <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/>
+                            <path d="M9 21v-6h6v6"/>
+                        </svg>
+                        Envíos Pendientes
+                    </a>
+
                     <a class="nav-link {{ request()->is('dashboard/reviews*') ? 'active' : '' }}"
                         href="{{ route('dashboard.reviews.index') }}">
                         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
