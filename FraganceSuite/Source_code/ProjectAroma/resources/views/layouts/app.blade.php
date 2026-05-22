@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,12 +7,24 @@
     <title>AROMA - Perfumería</title>
     
     <style>
+    <!-- Estilos críticos inline para evitar FOUC -->
+    <style>
+        /* Evita el flash de contenido sin estilos */
         body {
             opacity: 0;
             transition: opacity 0.2s ease;
         }
         body.loaded {
             opacity: 1;
+        }
+        
+        body.loaded {
+            opacity: 1;
+        }
+        
+        /* Estilos mínimos para que no se vea feo mientras carga */
+        .product-grid, .store-section, .videos-section {
+            min-height: 200px;
         }
     </style>
     
@@ -29,6 +40,13 @@
         document.addEventListener('DOMContentLoaded', function() {
             document.body.classList.add('loaded');
         });
+        
+        // Mostrar el body cuando todo esté listo
+        document.addEventListener('DOMContentLoaded', function() {
+            document.body.classList.add('loaded');
+        });
+        
+        // Fallback por si algo tarda
         setTimeout(function() {
             document.body.classList.add('loaded');
         }, 500);
@@ -91,5 +109,4 @@
 
     @stack('scripts')
 </body>
-
 </html>

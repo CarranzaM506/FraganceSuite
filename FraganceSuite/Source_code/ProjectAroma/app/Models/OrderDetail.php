@@ -20,4 +20,9 @@ class OrderDetail extends Model
     {
         return $this->belongsTo(Order::class, 'idorder', 'idorder');
     }
+
+    public function product()
+    {
+        return $this->belongsTo(\App\Models\Product::class, 'idproduct', 'idproduct');
+    }
 }
