@@ -126,7 +126,6 @@ class MainPageController extends Controller
             'bestSellers',
             'activeVideos',
             'infoCarouselItems'
-            'activeVideos'  
         ));
     }
 }
