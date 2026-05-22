@@ -64,6 +64,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::delete('/dashboard/reviews/{idreview}', [ReviewController::class, 'destroy'])->name('dashboard.reviews.destroy');
 
     Route::get('/pending-shipments', [OrderController::class, 'pendingShipments'])->name('pendingShipments');
+    Route::patch('/pending-shipments/{id}', [OrderController::class, 'updateShipment'])->name('pendingShipments.update');
 
     // Videos
     Route::get('/video', [VideoController::class, 'index'])->name('video.index');

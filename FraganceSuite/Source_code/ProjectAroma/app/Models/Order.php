@@ -20,6 +20,7 @@ class Order extends Model
         'iduser',
         'idlocation',
         'sale_type',
+        'shipping_status',
     ];
 
     public function details()

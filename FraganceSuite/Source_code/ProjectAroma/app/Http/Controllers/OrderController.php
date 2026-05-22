@@ -188,15 +188,60 @@ class OrderController extends Controller
 
     public function destroy(string $id) {}
 
-    public function pendingShipments()
+    public function pendingShipments(Request $request)
     {
-        $orders = Order::with(['user', 'location', 'details.product'])
+        $status = $request->get('status', 'pending');
+        $search = trim($request->get('search', ''));
+
+        $validStatuses = ['pending', 'in_progress', 'completed'];
+        if (!in_array($status, $validStatuses)) {
+            $status = 'pending';
+        }
+
+        $query = Order::with(['user', 'location', 'details.product'])
             ->where('state', 1)
             ->whereNotNull('idlocation')
-            ->orderBy('date', 'asc')
-            ->get();
+            ->where('shipping_status', $status);
 
-        return view('dashboard.sales.pending-shipments', compact('orders'));
+        if ($search !== '') {
+            $query->whereHas('user', function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('lastname', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('phone', 'like', "%{$search}%");
+            });
+        }
+
+        $orders = $query->orderBy('date', 'asc')->get();
+
+        $counts = Order::where('state', 1)
+            ->whereNotNull('idlocation')
+            ->selectRaw("shipping_status, COUNT(*) as total")
+            ->groupBy('shipping_status')
+            ->pluck('total', 'shipping_status');
+
+        return view('dashboard.sales.pending-shipments', compact('orders', 'status', 'search', 'counts'));
+    }
+
+    public function updateShipment(Request $request, $id)
+    {
+        $order = Order::where('state', 1)->whereNotNull('idlocation')->findOrFail($id);
+
+        $validated = $request->validate([
+            'shipping_status' => 'required|in:pending,in_progress,completed',
+            'guidenumber'     => 'nullable|string|max:255',
+        ]);
+
+        $order->shipping_status = $validated['shipping_status'];
+        $order->guidenumber     = $validated['guidenumber'] ?? $order->guidenumber;
+        $order->save();
+
+        $returnStatus = $request->get('return_status', $validated['shipping_status']);
+        $returnSearch = $request->get('return_search', '');
+
+        return redirect()
+            ->route('pendingShipments', array_filter(['status' => $returnStatus, 'search' => $returnSearch]))
+            ->with('success', "Pedido #{$order->idorder} actualizado correctamente.");
     }
 
     public function success($id)

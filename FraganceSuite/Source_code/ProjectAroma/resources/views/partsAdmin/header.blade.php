@@ -160,11 +160,9 @@
                     </a>
 
                     <!-- Ventas -->
-
                     <a class="nav-link d-flex align-items-center justify-content-between {{ request()->is('orders*') || request()->is('dailySales*') ? 'active' : '' }}"
                         data-bs-toggle="collapse" href="#submenuVentas" role="button"
                         aria-expanded="{{ request()->is('orders*') || request()->is('dailySales*') ? 'true' : 'false' }}"
-
                         aria-controls="submenuVentas">
                         <span>
                             <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -177,7 +175,6 @@
                         <span class="ms-2">▾</span>
                     </a>
 
-
                     <div class="collapse submenu {{ request()->is('orders*') || request()->is('dailySales*') ? 'show' : '' }}" id="submenuVentas">
                         <a class="nav-link {{ request()->routeIs('orders.index') ? 'active' : '' }}" href="{{ route('orders.index') }}">
                             Ventas Mensuales
@@ -185,10 +182,18 @@
                         <a class="nav-link {{ request()->routeIs('dailySales') ? 'active' : '' }}" href="{{ route('dailySales') }}">
                             Ventas Diarias
                         </a>
-                        <a class="nav-link {{ request()->routeIs('pendingShipments') ? 'active' : '' }}" href="{{ route('pendingShipments') }}">
-                            Pendientes de Envío
-                        </a>
                     </div>
+
+                    <!-- Pendientes de Envío -->
+                    <a class="nav-link {{ request()->routeIs('pendingShipments') || request()->routeIs('pendingShipments.update') ? 'active' : '' }}"
+                        href="{{ route('pendingShipments') }}">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12H3l9-9 9 9h-2"/>
+                            <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/>
+                            <path d="M9 21v-6h6v6"/>
+                        </svg>
+                        Envíos Pendientes
+                    </a>
 
                     <a class="nav-link {{ request()->is('dashboard/reviews*') ? 'active' : '' }}"
                         href="{{ route('dashboard.reviews.index') }}">
