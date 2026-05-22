@@ -200,7 +200,7 @@ class OrderController extends Controller
 
         $query = Order::with(['user', 'location', 'details.product'])
             ->where('state', 1)
-            ->whereNotNull('idlocation')
+            ->where('sale_type', 'web')
             ->where('shipping_status', $status);
 
         if ($search !== '') {
@@ -215,7 +215,7 @@ class OrderController extends Controller
         $orders = $query->orderBy('date', 'asc')->get();
 
         $counts = Order::where('state', 1)
-            ->whereNotNull('idlocation')
+            ->where('sale_type', 'web')
             ->selectRaw("shipping_status, COUNT(*) as total")
             ->groupBy('shipping_status')
             ->pluck('total', 'shipping_status');
@@ -225,7 +225,7 @@ class OrderController extends Controller
 
     public function updateShipment(Request $request, $id)
     {
-        $order = Order::where('state', 1)->whereNotNull('idlocation')->findOrFail($id);
+        $order = Order::where('state', 1)->where('sale_type', 'web')->findOrFail($id);
 
         $validated = $request->validate([
             'shipping_status' => 'required|in:pending,in_progress,completed',
