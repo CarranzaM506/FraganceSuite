@@ -1,8 +1,69 @@
 /* ========== ESTILOS ESPECÍFICOS PARA CATÁLOGO ========== */
 
+/* BARRA NEGRA PEGADA AL HEADER */
+.black-navbar {
+    background-color: #000000;
+    color: white;
+    padding: 12px 0;
+    text-align: center;
+    font-family: sans-serif;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+    width: 100%;
+    position: fixed;
+    top: 80px; /* JUSTO DEBAJO DEL HEADER */
+    left: 0;
+    z-index: 999; /* UNO MENOS que el header */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: all 0.3s ease-in-out;
+    transform: translateY(0);
+}
+
+.black-navbar.hidden {
+    transform: translateY(-100%);
+}
+
+.black-navbar .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.nav-title {
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* FORZAR HEADER POR ENCIMA DE TODO EN CATÁLOGO */
+.catalog-body header {
+    z-index: 1000 !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    background: white !important;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05) !important;
+}
+
+.catalog-body header.visible {
+    transform: translateY(0) !important;
+}
+
+.catalog-body header.hidden {
+    transform: translateY(-100%) !important;
+}
+
+/* AJUSTE DE PADDING PARA EL BODY EN CATÁLOGO */
+.catalog-body {
+    padding-top: 70px !important; 
+}
+
 /* CONTENIDO PRINCIPAL */
 .catalog-page {
-    padding: 30px 20px;
+
+    padding: 110px 20px 30px; 
     max-width: 1400px;
     margin: 0 auto;
     min-height: 100vh;
@@ -16,6 +77,8 @@
     margin-bottom: 40px;
     padding: 20px;
     background: #ffffff;
+    border-radius: 0px;
+    padding-top: -5px;
 }
 
 .filter-left {
@@ -26,7 +89,7 @@
 
 /* Botón Filtrar */
 .filter-btn {
-    background: none;
+    background:none;
     border: 1px solid #ddd;
     padding: 10px 25px;
     font-size: 14px;
@@ -38,12 +101,14 @@
     transition: all 0.3s;
     letter-spacing: 0.5px;
     text-transform: uppercase;
+    border-radius: 0px;
     font-weight: 500;
 }
 
 .filter-btn:hover {
     border-color: #927a1b;
     color: #927a1b;
+    background: none
 }
 
 .filter-btn i {
@@ -57,7 +122,7 @@
     font-weight: 500;
 }
 
-/* MODAL DE FILTROS */
+/* MODAL DE FILTROS - ESTILO CENTRADO MINIMALISTA */
 .filter-modal {
     display: none;
     position: fixed;
@@ -65,8 +130,8 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.6);
-    z-index: 2000;
+    background: rgba(0, 0, 0, 0.6); /* Fondo más oscuro para contraste */
+    z-index: 1002;
     align-items: center;
     justify-content: center;
     padding: 20px;
@@ -78,14 +143,18 @@
 
 .modal-content {
     background: white;
+    border-radius: 0;
     width: 100%;
-    max-width: 320px;
+    max-width: 320px; /* Más estrecho, similar a la imagen */
     max-height: 90vh;
     overflow-y: auto;
     position: relative;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    border: none; /* Sin bordes */
 }
 
+/* Header del modal - Centrado y minimalista */
+/* Alternativa: sin botón de cerrar en el header, solo la X */
 .modal-header {
     padding: 25px 24px 20px;
     border-bottom: 1px solid #f0f0f0;
@@ -93,6 +162,7 @@
     position: relative;
 }
 
+/* Mover el botón de cerrar fuera del header */
 .modal-close {
     position: absolute;
     top: 15px;
@@ -102,8 +172,10 @@
     font-size: 24px;
     color: #777;
     cursor: pointer;
+    z-index: 10;
 }
 
+/* Título centrado */
 .modal-title {
     font-size: 13px;
     font-weight: 400;
@@ -111,48 +183,60 @@
     text-transform: uppercase;
     letter-spacing: 3px;
     margin: 0;
+    padding: 0;
 }
 
+
+/* Cuerpo del modal */
 .modal-body {
     padding: 20px 24px;
 }
 
+/* Opciones de filtro - más compactas */
 .filter-option {
     margin-bottom: 20px;
 }
 
 .filter-label {
     display: block;
-    font-size: 11px;
+    font-size: 11px; /* Más pequeño */
     color: #666;
     margin-bottom: 8px;
     text-transform: uppercase;
     letter-spacing: 1px;
-    font-weight: 400;
+    font-weight: 400; /* Más delgado */
 }
 
+/* Selects - estilo minimalista */
 .filter-select {
     width: 100%;
-    padding: 12px 0;
+    padding: 12px 0; /* Padding vertical, sin horizontal */
     border: none;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid #eee; /* Solo línea inferior */
+    border-radius: 0;
     font-size: 14px;
     background: transparent;
     color: #222;
     transition: all 0.2s;
     appearance: none;
     cursor: pointer;
+    font-weight: 400;
+    -webkit-appearance: none;
+    -moz-appearance: none;
 }
 
+/* Efecto al enfocar */
 .filter-select:focus {
     outline: none;
     border-bottom-color: #000;
 }
 
+/* Para inputs de texto */
 .filter-select[type="text"] {
     padding: 12px 0;
 }
 
+/* Pie del modal con botones */
 .modal-actions {
     padding: 20px 24px 24px;
     border-top: 1px solid #f0f0f0;
@@ -161,18 +245,22 @@
     background: white;
 }
 
+/* Botones - estilo minimalista */
 .btn-apply, .btn-clear {
     flex: 1;
     padding: 14px;
     border: none;
+    border-radius: 0;
     font-size: 12px;
     font-weight: 500;
     cursor: pointer;
     text-transform: uppercase;
     letter-spacing: 1px;
     transition: all 0.2s;
+    background: transparent;
 }
 
+/* Botón aplicar - negro con texto blanco */
 .btn-apply {
     background: #000;
     color: white;
@@ -181,8 +269,10 @@
 
 .btn-apply:hover {
     background: #222;
+    border-color: #222;
 }
 
+/* Botón limpiar - blanco con borde gris */
 .btn-clear {
     background: white;
     color: #666;
@@ -192,8 +282,30 @@
 .btn-clear:hover {
     background: #fafafa;
     color: #333;
+    border-color: #bbb;
 }
 
+/* Estilo para las opciones del select */
+.filter-select option {
+    padding: 10px;
+    font-size: 14px;
+    background: white;
+    color: #000;
+}
+
+/* Para opción seleccionada - GRIS en lugar de AZUL */
+.filter-select option:checked,
+.filter-select option:selected {
+    background-color: #f5f5f5 !important;
+    color: #000 !important;
+}
+
+/* Cuando no hay opciones seleccionadas, texto más claro */
+.filter-select:not(:focus):placeholder-shown {
+    color: #999;
+}
+
+/* Flecha del select personalizada */
 .filter-select {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
     background-repeat: no-repeat;
@@ -202,21 +314,115 @@
     padding-right: 25px;
 }
 
+/* Para el input de búsqueda, quitar la flecha */
 .filter-select[type="text"] {
     background-image: none;
     padding-right: 0;
 }
 
+/* Asegurar que el modal se vea siempre centrado */
+@media (max-height: 600px) {
+    .modal-content {
+        max-height: 95vh;
+        margin-top: 0;
+    }
+}
+
+/* Animación de entrada */
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.modal-content {
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+/* ========== SOLUCIÓN DEFINITIVA PARA EL COLOR AZUL ========== */
+/* Estas líneas son NUEVAS y van AL FINAL del CSS */
+
+/* 1. Eliminar TODOS los estilos azules del sistema */
+.filter-select,
+.filter-select:focus,
+.filter-select:active,
+.filter-select:hover {
+    background-color: white !important;
+    color: #000 !important;
+    outline: none !important;
+}
+
+/* 2. Para las opciones dentro del dropdown */
 .filter-select option {
     background-color: white !important;
     color: #000 !important;
 }
 
-.filter-select option:checked {
+.filter-select option:hover,
+.filter-select option:focus,
+.filter-select option:active {
     background-color: #f5f5f5 !important;
     color: #000 !important;
 }
 
+/* 3. Específico para Chrome/Edge */
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+    .filter-select {
+        color: #000;
+    }
+    
+    .filter-select:focus {
+        color: #000;
+    }
+    
+    .filter-select option {
+        background-color: white;
+        color: #000;
+    }
+    
+    .filter-select option:checked {
+        background-color: #f5f5f5;
+        color: #000;
+    }
+}
+
+/* 4. Específico para Firefox */
+@-moz-document url-prefix() {
+    .filter-select {
+        color: #000;
+        text-indent: 0.01px;
+        text-overflow: '';
+    }
+    
+    .filter-select option:checked {
+        background-color: #f5f5f5 !important;
+        color: #000 !important;
+    }
+}
+
+/* 5. Para Safari */
+@media not all and (min-resolution:.001dpcm) { 
+    @supports (-webkit-appearance:none) {
+        .filter-select {
+            color: #000;
+        }
+        
+        .filter-select option {
+            background-color: white;
+            color: #000;
+        }
+        
+        .filter-select option:checked {
+            background-color: #f5f5f5;
+            color: #000;
+        }
+    }
+}
 /* PRODUCTOS */
 .catalog-products {
     padding: 0 10px;
@@ -229,53 +435,41 @@
     margin-top: 20px;
 }
 
-@media (max-width: 1200px) {
+/* Para pantallas entre 992px y 1200px */
+@media (min-width: 992px) and (max-width: 1199px) {
     .catalog-grid {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 25px !important;
     }
 }
 
-@media (max-width: 768px) {
+/* Para pantallas entre 768px y 991px */
+@media (min-width: 768px) and (max-width: 991px) {
     .catalog-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 20px;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 20px !important;
     }
 }
 
-@media (max-width: 480px) {
+/* Para móviles */
+@media (max-width: 767px) {
     .catalog-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 15px;
-    }
-    
-    .catalog-page {
-        padding: 20px 15px;
-    }
-    
-    .filter-btn {
-        padding: 6px 18px;
-        font-size: 12px;
-    }
-    
-    .product-count {
-        font-size: 12px;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 15px !important;
     }
 }
 
+/* Para pantallas grandes (1600px+) */
 @media (min-width: 1600px) {
     .catalog-grid {
-        grid-template-columns: repeat(5, 1fr);
-        gap: 35px;
+        grid-template-columns: repeat(5, 1fr) !important;
+        gap: 35px !important;
     }
 }
-
 .catalog-card {
     opacity: 0;
     transform: translateY(20px);
     transition: opacity 0.5s ease, transform 0.5s ease;
-    text-decoration: none;
-    color: inherit;
-    display: block;
 }
 
 .catalog-card.visible {
@@ -283,43 +477,12 @@
     transform: translateY(0);
 }
 
-.product-image {
-    height: 260px;
-    background-color: #fafafa;
-    position: relative;
-    overflow: hidden;
-    margin-bottom: 15px;
-}
-
-.product-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.product-hover {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.25);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 15px;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.product-card:hover .product-hover {
-    opacity: 1;
-}
-
+/* Iconos discretos */
 .wishlist-icon, .add-cart-icon {
     color: white;
     font-size: 18px;
     cursor: pointer;
+    transition: all 0.2s ease;
     width: 36px;
     height: 36px;
     display: flex;
@@ -327,7 +490,11 @@
     justify-content: center;
     border-radius: 50%;
     background-color: rgba(0, 0, 0, 0.3);
-    transition: all 0.2s ease;
+}
+
+.wishlist-icon:hover, .add-cart-icon:hover {
+    background-color: rgba(0, 0, 0, 0.5);
+    transform: scale(1.05);
 }
 
 .wishlist-icon:hover {
@@ -338,32 +505,7 @@
     color: #927a1b;
 }
 
-.product-info {
-    text-align: center;
-}
-
-.product-name {
-    font-weight: 400;
-    margin-bottom: 6px;
-    color: #222;
-    font-size: 14px;
-    text-transform: uppercase;
-}
-
-.product-brand {
-    color: #777;
-    font-size: 12px;
-    margin-bottom: 8px;
-    text-transform: uppercase;
-}
-
-.product-price {
-    color: #222;
-    font-weight: 400;
-    font-size: 15px;
-}
-
-/* PAGINACIÓN */
+/* PAGINACIÓN ABAJO */
 .pagination-arrows {
     display: flex;
     justify-content: center;
@@ -379,13 +521,15 @@
     height: 40px;
     border: 1px solid #ddd;
     background: white;
+    border-radius: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    text-decoration: none;
+    transition: all 0.3s;
     color: #927a1b;
     font-size: 14px;
+    text-decoration: none;
 }
 
 .arrow-btn:hover:not(:disabled) {
@@ -399,35 +543,24 @@
     cursor: not-allowed;
 }
 
-/* FILTROS ACTIVOS TAGS */
-.filter-tag {
-    display: inline-flex;
-    align-items: center;
-    padding: 5px 12px;
-    background: #927a1b;
-    color: white;
-    font-size: 12px;
-    gap: 8px;
+.page-info {
+    font-size: 14px;
+    color: #927a1b;
+    font-weight: 500;
 }
 
-.filter-tag button {
-    background: none;
-    border: none;
-    color: white;
-    cursor: pointer;
-    font-size: 16px;
-}
-
-/* NO PRODUCTOS */
+/* NO PRODUCTS */
 .no-products {
     text-align: center;
     padding: 100px 20px;
+    color: #927a1b;
 }
 
 .no-products i {
     font-size: 4rem;
     margin-bottom: 20px;
     color: #ddd;
+    opacity: 0.7;
 }
 
 .no-products h3 {
@@ -437,32 +570,102 @@
     color: #444;
 }
 
-/* Responsive para móvil */
+.no-products p {
+    font-size: 1rem;
+    margin-bottom: 30px;
+    color: #888;
+}
+
+.no-products .filter-btn {
+    margin-top: 20px;
+}
+
+/* Para tablets (768px) */
 @media (max-width: 768px) {
-    .catalog-page {
-        padding: 20px 15px;
+    .catalog-body {
+        padding-top: 80px !important;
     }
     
+    .catalog-page {
+        padding: 60px 15px 20px !important;
+    }
+    
+    
+    /* SOLO hacer el botón más pequeño */
     .filter-btn {
         padding: 6px 18px;
         font-size: 12px;
     }
     
+    /* Contador más pequeño */
     .product-count {
         font-size: 12px;
     }
     
+    /* Contenedor de filtros activos */
+    .filter-tags-container {
+        flex-wrap: wrap;
+        gap: 8px !important;
+        padding: 0 15px !important;
+        margin-bottom: 15px !important;
+    }
+    
+    .filter-tags-container > div {
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+    }
+    
+    /* Tags más pequeños */
     .filter-tag {
-        font-size: 11px;
-        padding: 4px 10px;
+        font-size: 11px !important;
+        padding: 4px 10px !important;
+        gap: 6px !important;
+    }
+    
+    .filter-tag button {
+        font-size: 14px !important;
+        width: 16px !important;
+        height: 16px !important;
+    }
+    
+    /* Texto "Filtros aplicados:" */
+    .filter-tags-container span:first-child {
+        font-size: 12px !important;
+        display: block !important;
+        width: 100% !important;
+        margin-bottom: 5px !important;
+    }
+    
+    /* Botón "Limpiar todos" */
+    .clear-all-btn {
+        font-size: 12px !important;
+        margin-left: 0 !important;
+        margin-top: 5px !important;
+        display: inline-block !important;
+    }
+    
+    .catalog-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 20px;
+    }
+    
+    .pagination-arrows {
+        margin-top: 40px;
+        padding-top: 20px;
     }
 }
 
+/* Para móviles pequeños (480px) */
 @media (max-width: 480px) {
-    .catalog-page {
-        padding: 15px 12px;
+    .catalog-body {
+        padding-top: 70px !important;
     }
     
+    .catalog-page {
+        padding: 50px 12px 15px !important;
+    }
+    
+    /* Botón aún más pequeño */
     .filter-btn {
         padding: 5px 15px;
         font-size: 11px;
@@ -472,57 +675,122 @@
         font-size: 11px;
     }
     
+    /* Tags más pequeños */
     .filter-tag {
-        font-size: 10px;
-        padding: 3px 8px;
-    }
-}
-
-/* ========== CENTRAR ÚLTIMA FILA DEL GRID ========== */
-.catalog-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 30px;
-    margin-top: 20px;
-    margin-bottom: 40px;
-}
-
-/* Para escritorio (4 columnas) */
-@media (min-width: 992px) {
-    .catalog-grid {
-        grid-template-columns: repeat(4, 1fr);
+        font-size: 10px !important;
+        padding: 3px 8px !important;
     }
     
-    /* Centrar elementos cuando la última fila tiene menos de 4 productos */
-    .catalog-grid:after {
-        content: "";
-        flex: auto;
+    .filter-tag button {
+        font-size: 12px !important;
+        width: 14px !important;
+        height: 14px !important;
     }
-}
-
-/* Para tablets (3 columnas) */
-@media (max-width: 991px) and (min-width: 768px) {
+    
+    .clear-all-btn {
+        font-size: 11px !important;
+    }
+    
     .catalog-grid {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 15px;
     }
+
+
 }
 
-/* Para móviles (2 columnas) */
-@media (max-width: 767px) {
+/* Para móviles muy pequeños (375px) */
+@media (max-width: 375px) {
+    .catalog-body {
+        padding-top: 65px !important;
+    }
+    
+    .catalog-page {
+        padding: 45px 10px 15px !important;
+    }
+    
+    /* Botón más pequeño */
+    .filter-btn {
+        padding: 4px 12px;
+        font-size: 10px;
+    }
+    
+    .product-count {
+        font-size: 10px;
+    }
+    
     .catalog-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+        gap: 12px;
+    }
+}
+/* ====== ESTILOS ADICIONALES PARA FILTROS ====== */
+
+/* Tags de filtros activos */
+.filter-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 12px;
+    background: #e5e3da;
+    color: white;
+    border-radius: 0px;
+    font-size: 13px;
+    font-weight: 500;
+    gap: 8px;
+}
+
+.filter-tag button {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 0;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0px;
+    transition: all 0.2s;
+}
+
+.filter-tag button:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Título más pequeño en móvil */
+@media (max-width: 768px) {
+    .nav-title {
+        font-size: 12px !important;
+        letter-spacing: 1.5px !important;
     }
 }
 
-/* Usar flexbox para centrar la última fila */
-.catalog-products {
-    padding: 0 10px;
+@media (max-width: 480px) {
+    .nav-title {
+        font-size: 12px !important;
+        letter-spacing: 1px !important;
+    }
 }
 
-.catalog-grid {
-    display: grid;
+
+/* ========== FORZAR 4 COLUMNAS EN ESCRITORIO ========== */
+@media (min-width: 992px) {
+    .catalog-grid {
+        display: grid !important;
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 30px !important;
+    }
 }
 
+/* Para pantallas muy grandes */
+@media (min-width: 1600px) {
+    .catalog-grid {
+        grid-template-columns: repeat(5, 1fr) !important;
+        gap: 35px !important;
+    }
+}
 /* Anular cualquier regla que ponga 2 columnas en escritorio */
 @media (min-width: 992px) {
     .catalog-grid {
@@ -560,6 +828,8 @@
     display: inline-block;
     border-radius: 2px;
     margin-top: 2px;
+}
+
 /* Estilo para que los productos se vean consistentes */
 .catalog-card {
     text-decoration: none;

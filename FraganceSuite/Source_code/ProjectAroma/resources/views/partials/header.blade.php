@@ -1,76 +1,78 @@
-<div class="header-main">
-    <!-- Botón de menú lateral (hamburguesa) -->
-    <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="3" y1="12" x2="21" y2="12"></line>
-            <line x1="3" y1="6" x2="21" y2="6"></line>
-            <line x1="3" y1="18" x2="21" y2="18"></line>
-        </svg>
-    </button>
+<header>
+    <div class="header-main">
+        <!-- Botón de menú lateral (hamburguesa) -->
+        <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+        </button>
 
-    <!-- Logo centrado -->
-    <a href="{{ route('mainPage') }}" class="logo">AROMA</a>
+        <!-- Logo centrado -->
+        <a href="{{ route('mainPage') }}" class="logo">AROMA</a>
 
-    <!-- Iconos de usuario a la derecha -->
-    <div class="user-icons">
-        <!-- Formulario de búsqueda expandible (SOLO DESKTOP) -->
-        <form action="{{ route('catalog.index') }}" method="GET" class="search-icon-form">
-            <input type="text" name="search" class="search-input-mobile" placeholder="Buscar..." value="{{ request('search') }}">
-            <button type="submit" class="search-icon-btn">
+        <!-- Iconos de usuario a la derecha -->
+        <div class="user-icons">
+            <!-- Formulario de búsqueda expandible (SOLO DESKTOP) -->
+            <form action="{{ route('catalog.index') }}" method="GET" class="search-icon-form">
+                <input type="text" name="search" class="search-input-mobile" placeholder="Buscar..." value="{{ request('search') }}">
+                <button type="submit" class="search-icon-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" 
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </button>
+            </form>
+
+            <!-- Botón de búsqueda para móvil (MODAL) -->
+            <button type="button" class="search-icon-btn" id="mobileSearchBtn">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" 
                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="11" cy="11" r="8"></circle>
                     <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                 </svg>
             </button>
-        </form>
 
-        <!-- Botón de búsqueda para móvil (MODAL) -->
-        <button type="button" class="search-icon-btn" id="mobileSearchBtn">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" 
-                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
-        </button>
-
-        <!-- Icono de favoritos -->
-        <a href="{{ route('favorites.index') }}" class="icon-link">
-            <span class="icon"><i class="far fa-heart"></i></span>
-        </a>
-
-        <!-- Icono de carrito con dropdown -->
-        <div id="cartIconContainer" class="cart-dropdown-container">
-            <a href="{{ route('cart.index') }}" class="icon-link">
-                <span class="icon" id="cartIcon">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                        <line x1="3" y1="6" x2="21" y2="6"></line>
-                        <path d="M16 10a4 4 0 0 1-8 0"></path>
-                    </svg>
-                </span>
+            <!-- Icono de favoritos -->
+            <a href="{{ route('favorites.index') }}" class="icon-link">
+                <span class="icon"><i class="far fa-heart"></i></span>
             </a>
 
-            <!-- Dropdown Preview del Carrito -->
-            <div id="cartPreview" class="cart-preview-dropdown" style="display: none;">
-                <div class="cart-preview-content">
-                    <div class="cart-preview-header">
-                        <h3>Tu Carrito</h3>
-                    </div>
-                    <div id="cartPreviewItems" class="cart-preview-items"></div>
-                    <div class="cart-preview-footer">
-                        <div class="cart-total">
-                            <strong>Total:</strong>
-                            <span id="cartPreviewTotal">₡0</span>
+            <!-- Icono de carrito con dropdown -->
+            <div id="cartIconContainer" class="cart-dropdown-container">
+                <a href="{{ route('cart.index') }}" class="icon-link">
+                    <span class="icon" id="cartIcon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <path d="M16 10a4 4 0 0 1-8 0"></path>
+                        </svg>
+                    </span>
+                </a>
+
+                <!-- Dropdown Preview del Carrito -->
+                <div id="cartPreview" class="cart-preview-dropdown" style="display: none;">
+                    <div class="cart-preview-content">
+                        <div class="cart-preview-header">
+                            <h3>Tu Carrito</h3>
                         </div>
-                        <a href="{{ route('cart.index') }}" class="btn-view-cart">Ver Carrito</a>
+                        <div id="cartPreviewItems" class="cart-preview-items"></div>
+                        <div class="cart-preview-footer">
+                            <div class="cart-total">
+                                <strong>Total:</strong>
+                                <span id="cartPreviewTotal">₡0</span>
+                            </div>
+                            <a href="{{ route('cart.index') }}" class="btn-view-cart">Ver Carrito</a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</header>
 
 <!-- Modal de búsqueda para móvil -->
 <div id="searchModal" class="search-modal">
@@ -153,6 +155,28 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // ========== SCROLL PARA OCULTAR HEADER ==========
+        const header = document.querySelector('header');
+        let lastScroll = 0;
+        
+        if (header) {
+            header.style.transition = 'transform 0.3s ease-in-out';
+            
+            window.addEventListener('scroll', function() {
+                const currentScroll = window.pageYOffset;
+                
+                if (currentScroll > lastScroll && currentScroll > 100) {
+                    // Scroll hacia abajo - ocultar header
+                    header.style.transform = 'translateY(-100%)';
+                } else if (currentScroll < lastScroll) {
+                    // Scroll hacia arriba - mostrar header
+                    header.style.transform = 'translateY(0)';
+                }
+                
+                lastScroll = currentScroll;
+            });
+        }
+        
         // ========== MENÚ LATERAL ==========
         const menuToggle = document.getElementById('menuToggle');
         const sideMenu = document.getElementById('sideMenu');
@@ -175,8 +199,7 @@
         if (closeMenuBtn) closeMenuBtn.addEventListener('click', closeMenu);
         if (menuOverlay) menuOverlay.addEventListener('click', closeMenu);
 
-        // Cerrar menú al hacer clic en cualquier enlace
-        const menuLinks = document.querySelectorAll('.side-menu-link, .side-menu-category-link, .side-menu-logout-btn');
+        const menuLinks = document.querySelectorAll('.side-menu-link');
         menuLinks.forEach(link => {
             link.addEventListener('click', closeMenu);
         });
@@ -206,24 +229,6 @@
                     searchModal.classList.remove('active');
                     document.body.style.overflow = '';
                 }
-            });
-        }
-        
-        // ========== SCROLL PARA OCULTAR HEADER ==========
-        const header = document.querySelector('header');
-        let lastScroll = 0;
-        
-        if (header) {
-            window.addEventListener('scroll', function() {
-                const currentScroll = window.pageYOffset;
-                
-                if (currentScroll > lastScroll && currentScroll > 50) {
-                    header.style.transform = 'translateY(-100%)';
-                } else if (currentScroll < lastScroll) {
-                    header.style.transform = 'translateY(0)';
-                }
-                
-                lastScroll = currentScroll;
             });
         }
     });

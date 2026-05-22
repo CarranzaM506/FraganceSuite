@@ -140,8 +140,13 @@
 }
     </style>
 @endsection
-@section('content')
 
+@section('content')
+<nav class="black-navbar">
+    <div class="container">
+        <span class="nav-title">FAVORITOS</span>
+    </div>
+</nav>
 
 <section class="catalog-products">
     @if($products->isEmpty())

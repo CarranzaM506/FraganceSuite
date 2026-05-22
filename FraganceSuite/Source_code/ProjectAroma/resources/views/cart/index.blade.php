@@ -18,7 +18,12 @@
 @endsection
 
 @section('content')
-
+<!-- Barra negra pegada al header -->
+<nav class="black-navbar visible">
+    <div class="container">
+        <span class="nav-title">MI CARRITO</span>
+    </div>
+</nav>
 
 <div class="cart-page">
     <div class="cart-container">

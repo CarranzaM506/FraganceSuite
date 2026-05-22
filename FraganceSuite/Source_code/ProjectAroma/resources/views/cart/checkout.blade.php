@@ -236,6 +236,11 @@
 @endsection
 
 @section('content')
+<nav class="black-navbar">
+    <div class="container">
+        <span class="nav-title">CHECKOUT</span>
+    </div>
+</nav>
 
 <div class="cart-page">
     <div class="cart-container">
