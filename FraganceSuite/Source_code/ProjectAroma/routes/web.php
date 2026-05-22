@@ -15,6 +15,7 @@ use App\Http\Controllers\CodePromotionController;
 use App\Http\Controllers\FavoriteController; 
 use App\Http\Controllers\BrandController; 
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PhysicalSaleController;
 use App\Http\Controllers\PayPalController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\VideoController;
@@ -89,8 +90,15 @@ Route::middleware('auth')->group(function () {
 
     //Orders
     Route::get('/order/success/{id}', [OrderController::class, 'success']);
+    Route::get('/orders/period', [OrderController::class, 'ordersByPeriod'])->name('orders.period');
     Route::resource('orders', OrderController::class);
     Route::get('/dailySales', [OrderController::class, "dailysales"])->name('dailySales');
+
+    Route::get('/physical-sales', function () {
+        $products = \App\Models\Product::where('active', true)->where('stock', '>', 0)->orderBy('name')->get();
+        return view('dashboard.sales.physical-sales', compact('products'));
+    })->name('physicalSales');
+    Route::post('/physical-sales', [PhysicalSaleController::class, 'store'])->name('physicalSales.store');
 
     Route::post('/api/address', [LocationController::class, 'storeApi']);
     Route::get('/checkout', [CheckOutController::class, 'index'])->name('checkout');
