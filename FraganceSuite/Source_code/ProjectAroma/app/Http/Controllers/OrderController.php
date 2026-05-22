@@ -242,7 +242,7 @@ class OrderController extends Controller
         return redirect()
             ->route('pendingShipments', array_filter(['status' => $returnStatus, 'search' => $returnSearch]))
             ->with('success', "Pedido #{$order->idorder} actualizado correctamente.");
-
+    }
     public function history()
     {
         $orders = Order::where('iduser', auth()->id())
