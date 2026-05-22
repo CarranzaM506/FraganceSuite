@@ -2,32 +2,6 @@
 
 @section('title', 'Mensajes Informativos')
 
-@section('styles')
-<style>
-    .sortable-handle {
-        cursor: move;
-        padding: 8px;
-        text-align: center;
-        vertical-align: middle;
-        width: 40px;
-    }
-    .sortable-handle i {
-        font-size: 18px;
-        color: #999;
-    }
-    .sortable-handle:hover i {
-        color: #333;
-    }
-    .drag-row {
-        transition: background 0.2s;
-    }
-    .drag-row.dragging {
-        background: #f5f5f5;
-        opacity: 0.6;
-    }
-</style>
-@endsection
-
 @section('content')
 <div class="container-fluid py-4">
     <div class="card shadow border-0">
@@ -37,9 +11,9 @@
                     <h4 class="mb-1">Mensajes del Carrusel</h4>
                     <p class="text-muted mb-0">Administra los mensajes que se muestran en el carrusel superior.</p>
                 </div>
-                <button class="btn btn-dark" type="button" data-bs-toggle="modal" data-bs-target="#createModal">
+                <a href="{{ route('admin.info-carousel.create') }}" class="btn btn-dark">
                     + Agregar Mensaje
-                </button>
+                </a>
             </div>
 
             @if (session('success'))
@@ -49,33 +23,40 @@
                 </div>
             @endif
 
-            <div class="table-responsive">
+            @if (session('error'))
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ session('error') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            @endif
+
+            <!-- Desktop: tabla -->
+            <div class="table-responsive d-none d-md-block">
                 <table class="table table-hover">
                     <thead class="table-light">
                         <tr>
-                            <th style="width: 50px"></th>
+                            <th style="width: 60px">Orden</th>
                             <th>Mensaje</th>
                             <th>Enlace</th>
-                            <th>Orden</th>
-                            <th>Activo</th>
-                            <th>Acciones</th>
+                            <th style="width: 80px">Activo</th>
+                            <th style="width: 200px">Acciones</th>
                         </tr>
                     </thead>
                     <tbody id="sortable-items">
                         @foreach($items as $item)
-                        <tr data-id="{{ $item->id }}" data-position="{{ $item->order_position }}" class="drag-row">
-                            <td class="sortable-handle">
-                                <i class="fas fa-grip-vertical"></i>
+                        <tr data-id="{{ $item->id }}">
+                            <td>
+                                <i class="fas fa-grip-vertical text-muted me-2" style="cursor: move;"></i>
+                                {{ $item->order_position }}
                             </td>
                             <td>{{ Str::limit($item->message, 80) }}</td>
                             <td>
                                 @if($item->link)
-                                    <a href="{{ $item->link }}" target="_blank" class="small">{{ $item->link_text ?: 'Enlace' }}</a>
+                                    <a href="{{ $item->link }}" target="_blank">{{ $item->link_text ?: 'Ver enlace' }}</a>
                                 @else
-                                    <span class="text-muted">—</span>
+                                    —
                                 @endif
                             </td>
-                            <td>{{ $item->order_position }}</td>
                             <td>
                                 <div class="form-check form-switch">
                                     <input class="form-check-input toggle-active" type="checkbox" 
@@ -84,19 +65,13 @@
                                 </div>
                             </td>
                             <td>
-                                <button class="btn btn-sm btn-outline-primary edit-btn" 
-                                    data-id="{{ $item->id }}"
-                                    data-message="{{ $item->message }}"
-                                    data-link="{{ $item->link }}"
-                                    data-link_text="{{ $item->link_text }}"
-                                    data-order="{{ $item->order_position }}"
-                                    data-active="{{ $item->active ? 1 : 0 }}">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-danger delete-btn" 
+                                <a href="{{ route('admin.info-carousel.edit', $item->id) }}" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-edit"></i> Editar
+                                </a>
+                                <button class="btn btn-sm btn-danger delete-btn" 
                                     data-id="{{ $item->id }}"
                                     data-message="{{ $item->message }}">
-                                    <i class="fas fa-trash"></i>
+                                    <i class="fas fa-trash"></i> Eliminar
                                 </button>
                             </td>
                         </tr>
@@ -104,125 +79,80 @@
                     </tbody>
                 </table>
             </div>
-            
-            @if($items->isEmpty())
-                <div class="text-center py-5">
-                    <i class="fas fa-info-circle fa-3x text-muted mb-3"></i>
-                    <p class="text-muted">No hay mensajes. ¡Agrega tu primer mensaje!</p>
-                </div>
-            @endif
-        </div>
-    </div>
-</div>
 
-{{-- Modal Crear --}}
-<div class="modal fade" id="createModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form method="POST" action="{{ route('admin.info-carousel.store') }}">
-                @csrf
-                <div class="modal-header">
-                    <h5 class="modal-title">Agregar Mensaje</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Mensaje *</label>
-                        <textarea name="message" class="form-control" rows="2" required></textarea>
+            <!-- Mobile: cards -->
+            <div class="d-md-none">
+                @foreach($items as $item)
+                    <div class="card mb-3 border">
+                        <div class="card-body">
+                            <p class="mb-1"><strong>Orden:</strong> {{ $item->order_position }}</p>
+                            <p class="mb-1"><strong>Mensaje:</strong> {{ $item->message }}</p>
+                            <p class="mb-1">
+                                <strong>Enlace:</strong> 
+                                @if($item->link)
+                                    <a href="{{ $item->link }}" target="_blank">{{ $item->link_text ?: 'Ver enlace' }}</a>
+                                @else
+                                    —
+                                @endif
+                            </p>
+                            <p class="mb-2">
+                                <strong>Activo:</strong>
+                                <span class="badge {{ $item->active ? 'bg-success' : 'bg-secondary' }}">
+                                    {{ $item->active ? 'Sí' : 'No' }}
+                                </span>
+                            </p>
+                            <div class="d-flex justify-content-end gap-2">
+                                <a href="{{ route('admin.info-carousel.edit', $item->id) }}" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-edit"></i> Editar
+                                </a>
+                                <button class="btn btn-sm btn-danger delete-btn-mobile" 
+                                    data-id="{{ $item->id }}"
+                                    data-message="{{ $item->message }}">
+                                    <i class="fas fa-trash"></i> Eliminar
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Enlace (URL)</label>
-                        <input type="url" name="link" class="form-control" placeholder="https://...">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Texto del enlace</label>
-                        <input type="text" name="link_text" class="form-control" placeholder="Ver más">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Orden</label>
-                        <input type="number" name="order_position" class="form-control" value="{{ $items->count() + 1 }}">
-                    </div>
-                    <div class="form-check">
-                        <input type="checkbox" name="active" class="form-check-input" id="activeCreate" checked>
-                        <label class="form-check-label" for="activeCreate">Activo</label>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-dark">Guardar</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+                @endforeach
 
-{{-- Modal Editar --}}
-<div class="modal fade" id="editModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form id="editForm" method="POST">
-                @csrf
-                @method('PUT')
-                <div class="modal-header">
-                    <h5 class="modal-title">Editar Mensaje</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Mensaje *</label>
-                        <textarea name="message" id="editMessage" class="form-control" rows="2" required></textarea>
+                @if($items->isEmpty())
+                    <div class="text-center py-5">
+                        <i class="fas fa-info-circle fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No hay mensajes. ¡Agrega tu primer mensaje!</p>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Enlace (URL)</label>
-                        <input type="url" name="link" id="editLink" class="form-control">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Texto del enlace</label>
-                        <input type="text" name="link_text" id="editLinkText" class="form-control">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Orden</label>
-                        <input type="number" name="order_position" id="editOrder" class="form-control">
-                    </div>
-                    <div class="form-check">
-                        <input type="checkbox" name="active" class="form-check-input" id="editActive">
-                        <label class="form-check-label" for="editActive">Activo</label>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-dark">Guardar</button>
-                </div>
-            </form>
+                @endif
+            </div>
+
         </div>
     </div>
 </div>
 @endsection
 
 @section('scripts')
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Sortable para ordenar
+        // ========== SORTABLE (ORDENAR) ==========
         const tbody = document.getElementById('sortable-items');
         if (tbody) {
             new Sortable(tbody, {
-                handle: '.sortable-handle',
+                handle: 'td:first-child',
                 animation: 150,
                 onEnd: function() {
                     const rows = tbody.querySelectorAll('tr');
                     const orders = [];
                     rows.forEach((row, index) => {
                         const id = row.dataset.id;
+                        const position = index + 1;
                         orders.push({
                             id: id,
-                            position: index + 1
+                            position: position
                         });
-                        row.querySelector('td:nth-child(4)').textContent = index + 1;
+                        row.querySelector('td:first-child').innerHTML = 
+                            '<i class="fas fa-grip-vertical text-muted me-2" style="cursor: move;"></i> ' + position;
                     });
                     
-                    fetch('{{ route("admin.info-carousel.update-order") }}', {
+                    fetch('/admin/info-carousel/update-order', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -234,11 +164,11 @@
             });
         }
         
-        // Toggle activo/inactivo
+        // ========== TOGGLE ACTIVO ==========
         document.querySelectorAll('.toggle-active').forEach(toggle => {
             toggle.addEventListener('change', function() {
                 const id = this.dataset.id;
-                fetch('{{ url("admin/info-carousel/toggle") }}/' + id, {
+                fetch('/admin/info-carousel/toggle/' + id, {
                     method: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
@@ -248,55 +178,35 @@
             });
         });
         
-        // Editar
-        document.querySelectorAll('.edit-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const id = this.dataset.id;
-                const message = this.dataset.message;
-                const link = this.dataset.link;
-                const linkText = this.dataset.link_text;
-                const order = this.dataset.order;
-                const active = this.dataset.active == 1;
-                
-                document.getElementById('editMessage').value = message;
-                document.getElementById('editLink').value = link || '';
-                document.getElementById('editLinkText').value = linkText || '';
-                document.getElementById('editOrder').value = order;
-                document.getElementById('editActive').checked = active;
-                
-                const form = document.getElementById('editForm');
-                form.action = '{{ url("admin/info-carousel") }}/' + id;
-                
-                new bootstrap.Modal(document.getElementById('editModal')).show();
+        // ========== ELIMINAR (USANDO LA FUNCIÓN GLOBAL DEL ADMIN) ==========
+        function deleteItem(id, message) {
+            openAdminDeleteConfirm(message, function() {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/admin/info-carousel/' + id;
+                form.innerHTML = '<input type="hidden" name="_token" value="{{ csrf_token() }}"> <input type="hidden" name="_method" value="DELETE">';
+                document.body.appendChild(form);
+                form.submit();
+            });
+        }
+        
+        // Eliminar desktop
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                deleteItem(this.dataset.id, this.dataset.message);
             });
         });
         
-        // Eliminar
-        document.querySelectorAll('.delete-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const id = this.dataset.id;
-                const message = this.dataset.message;
-                
-                Swal.fire({
-                    title: '¿Eliminar mensaje?',
-                    html: `<strong>${message}</strong><br>Esta acción no se puede deshacer.`,
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#dc3545',
-                    confirmButtonText: 'Sí, eliminar',
-                    cancelButtonText: 'Cancelar'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        const form = document.createElement('form');
-                        form.method = 'POST';
-                        form.action = '{{ url("admin/info-carousel") }}/' + id;
-                        form.innerHTML = '@csrf @method("DELETE")';
-                        document.body.appendChild(form);
-                        form.submit();
-                    }
-                });
+        // Eliminar mobile
+        document.querySelectorAll('.delete-btn-mobile').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                deleteItem(this.dataset.id, this.dataset.message);
             });
         });
+        
+        console.log('✅ Info Carousel JS cargado correctamente');
     });
 </script>
 @endsection

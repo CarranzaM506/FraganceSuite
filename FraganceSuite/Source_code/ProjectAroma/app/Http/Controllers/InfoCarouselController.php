@@ -14,6 +14,12 @@ class InfoCarouselController extends Controller
         return view('dashboard.info-carousel.index', compact('items'));
     }
     
+    public function create()
+    {
+        $nextOrder = InfoCarousel::max('order_position') + 1;
+        return view('dashboard.info-carousel.create', compact('nextOrder'));
+    }
+    
     public function store(Request $request)
     {
         $request->validate([
@@ -34,6 +40,12 @@ class InfoCarouselController extends Controller
         
         return redirect()->route('admin.info-carousel.index')
             ->with('success', 'Mensaje creado exitosamente.');
+    }
+    
+    public function edit($id)
+    {
+        $item = InfoCarousel::findOrFail($id);
+        return view('dashboard.info-carousel.edit', compact('item'));
     }
     
     public function update(Request $request, $id)

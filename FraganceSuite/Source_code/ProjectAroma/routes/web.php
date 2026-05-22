@@ -70,12 +70,14 @@ Route::middleware(['auth', 'admin'])->group(function () {
     
 
     // Info Carousel
-    Route::get('/admin/info-carousel', [InfoCarouselController::class, 'index'])->name('admin.info-carousel.index');
-    Route::post('/admin/info-carousel', [InfoCarouselController::class, 'store'])->name('admin.info-carousel.store');
-    Route::put('/admin/info-carousel/{id}', [InfoCarouselController::class, 'update'])->name('admin.info-carousel.update');
-    Route::delete('/admin/info-carousel/{id}', [InfoCarouselController::class, 'destroy'])->name('admin.info-carousel.destroy');
-    Route::post('/admin/info-carousel/toggle/{id}', [InfoCarouselController::class, 'toggle'])->name('admin.info-carousel.toggle');
-    Route::post('/admin/info-carousel/update-order', [InfoCarouselController::class, 'updateOrder'])->name('admin.info-carousel.update-order');
+Route::get('/admin/info-carousel', [InfoCarouselController::class, 'index'])->name('admin.info-carousel.index');
+Route::get('/admin/info-carousel/create', [InfoCarouselController::class, 'create'])->name('admin.info-carousel.create');
+Route::post('/admin/info-carousel', [InfoCarouselController::class, 'store'])->name('admin.info-carousel.store');
+Route::get('/admin/info-carousel/{id}/edit', [InfoCarouselController::class, 'edit'])->name('admin.info-carousel.edit');
+Route::put('/admin/info-carousel/{id}', [InfoCarouselController::class, 'update'])->name('admin.info-carousel.update');
+Route::delete('/admin/info-carousel/{id}', [InfoCarouselController::class, 'destroy'])->name('admin.info-carousel.destroy');
+Route::post('/admin/info-carousel/toggle/{id}', [InfoCarouselController::class, 'toggle'])->name('admin.info-carousel.toggle');
+Route::post('/admin/info-carousel/update-order', [InfoCarouselController::class, 'updateOrder'])->name('admin.info-carousel.update-order');
 });
 
 // RUTAS PROTEGIDAS USUARIOS (Requieren autenticación)

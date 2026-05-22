@@ -182,6 +182,8 @@ header > .info-carousel {
     display: flex;
     flex-direction: column;
     overflow-y: auto;
+    scrollbar-width: none; /* Firefox - oculta scrollbar */
+    -ms-overflow-style: none; /* IE/Edge - oculta scrollbar */
 }
 
 .side-menu.open {
@@ -938,7 +940,6 @@ footer {
     font-size: 14px;
 }
 
-/* ========== HERO ESTÁTICO ========== */
 /* ========== HERO ESTÁTICO ========== */
 .hero-static {
     width: 100%;
