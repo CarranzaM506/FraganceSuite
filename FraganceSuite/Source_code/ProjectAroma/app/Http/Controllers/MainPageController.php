@@ -46,6 +46,10 @@ class MainPageController extends Controller
                     ->orWhere('category', 'like', '%Hombre|Mujer%');
             })
             ->where('active', true)
+            ->with(['discount' => function ($q) {
+                $now = now()->toDateString();
+                $q->where('startdate', '<=', $now)->where('enddate', '>=', $now);
+            }])
             ->inRandomOrder()
             ->limit(4)
             ->get();
@@ -56,6 +60,10 @@ class MainPageController extends Controller
                     ->orWhere('category', 'like', '%Hombre|Mujer%');
             })
             ->where('active', true)
+            ->with(['discount' => function ($q) {
+                $now = now()->toDateString();
+                $q->where('startdate', '<=', $now)->where('enddate', '>=', $now);
+            }])
             ->inRandomOrder()
             ->limit(4)
             ->get();
