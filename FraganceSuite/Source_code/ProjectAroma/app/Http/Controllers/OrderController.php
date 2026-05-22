@@ -58,16 +58,16 @@ class OrderController extends Controller
 
         // ========== MÁS VENDIDOS DEL MES ==========
         $bestSellers = collect();
-        
+
         try {
             $bestSellers = Product::select(
-                    'product.idproduct',
-                    'product.name',
-                    'product.price',
-                    'product.brand',
-                    'product.pathimg',
-                    DB::raw('SUM(orderdetail.quantity) as total_sold')
-                )
+                'product.idproduct',
+                'product.name',
+                'product.price',
+                'product.brand',
+                'product.pathimg',
+                DB::raw('SUM(orderdetail.quantity) as total_sold')
+            )
                 ->join('orderdetail', 'product.idproduct', '=', 'orderdetail.idproduct')
                 ->join('order', 'orderdetail.idorder', '=', 'order.idorder')
                 ->whereMonth('order.date', now()->month)
@@ -83,16 +83,19 @@ class OrderController extends Controller
                 ->orderByDesc('total_sold')
                 ->limit(2)
                 ->get();
-                
         } catch (\Exception $e) {
             \Log::error('Error en más vendidos dashboard: ' . $e->getMessage());
         }
 
         return view('dashboard.main', compact(
-            'meses', 'monthlySales',
-            'dailyLabels', 'dailySales',
-            'totalVentasAnio', 'totalPedidosAnio',
-            'totalVentasMes', 'totalPedidosMes',
+            'meses',
+            'monthlySales',
+            'dailyLabels',
+            'dailySales',
+            'totalVentasAnio',
+            'totalPedidosAnio',
+            'totalVentasMes',
+            'totalPedidosMes',
             'currentYear',
             'bestSellers'
         ));
@@ -206,9 +209,9 @@ class OrderController extends Controller
         if ($search !== '') {
             $query->whereHas('user', function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('lastname', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('phone', 'like', "%{$search}%");
+                    ->orWhere('lastname', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('phone', 'like', "%{$search}%");
             });
         }
 
@@ -242,7 +245,7 @@ class OrderController extends Controller
         return redirect()
             ->route('pendingShipments', array_filter(['status' => $returnStatus, 'search' => $returnSearch]))
             ->with('success', "Pedido #{$order->idorder} actualizado correctamente.");
-
+    }
     public function history()
     {
         $orders = Order::where('iduser', auth()->id())
@@ -250,7 +253,6 @@ class OrderController extends Controller
             ->get();
 
         return view('profile.orders.index', compact('orders'));
-
     }
 
     public function success($id)
