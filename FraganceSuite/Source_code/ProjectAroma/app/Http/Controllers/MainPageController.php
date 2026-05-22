@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Models\Hero; 
 use App\Models\Discount;
 use App\Models\Brand;
+use App\Models\InfoCarousel;
 use App\Models\Video;  
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -114,6 +115,11 @@ class MainPageController extends Controller
             }
         }
 
+        // ========== OBTENER VIDEOS ACTIVOS ==========
+        $activeVideos = \App\Models\Video::where('active', 1)->get();
+
+        // ========== INFO CARROUSEL ==========
+        $infoCarouselItems = InfoCarousel::getActiveItems();
         $activeVideos = Video::where('active', 1)->get();
 
         return view('mainPage.index', compact(
@@ -124,6 +130,8 @@ class MainPageController extends Controller
             'promotionProduct',
             'activeBrands',
             'bestSellers',
+            'activeVideos',
+            'infoCarouselItems'
             'activeVideos'  
         ));
     }
