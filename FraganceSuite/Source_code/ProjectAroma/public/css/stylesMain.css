@@ -2228,7 +2228,7 @@ body {
 }
 
 body.default-body {
-    padding-top: 80px !important;
+    padding-top: 120px !important;
 }
 
 /* El menÃº lateral NO debe tener padding-top extra */

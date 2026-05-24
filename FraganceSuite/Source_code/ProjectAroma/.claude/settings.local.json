@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(php artisan *)"
+      "Bash(php artisan *)",
+      "Bash(Get-ChildItem C:\\\\Users\\\\andre\\\\OneDrive\\\\Documents\\\\GitHub\\\\FraganceSuite\\\\FraganceSuite\\\\Source_code\\\\ProjectAroma\\\\routes *)"
     ]
   }
 }

@@ -758,6 +758,11 @@ body.promo-codes-admin-mode * {
   border-radius: 0 !important;
 }
 
+/* Excepción: el avatar "A" del topbar siempre redondo */
+body.promo-codes-admin-mode .topbar .rounded-circle {
+  border-radius: 50% !important;
+}
+
 
 /* ===== Mobile table fixes (dashboard) ===== */
 .table-responsive {
