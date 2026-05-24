@@ -53,14 +53,11 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <form method="POST" action="{{ route('video.destroy', $video->id) }}" class="delete-form d-inline-block">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-danger delete-btn">
-                                            <span class="spinner-border spinner-border-sm d-none" role="status"></span>
-                                            <span class="btn-text">Eliminar</span>
-                                        </button>
-                                    </form>
+                                    <button class="btn btn-sm btn-danger delete-video-btn" 
+                                        data-id="{{ $video->id }}"
+                                        data-name="Video #{{ $video->id }}">
+                                        Eliminar
+                                    </button>
                                 </td>
                             </tr>
                         @endforeach
@@ -81,19 +78,16 @@
                             </div>
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="form-check form-switch mb-0">
-                                    <input class="form-check-input toggle-active" type="checkbox" role="switch"
+                                    <input class="form-check-input toggle-active-mobile" type="checkbox" role="switch"
                                         data-id="{{ $video->id }}"
                                         {{ $video->active ? 'checked' : '' }}>
                                     <label class="form-check-label">Activo</label>
                                 </div>
-                                <form method="POST" action="{{ route('video.destroy', $video->id) }}" class="delete-form">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger delete-btn">
-                                        <span class="spinner-border spinner-border-sm d-none" role="status"></span>
-                                        <span class="btn-text">Eliminar</span>
-                                    </button>
-                                </form>
+                                <button class="btn btn-sm btn-danger delete-video-btn-mobile" 
+                                    data-id="{{ $video->id }}"
+                                    data-name="Video #{{ $video->id }}">
+                                    Eliminar
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -181,10 +175,10 @@
         });
     @endif
 
-    // Toggle activo/inactivo vía fetch
+    // Toggle activo/inactivo (desktop)
     document.querySelectorAll('.toggle-active').forEach(function (toggle) {
         toggle.addEventListener('change', function () {
-            const id       = this.dataset.id;
+            const id = this.dataset.id;
             const checkbox = this;
 
             fetch('/video/' + id + '/toggle', {
@@ -204,31 +198,43 @@
         });
     });
 
-    // Eliminar con SweetAlert2
-    document.querySelectorAll('.delete-form').forEach(function (form) {
-        form.addEventListener('submit', function (e) {
-            e.preventDefault();
-            Swal.fire({
-                title: '¿Eliminar video?',
-                text: 'Esta acción no se puede deshacer.',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#dc3545',
-                cancelButtonColor: '#6c757d',
-                confirmButtonText: 'Sí, eliminar',
-                cancelButtonText: 'Cancelar',
-            }).then(function (result) {
-                if (result.isConfirmed) {
-                    const button  = form.querySelector('.delete-btn');
-                    const spinner = button ? button.querySelector('.spinner-border') : null;
-                    const btnText = button ? button.querySelector('.btn-text') : null;
+    // Toggle activo/inactivo (mobile)
+    document.querySelectorAll('.toggle-active-mobile').forEach(function (toggle) {
+        toggle.addEventListener('change', function () {
+            const id = this.dataset.id;
+            const checkbox = this;
 
-                    if (spinner) spinner.classList.remove('d-none');
-                    if (btnText) btnText.textContent = ' Eliminando...';
-                    if (button)  button.disabled = true;
-
-                    form.submit();
+            fetch('/video/' + id + '/toggle', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json',
                 }
+            })
+            .then(function (res) { return res.json(); })
+            .then(function (data) {
+                checkbox.checked = data.active == 1;
+            })
+            .catch(function () {
+                checkbox.checked = !checkbox.checked;
+            });
+        });
+    });
+
+    // Eliminar con SweetAlert2 (usando el mismo estilo que productos)
+    document.querySelectorAll('.delete-video-btn, .delete-video-btn-mobile').forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            const id = this.dataset.id;
+            const name = this.dataset.name;
+            
+            openAdminDeleteConfirm('¿Eliminar ' + name + '?', function() {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/video/' + id;
+                form.innerHTML = '<input type="hidden" name="_token" value="{{ csrf_token() }}"> <input type="hidden" name="_method" value="DELETE">';
+                document.body.appendChild(form);
+                form.submit();
             });
         });
     });
