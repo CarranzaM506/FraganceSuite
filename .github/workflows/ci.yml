@@ -58,7 +58,7 @@ jobs:
         run: php artisan key:generate
 
       - name: Import database schema
-        run: mysql -h 127.0.0.1 -u root -proot aroma_test < database/schema.sql
+        run: mysql -h 127.0.0.1 -u root --password="" aroma_test < database/schema.sql
 
       - name: Run tests
         run: |
