@@ -56,8 +56,8 @@ jobs:
       - name: Generate application key
         run: php artisan key:generate
 
-      - name: Run migrations
-        run: php artisan migrate --force
+      - name: Import database schema
+        run: mysql -h 127.0.0.1 -u root -proot aroma_test < database/schema.sql
 
       - name: Run tests
         run: |
