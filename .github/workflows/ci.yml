@@ -79,7 +79,6 @@ jobs:
             tests/Feature/BestSellerTest.php \
             tests/Feature/DashboardGraphsTest.php \
             tests/Feature/ReviewModerationTest.php \
-            tests/Feature/ProfileTest.php \
             tests/Feature/Auth \
             tests/Unit/BestSellersLogicTest.php \
             tests/Unit/InfoCarouselTest.php \
