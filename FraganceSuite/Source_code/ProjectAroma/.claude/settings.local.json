@@ -2,7 +2,10 @@
   "permissions": {
     "allow": [
       "Bash(php artisan *)",
-      "Bash(Get-ChildItem C:\\\\Users\\\\andre\\\\OneDrive\\\\Documents\\\\GitHub\\\\FraganceSuite\\\\FraganceSuite\\\\Source_code\\\\ProjectAroma\\\\routes *)"
+      "Bash(Get-ChildItem C:\\\\Users\\\\andre\\\\OneDrive\\\\Documents\\\\GitHub\\\\FraganceSuite\\\\FraganceSuite\\\\Source_code\\\\ProjectAroma\\\\routes *)",
+      "Bash(git -C \"C:\\\\Users\\\\andre\\\\OneDrive\\\\Documents\\\\GitHub\\\\FraganceSuite\" rev-parse --show-toplevel)",
+      "Bash(git -C \"C:\\\\Users\\\\andre\\\\OneDrive\\\\Documents\\\\GitHub\\\\FraganceSuite\\\\FraganceSuite\" rev-parse --show-toplevel)",
+      "Bash(New-Item *)"
     ]
   }
 }
