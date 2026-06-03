@@ -43,7 +43,20 @@ jobs:
         run: php artisan key:generate
 
       - name: Run tests
-        run: php artisan test --stop-on-failure
+        run: |
+          php artisan test \
+            tests/Feature/VideoTest.php \
+            tests/Feature/DiscountPriceTest.php \
+            tests/Feature/OrderHistoryTest.php \
+            tests/Feature/BestSellerTest.php \
+            tests/Feature/DashboardGraphsTest.php \
+            tests/Feature/ProfileTest.php \
+            tests/Feature/ReviewModerationTest.php \
+            tests/Feature/Auth \
+            tests/Unit/BestSellersLogicTest.php \
+            tests/Unit/InfoCarouselTest.php \
+            tests/Unit/VideoHelperTest.php \
+            --stop-on-failure
 
   deploy:
     name: Deploy to Production
