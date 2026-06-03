@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: Source_code/ProjectAroma
+        working-directory: FraganceSuite/Source_code/ProjectAroma
 
     steps:
       - name: Checkout repository
