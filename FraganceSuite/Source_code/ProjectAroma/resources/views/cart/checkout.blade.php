@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('page-name', 'Checkout')
+
 @section('body-class', 'cart-body checkout-body')
 
 @section('styles')
@@ -8,7 +10,7 @@
     <style>
     /* Estilos específicos para checkout */
     .checkout-body .cart-page {
-        padding-top: 180px !important;
+        padding-top: 30px !important;
     }
     
     .checkout-body .cart-items-section {
@@ -171,7 +173,7 @@
     /* Responsive */
     @media (max-width: 768px) {
         .checkout-body .cart-page {
-            padding-top: 130px !important;
+            padding-top: 25px !important;
         }
         
         .address-card {
@@ -200,7 +202,7 @@
     
     @media (max-width: 480px) {
         .checkout-body .cart-page {
-            padding-top: 130px !important;
+            padding-top: 25px !important;
         }
         
         .address-card {

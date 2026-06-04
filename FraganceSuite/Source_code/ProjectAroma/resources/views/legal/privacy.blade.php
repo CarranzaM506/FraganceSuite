@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('page-name', 'Política de Privacidad')
+
 @section('title', 'Política de Privacidad | AROMA')
 
 @section('body-class', 'legal-body')

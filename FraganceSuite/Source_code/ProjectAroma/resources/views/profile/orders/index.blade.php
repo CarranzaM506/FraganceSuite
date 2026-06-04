@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('page-name', 'Mis Pedidos')
+
 @section('title', 'Mis Pedidos | AROMA')
 
 @section('body-class', 'profile-body')
@@ -14,8 +16,8 @@
 
     <div class="orders-page-header">
         <div class="orders-page-header-left">
-            <a href="{{ route('profile.index') }}" class="orders-back-btn">
-                ← Volver
+            <a href="{{ route('profile.index') }}" class="orders-back-btn" title="Volver">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
             </a>
             <h4>Mis pedidos</h4>
         </div>

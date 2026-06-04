@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('page-name', 'Términos y Condiciones')
+
 @section('title', 'Términos y Condiciones | AROMA')
 
 @section('body-class', 'legal-body')

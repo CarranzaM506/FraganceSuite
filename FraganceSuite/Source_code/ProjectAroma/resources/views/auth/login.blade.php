@@ -1,14 +1,16 @@
 @extends('layouts.app')
 
+@section('body-class', 'auth-body')
+
 @section('content')
 <style>
 /* ========== LOGIN ESTILO AROMA ========== */
 .login-wrapper {
     min-height: calc(100vh - 70px - 350px);
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
-    padding: 60px 20px;
+    padding: 8px 20px 40px;
     background: #ffffff;
 }
 
@@ -40,7 +42,7 @@
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 1.5px;
-    color: #999;
+    color: #666;
     margin-bottom: 8px;
 }
 
@@ -75,7 +77,7 @@
 
 .checkbox-group label {
     font-size: 12px;
-    color: #888;
+    color: #555;
     cursor: pointer;
 }
 
@@ -105,7 +107,7 @@
 }
 
 .login-links a {
-    color: #888;
+    color: #666;
     text-decoration: none;
     font-size: 11px;
     letter-spacing: 0.8px;
