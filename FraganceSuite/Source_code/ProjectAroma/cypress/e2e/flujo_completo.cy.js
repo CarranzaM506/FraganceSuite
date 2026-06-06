@@ -1,5 +1,5 @@
 describe('Flujo completo de usuario', () => {
-  it('Inicia sesión y verifica un producto del catálogo', () => {
+  it('Inicia sesión, agrega al carrito y a favoritos', () => {
     cy.visit('/')
 
     cy.visit('/login')
@@ -22,5 +22,12 @@ describe('Flujo completo de usuario', () => {
 
     cy.visit('/cart')
     cy.get('#cartItemsContainer .cart-item-row').should('have.length.at.least', 1)
+
+    cy.go('back')
+
+    cy.get('#wishlistBtn').click()
+
+    cy.visit('/favorites')
+    cy.get('#favoritesGrid .catalog-card').should('have.length.at.least', 1)
   })
 })

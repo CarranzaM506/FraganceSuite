@@ -2,6 +2,6 @@ import { defineConfig } from 'cypress'
 
 export default defineConfig({
   e2e: {
-    baseUrl: 'http://aromatest.ink',
+    baseUrl: 'https://aromaperfumeria.shop',
   },
 })
