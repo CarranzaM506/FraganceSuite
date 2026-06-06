@@ -99,12 +99,11 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd /home/aromuwjs/devops.aromaperfumeria.shop
+            cd /home/arombknf/public_html
             git pull origin main
-            cd Source_code/ProjectAroma
-            composer install --no-interaction --prefer-dist --optimize-autoloader
+            cd FraganceSuite/Source_code/ProjectAroma
+            php composer.phar install --no-interaction --prefer-dist --optimize-autoloader
             php artisan config:cache
-            php artisan route:cache
             php artisan view:cache
 
       - name: Send success email
