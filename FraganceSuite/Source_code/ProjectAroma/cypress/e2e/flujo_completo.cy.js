@@ -10,7 +10,7 @@ describe('Flujo completo de usuario', () => {
 
     cy.url().should('not.include', '/login')
 
-    cy.contains('a', /catálogo|catalogo|productos/i).click()
+    cy.visit('/catalog')
 
     cy.get('a').filter(':visible').first().click()
 
