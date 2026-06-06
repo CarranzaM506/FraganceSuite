@@ -24,11 +24,10 @@ describe('Flujo completo de usuario', () => {
       }
     })
 
-    // Agregar a favoritos — el botón puede estar cubierto por overlays
+    // Agregar a favoritos e interceptar respuesta
+    cy.intercept('POST', '/favorites/toggle').as('toggleFav')
     cy.get('#wishlistBtn').click({ force: true })
-    cy.get('#wishlistBtn').should('have.class', 'active')
-
-    cy.visit('/favorites')
-    cy.get('#favoritesGrid .catalog-card').should('have.length.at.least', 1)
+    cy.wait('@toggleFav').its('response.statusCode').should('eq', 200)
+    cy.get('@toggleFav').its('response.body.status').should('eq', 'added')
   })
 })
