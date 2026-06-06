@@ -12,9 +12,9 @@ describe('Flujo completo de usuario', () => {
 
     cy.visit('/catalog')
 
-    cy.get('a').filter(':visible').first().click()
+    cy.get('a.catalog-card').first().click()
 
-    cy.get('h1, h2').should('be.visible')
-    cy.contains(/\$|₡|precio/i).should('be.visible')
+    cy.get('h1.product-title').should('be.visible')
+    cy.get('span.current-price').should('be.visible')
   })
 })
