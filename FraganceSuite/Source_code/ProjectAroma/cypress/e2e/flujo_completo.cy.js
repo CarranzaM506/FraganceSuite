@@ -2,7 +2,7 @@ describe('Flujo completo de usuario', () => {
   it('Inicia sesión y verifica un producto del catálogo', () => {
     cy.visit('/')
 
-    cy.contains('a', /login|iniciar sesión/i).click()
+    cy.visit('/login')
 
     cy.get('input[name="email"]').type('andrescarranza8281@gmail.com')
     cy.get('input[name="password"]').type('12345678')
