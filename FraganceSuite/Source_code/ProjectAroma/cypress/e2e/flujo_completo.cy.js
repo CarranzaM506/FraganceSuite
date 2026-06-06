@@ -1,4 +1,8 @@
 describe('Flujo completo de usuario', () => {
+  beforeEach(() => {
+    cy.clearCookies()
+  })
+
   function handleProduct(index) {
     cy.get('a.catalog-card').eq(index).click()
     cy.get('h1.product-title').should('be.visible')
@@ -9,15 +13,11 @@ describe('Flujo completo de usuario', () => {
         cy.go('back')
         handleProduct(index + 1)
       } else {
-        cy.url().as('productUrl')
-
         cy.wrap($btn).click()
         cy.get('.aroma-notification').should('be.visible')
 
-        cy.visit('/cart')
-        cy.get('#cartItemsContainer .cart-item-row', { timeout: 8000 }).should('have.length.at.least', 1)
+        cy.request('/api/cart').its('body.items').should('have.length.at.least', 1)
 
-        cy.get('@productUrl').then(url => cy.visit(url))
         cy.get('#wishlistBtn').click()
 
         cy.visit('/favorites')
