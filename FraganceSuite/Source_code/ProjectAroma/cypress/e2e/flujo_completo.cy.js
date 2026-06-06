@@ -1,15 +1,17 @@
 describe('Flujo completo de usuario', () => {
   beforeEach(() => {
-    cy.session('user-session', () => {
+    cy.session('usuario', () => {
       cy.visit('/login')
       cy.get('input[name="email"]').type('andrescarranza8281@gmail.com')
       cy.get('input[name="password"]').type('12345678')
       cy.get('button[type="submit"]').first().click({ force: true })
       cy.url().should('not.include', '/login')
+    }, {
+      cacheAcrossSpecs: true
     })
   })
 
-  it('Agrega al carrito y a favoritos', () => {
+  it('Agrega producto al carrito y a favoritos', () => {
     cy.visit('/catalog')
 
     cy.get('a.catalog-card').first().click()
