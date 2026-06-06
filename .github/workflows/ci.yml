@@ -101,6 +101,12 @@ jobs:
           script: |
             cd /home/arombknf/public_html
             git pull origin main
+            mkdir -p FraganceSuite/Source_code/ProjectAroma/public/build
+            echo '{
+              "resources/js/app.js": {"file": "assets/app.js", "src": "resources/js/app.js"},
+              "resources/js/favorites.js": {"file": "assets/favorites.js", "src": "resources/js/favorites.js"},
+              "resources/css/app.css": {"file": "assets/app.css", "src": "resources/css/app.css"}
+            }' > FraganceSuite/Source_code/ProjectAroma/public/build/manifest.json
             cd FraganceSuite/Source_code/ProjectAroma
             php composer.phar install --no-interaction --prefer-dist --optimize-autoloader
             php artisan config:cache
