@@ -6,7 +6,7 @@ describe('Flujo completo de usuario', () => {
 
     cy.get('input[name="email"]').type('andrescarranza8281@gmail.com')
     cy.get('input[name="password"]').type('12345678')
-    cy.get('button[type="submit"]').click()
+    cy.get('button[type="submit"]').first().click()
 
     cy.url().should('not.include', '/login')
 
