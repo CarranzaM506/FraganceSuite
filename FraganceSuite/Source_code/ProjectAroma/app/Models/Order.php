@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Location;
 
 class Order extends Model
 {
@@ -17,7 +18,9 @@ class Order extends Model
         'purchasemethod',
         'guidenumber',
         'iduser',
-        'idlocation'
+        'idlocation',
+        'sale_type',
+        'shipping_status',
     ];
 
     public function details()
@@ -28,5 +31,10 @@ class Order extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'iduser', 'id');
+    }
+
+    public function location()
+    {
+        return $this->belongsTo(Location::class, 'idlocation', 'idlocation');
     }
 }

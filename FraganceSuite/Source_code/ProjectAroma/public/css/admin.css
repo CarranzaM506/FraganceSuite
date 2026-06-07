@@ -752,10 +752,15 @@ table.dataTable thead th.sorting:before {
 }
 
 
-/* Vista admin de códigos promocionales: todo cuadrado */
+/* Vista admin de cï¿½digos promocionales: todo cuadrado */
 body.promo-codes-admin-mode,
 body.promo-codes-admin-mode * {
   border-radius: 0 !important;
+}
+
+/* ExcepciÃ³n: el avatar "A" del topbar siempre redondo */
+body.promo-codes-admin-mode .topbar .rounded-circle {
+  border-radius: 50% !important;
 }
 
 
@@ -964,4 +969,206 @@ body.promo-codes-admin-mode * {
   justify-content: center;
   gap: 0.5rem;
   margin-top: 0.9rem;
+}
+
+/* ========== ADMIN BESTSELLERS STYLES ========== */
+.admin-bestsellers-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+}
+
+.admin-bestsellers-grid.single-product {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.admin-bestsellers-grid.single-product .admin-bestseller-card {
+    max-width: 400px;
+    width: 100%;
+}
+
+.admin-bestseller-card {
+    background: white;
+    border: 1px solid var(--aroma-gray-200);
+    padding: 20px;
+    position: relative;
+    transition: transform 0.2s ease;
+}
+
+.admin-bestseller-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+}
+
+.admin-rank-badge {
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    font-size: 32px;
+    background: white;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.admin-bestseller-image {
+    width: 100%;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.admin-bestseller-image img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.admin-bestseller-info {
+    text-align: center;
+}
+
+.admin-bestseller-info h4 {
+    font-size: 14px;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.admin-bestseller-info .brand {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+.admin-bestseller-info .price {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.admin-bestseller-info .sold-count {
+    font-size: 12px;
+    color: #927a1b;
+    margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+    .admin-bestsellers-grid {
+        grid-template-columns: 1fr;
+        gap: 25px;
+    }
+    
+    .admin-bestseller-image {
+        height: 180px;
+    }
+}
+
+/* ========== QUITAR FLECHA DEL SELECT ========== */
+.form-select,
+select.form-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: none;
+    padding-right: 0.75rem;
+}
+
+
+/* ========== MODAL ELIMINAR ESTILO PRODUCTOS ========== */
+.swal2-popup-custom {
+    border-radius: 0px !important;
+    padding: 1.5rem !important;
+}
+
+.swal2-popup-custom .swal2-title {
+    font-size: 1.3rem !important;
+    font-weight: 500 !important;
+    color: #1a1a1a !important;
+}
+
+.swal2-popup-custom .swal2-html-container {
+    font-size: 0.95rem !important;
+    color: #555 !important;
+}
+
+.swal2-popup-custom .swal2-confirm.btn-danger {
+    background-color: #dc3545 !important;
+    border-color: #dc3545 !important;
+    border-radius: 0px !important;
+    padding: 0.4rem 1.2rem !important;
+    font-size: 0.85rem !important;
+}
+
+.swal2-popup-custom .swal2-cancel.btn-secondary {
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+    border-radius: 0px !important;
+    padding: 0.4rem 1.2rem !important;
+    font-size: 0.85rem !important;
+}
+
+.swal2-popup-custom .swal2-actions {
+    gap: 0.75rem !important;
+}
+
+/* ========== ESTILOS PARA SWITCH (TOGGLE) ========== */
+.form-switch {
+    padding-left: 2.5em;
+    min-height: 1.5em;
+}
+
+.form-switch .form-check-input {
+    width: 2em;
+    height: 1em;
+    margin-left: -2.5em;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba(0,0,0,0.25)'/%3e%3c/svg%3e");
+    background-position: left center;
+    border-radius: 2em;
+    transition: background-position .15s ease-in-out;
+    cursor: pointer;
+}
+
+.form-switch .form-check-input:checked {
+    background-color: #28a745;
+    border-color: #28a745;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23fff'/%3e%3c/svg%3e");
+    background-position: right center;
+}
+
+/* ========== ESTILOS PARA BOTONES DE TABLA ========== */
+.table .btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    margin: 0 2px;
+}
+
+.btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #bb2d3b;
+    border-color: #b02a37;
 }

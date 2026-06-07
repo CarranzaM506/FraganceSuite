@@ -5,13 +5,12 @@
 @if(isset($heroImage) && $heroImage->image)
 <section class="hero-static">
     <div class="hero-image-wrapper">
-        <img src="/storage/{{ $heroImage->image }}" 
-             alt="Hero AROMA" 
+        <img src="{{ asset('img-hero/' . $heroImage->image) }}"
+             alt="Hero AROMA"
              class="hero-image">
     </div>
 </section>
 @endif
-
 
 <!-- Productos para Mujer -->
 <section class="store-section">
@@ -37,7 +36,16 @@
                     <h3 class="product-name">{{ $product->name }}</h3>
                     <p class="product-brand">{{ $product->brand }}</p>
                     <p class="product-category" style="display: none;">{{ $product->category }}</p>
-                    <p class="product-price">₡{{ number_format($product->price, 2) }}</p>
+                    @if($product->discount)
+                        @php $discountedPrice = $product->price * (1 - ($product->discount->value / 100)); @endphp
+                        <div class="product-price-block">
+                            <span class="old-price">₡{{ number_format($product->price, 2) }}</span>
+                            <span class="new-price">₡{{ number_format($discountedPrice, 2) }}</span>
+                            <span class="discount">{{ $product->discount->value }}% OFF</span>
+                        </div>
+                    @else
+                        <p class="product-price">₡{{ number_format($product->price, 2) }}</p>
+                    @endif
                 </div>
             </a>
         </div>
@@ -69,13 +77,24 @@
                     <h3 class="product-name">{{ $product->name }}</h3>
                     <p class="product-brand">{{ $product->brand }}</p>
                     <p class="product-category" style="display: none;">{{ $product->category }}</p>
-                    <p class="product-price">₡{{ number_format($product->price, 2) }}</p>
+                    @if($product->discount)
+                        @php $discountedPrice = $product->price * (1 - ($product->discount->value / 100)); @endphp
+                        <div class="product-price-block">
+                            <span class="old-price">₡{{ number_format($product->price, 2) }}</span>
+                            <span class="new-price">₡{{ number_format($discountedPrice, 2) }}</span>
+                            <span class="discount">{{ $product->discount->value }}% OFF</span>
+                        </div>
+                    @else
+                        <p class="product-price">₡{{ number_format($product->price, 2) }}</p>
+                    @endif
                 </div>
             </a>
         </div>
         @endforeach
     </div>
 </section>
+
+
 
 
 @if(isset($activeBrands) && $activeBrands->count() > 0)
@@ -88,14 +107,14 @@
                 <div class="brand-item" 
                      onclick="window.location.href='{{ route('catalog', ['brand' => $brand->brand_name]) }}'"
                      style="cursor: pointer;">
-                    <img src="{{ Storage::url($brand->logo) }}" alt="{{ $brand->brand_name }}">
+                    <img src="{{ asset('img-brands/' . $brand->logo) }}" alt="{{ $brand->brand_name }}">
                 </div>
                 @endforeach
                 @foreach($activeBrands as $brand)
                 <div class="brand-item" 
                      onclick="window.location.href='{{ route('catalog', ['brand' => $brand->brand_name]) }}'"
                      style="cursor: pointer;">
-                    <img src="{{ Storage::url($brand->logo) }}" alt="{{ $brand->brand_name }}">
+                    <img src="{{ asset('img-brands/' . $brand->logo) }}" alt="{{ $brand->brand_name }}">
                 </div>
                 @endforeach
             </div>
@@ -108,14 +127,14 @@
                 <div class="brand-item" 
                      onclick="window.location.href='{{ route('catalog', ['brand' => $brand->brand_name]) }}'"
                      style="cursor: pointer;">
-                    <img src="{{ Storage::url($brand->logo) }}" alt="{{ $brand->brand_name }}">
+                    <img src="{{ asset('img-brands/' . $brand->logo) }}" alt="{{ $brand->brand_name }}">
                 </div>
                 @endforeach
                 @foreach($activeBrands as $brand)
                 <div class="brand-item" 
                      onclick="window.location.href='{{ route('catalog', ['brand' => $brand->brand_name]) }}'"
                      style="cursor: pointer;">
-                    <img src="{{ Storage::url($brand->logo) }}" alt="{{ $brand->brand_name }}">
+                    <img src="{{ asset('img-brands/' . $brand->logo) }}" alt="{{ $brand->brand_name }}">
                 </div>
                 @endforeach
             </div>
@@ -170,6 +189,59 @@
     </div>
 </section>
 @endif
+
+<!-- ========== SECCIÓN DE VIDEOS ========== -->
+@if(isset($activeVideos) && ($activeVideos->count() == 3 || $activeVideos->count() == 4))
+<section class="videos-section">
+    <h2 class="section-title">VIDEOS</h2>
+    
+    <!-- Desktop: Grid normal -->
+    <div class="videos-grid" data-count="{{ $activeVideos->count() }}">
+        @foreach($activeVideos as $video)
+        <div class="video-card">
+            <div class="video-wrapper">
+                <video class="info-video" preload="metadata" playsinline loop muted>
+                    <source src="{{ asset('videos/' . $video->route) }}" type="video/mp4">
+                </video>
+                <div class="video-overlay">
+                    <i class="fas fa-volume-up"></i>
+                </div>
+            </div>
+        </div>
+        @endforeach
+    </div>
+    
+    <!-- Mobile/Tablet: Slider con 2 videos visibles -->
+    <div class="videos-slider-mobile">
+        <div class="videos-slider-container">
+            <div class="videos-slider-track">
+                @foreach($activeVideos as $video)
+                <div class="video-slide">
+                    <div class="video-card">
+                        <div class="video-wrapper">
+                            <video class="info-video" preload="metadata" playsinline loop muted>
+                                <source src="{{ asset('videos/' . $video->route) }}" type="video/mp4">
+                            </video>
+                            <div class="video-overlay">
+                                <i class="fas fa-volume-up"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </div>
+        <button class="video-arrow video-arrow-left"><i class="fas fa-chevron-left"></i></button>
+        <button class="video-arrow video-arrow-right"><i class="fas fa-chevron-right"></i></button>
+        <div class="video-dots">
+            @foreach($activeVideos as $index => $video)
+            <span class="video-dot {{ $index == 0 ? 'active' : '' }}" data-index="{{ $index }}"></span>
+            @endforeach
+        </div>
+    </div>
+</section>
+@endif
+    
 
 <!-- Promoción Activa -->
 @if($activePromotion && $promotionProduct)
@@ -362,41 +434,7 @@
         window.addEventListener('scroll', checkScroll);
     });
 
-    // ===== EFECTO DE HEADER STICKY =====
-    document.addEventListener('DOMContentLoaded', function() {
-        const header = document.querySelector('header');
-        if (!header) return;
-        
-        let lastScrollTop = 0;
-        const headerHeight = header.offsetHeight;
-        
-        document.body.style.paddingTop = headerHeight + 'px';
-        
-        window.addEventListener('scroll', function() {
-            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            
-            if (scrollTop < 100) {
-                header.classList.remove('hidden');
-                header.classList.add('visible');
-                return;
-            }
-            
-            if (scrollTop > lastScrollTop && scrollTop > headerHeight) {
-                header.classList.remove('visible');
-                header.classList.add('hidden');
-            } else if (scrollTop < lastScrollTop) {
-                header.classList.remove('hidden');
-                header.classList.add('visible');
-            }
-            
-            lastScrollTop = scrollTop;
-        });
-        
-        window.addEventListener('resize', function() {
-            document.body.style.paddingTop = header.offsetHeight + 'px';
-        });
-    });
-
+    
     // ===== ANIMACIÓN DEL SPLIT PROMO =====
     document.addEventListener('DOMContentLoaded', function() {
         const splitPromo = document.querySelector('.split-promo');
@@ -427,9 +465,7 @@
                 const rect = card.getBoundingClientRect();
                 const windowHeight = window.innerHeight;
                 
-                // Si la tarjeta está visible en el viewport
                 if (rect.top < windowHeight - 100 && rect.bottom > 0) {
-                    // Agregar un pequeño retraso para cada tarjeta (efecto cascada)
                     setTimeout(() => {
                         card.classList.add('animate-in');
                     }, index * 150);
@@ -437,12 +473,164 @@
             });
         }
         
-        // Ejecutar al cargar la página
         setTimeout(checkBestsellerScroll, 100);
-        
-        // Ejecutar al hacer scroll
         window.addEventListener('scroll', checkBestsellerScroll);
     });
 
+// ===== CONTROL DE VIDEOS =====
+document.addEventListener('DOMContentLoaded', function() {
+    const videoWrappers = document.querySelectorAll('.video-wrapper');
+    
+    // Iniciar reproducción automática silenciosa
+    videoWrappers.forEach(wrapper => {
+        const video = wrapper.querySelector('video');
+        if (video) {
+            video.muted = true;
+            video.play().catch(e => console.log('Autoplay prevented:', e));
+        }
+    });
+    
+    videoWrappers.forEach(wrapper => {
+        const video = wrapper.querySelector('video');
+        const overlay = wrapper.querySelector('.video-overlay');
+        
+        if (!video || !overlay) return;
+        
+        const pauseAllOthers = () => {
+            videoWrappers.forEach(w => {
+                const otherVideo = w.querySelector('video');
+                if (otherVideo && otherVideo !== video && !otherVideo.paused) {
+                    otherVideo.pause();
+                    otherVideo.muted = true;
+                    otherVideo.currentTime = 0;
+                    otherVideo.play().catch(e => console.log('Error:', e));
+                    w.classList.remove('playing');
+                }
+            });
+        };
+        
+        const toggleSound = (e) => {
+            e.stopPropagation();
+            pauseAllOthers();
+            
+            if (video.muted) {
+                // Activar sonido y reproducir
+                video.muted = false;
+                overlay.innerHTML = '<i class="fas fa-pause"></i>';
+                wrapper.classList.add('playing');
+                video.play();
+            } else if (!video.paused) {
+                // Pausar video
+                video.pause();
+                overlay.innerHTML = '<i class="fas fa-volume-up"></i>';
+                wrapper.classList.remove('playing');
+            } else {
+                // Reanudar con sonido
+                video.play();
+                overlay.innerHTML = '<i class="fas fa-pause"></i>';
+                wrapper.classList.add('playing');
+            }
+        };
+        
+        // Tocar en cualquier parte del video reproduce/pausa
+        wrapper.addEventListener('click', toggleSound);
+        
+        // El overlay también (por si tocan el botón)
+        overlay.addEventListener('click', toggleSound);
+        
+        video.addEventListener('ended', function() {
+            if (video.muted) {
+                video.play();
+            } else {
+                overlay.innerHTML = '<i class="fas fa-volume-up"></i>';
+                wrapper.classList.remove('playing');
+                video.muted = true;
+                video.play();
+            }
+        });
+    });
+
+    // ===== SLIDER PARA MÓVIL (2 videos visibles) =====
+    const sliderTrack = document.querySelector('.videos-slider-track');
+    const prevBtn = document.querySelector('.video-arrow-left');
+    const nextBtn = document.querySelector('.video-arrow-right');
+    const dots = document.querySelectorAll('.video-dot');
+    
+    if (sliderTrack && sliderTrack.children.length > 0) {
+        let currentIndex = 0;
+        const totalSlides = sliderTrack.children.length;
+        let slidesPerView = 2;
+        
+        if (window.innerWidth >= 769) {
+            slidesPerView = totalSlides;
+        } else {
+            slidesPerView = 2;
+        }
+        
+        const maxIndex = Math.max(0, totalSlides - slidesPerView);
+        
+        function updateSlider() {
+            const translateX = -(currentIndex * (100 / slidesPerView));
+            sliderTrack.style.transform = `translateX(${translateX}%)`;
+            const currentDotIndex = Math.floor(currentIndex / slidesPerView);
+            dots.forEach((dot, i) => {
+                dot.classList.toggle('active', i === currentDotIndex);
+            });
+        }
+        
+        function updateArrows() {
+            if (prevBtn) prevBtn.style.opacity = currentIndex <= 0 ? '0.3' : '1';
+            if (nextBtn) nextBtn.style.opacity = currentIndex >= maxIndex ? '0.3' : '1';
+        }
+        
+        if (nextBtn) {
+            nextBtn.addEventListener('click', () => {
+                if (currentIndex < maxIndex) {
+                    currentIndex++;
+                    updateSlider();
+                    updateArrows();
+                }
+            });
+        }
+        
+        if (prevBtn) {
+            prevBtn.addEventListener('click', () => {
+                if (currentIndex > 0) {
+                    currentIndex--;
+                    updateSlider();
+                    updateArrows();
+                }
+            });
+        }
+        
+        dots.forEach((dot, index) => {
+            dot.addEventListener('click', () => {
+                currentIndex = index * slidesPerView;
+                if (currentIndex > maxIndex) currentIndex = maxIndex;
+                updateSlider();
+                updateArrows();
+            });
+        });
+        
+        updateSlider();
+        updateArrows();
+        
+        window.addEventListener('resize', () => {
+            let newSlidesPerView = 2;
+            if (window.innerWidth >= 769) {
+                newSlidesPerView = totalSlides;
+            } else {
+                newSlidesPerView = 2;
+            }
+            
+            if (newSlidesPerView !== slidesPerView) {
+                slidesPerView = newSlidesPerView;
+                currentIndex = 0;
+                updateSlider();
+                updateArrows();
+            }
+        });
+    }
+});
 </script>
 @endpush

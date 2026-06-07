@@ -139,20 +139,15 @@
 
 @section('scripts')
     <style>
+        .min-w-0 {
+            min-width: 0;
+        }
+
         @media (max-width: 767.98px) {
             .dropdown-menu {
                 max-width: 280px;
                 left: 0 !important;
                 right: auto !important;
-            }
-            
-            .product-card .card-body {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .product-card img {
-                margin-bottom: 0.5rem;
             }
         }
     </style>
@@ -177,11 +172,11 @@
                     col.innerHTML = `
                         <div class="card h-100">
                             <div class="card-body d-flex gap-3 align-items-center">
-                                <input type="checkbox" name="products[]" value="${p.id}" class="form-check-input me-2 product-checkbox ${p.iddiscount ? 'has-discount' : ''}" ${(Array.isArray(oldProducts) && oldProducts.includes(String(p.id))) ? 'checked' : ''}>
-                                <img src="${p.pathimg}" alt="" width="64" class="rounded">
-                                <div>
-                                    <div class="fw-bold">${p.name}</div>
-                                    <div class="text-muted">${p.brand}</div>
+                                <input type="checkbox" name="products[]" value="${p.id}" class="form-check-input flex-shrink-0 me-2 product-checkbox ${p.iddiscount ? 'has-discount' : ''}" ${(Array.isArray(oldProducts) && oldProducts.includes(String(p.id))) ? 'checked' : ''}>
+                                <img src="${p.pathimg}" alt="" width="64" class="rounded flex-shrink-0">
+                                <div class="min-w-0 overflow-hidden">
+                                    <div class="fw-bold text-truncate">${p.name}</div>
+                                    <div class="text-muted text-truncate">${p.brand}</div>
                                     <div>₡${p.price}</div>
                                 </div>
                             </div>

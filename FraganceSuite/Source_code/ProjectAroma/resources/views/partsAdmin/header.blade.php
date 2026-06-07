@@ -6,8 +6,10 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>AROMA | Dashboard</title>
 
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.4.0/css/all.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
@@ -84,6 +86,23 @@
                         <a class="nav-link" href="{{ route('product.index') }}">Ver</a>
                     </div>
 
+                    <!-- Videos -->
+                    <a class="nav-link {{ request()->is('video*') ? 'active' : '' }}" href="{{ route('video.index') }}">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="5 3 19 12 5 21 5 3"/>
+                        </svg>
+                        Videos
+                    </a>
+
+                    <!-- Mensajes del Carrusel (NUEVO) -->
+                    <a class="nav-link {{ request()->is('admin/info-carousel*') ? 'active' : '' }}" 
+                        href="{{ route('admin.info-carousel.index') }}">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+                        </svg>
+                        Mensajes Carrusel
+                    </a>
+
                     <!-- Hero -->
                     <a class="nav-link {{ request()->is('hero*') ? 'active' : '' }}" href="{{ route('hero.index') }}">
                         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -130,9 +149,20 @@
                         Logos de Marcas
                     </a>
 
+                    <!-- Nueva Venta (acceso directo) -->
+                    <a class="nav-link {{ request()->routeIs('physicalSales') ? 'active' : '' }}"
+                        href="{{ route('physicalSales') }}">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1V2l-2 1-2-1-2 1-2-1-2 1-2-1z"/>
+                            <path d="M14 8H8"/><path d="M16 12H8"/><path d="M11 16H8"/>
+                        </svg>
+                        Nueva Venta
+                    </a>
+
                     <!-- Ventas -->
-                    <a class="nav-link d-flex align-items-center justify-content-between {{ request()->is('sales*') ? 'active' : '' }}"
-                        data-bs-toggle="collapse" href="#submenuVentas" role="button" aria-expanded="false"
+                    <a class="nav-link d-flex align-items-center justify-content-between {{ request()->is('orders*') || request()->is('dailySales*') ? 'active' : '' }}"
+                        data-bs-toggle="collapse" href="#submenuVentas" role="button"
+                        aria-expanded="{{ request()->is('orders*') || request()->is('dailySales*') ? 'true' : 'false' }}"
                         aria-controls="submenuVentas">
                         <span>
                             <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -145,14 +175,25 @@
                         <span class="ms-2">▾</span>
                     </a>
 
-                    <div class="collapse submenu" id="submenuVentas">
-                        <a class="nav-link" href="{{ route('orders.index') }}">
+                    <div class="collapse submenu {{ request()->is('orders*') || request()->is('dailySales*') ? 'show' : '' }}" id="submenuVentas">
+                        <a class="nav-link {{ request()->routeIs('orders.index') ? 'active' : '' }}" href="{{ route('orders.index') }}">
                             Ventas Mensuales
                         </a>
-                        <a class="nav-link" href="{{route('dailySales')}}">
+                        <a class="nav-link {{ request()->routeIs('dailySales') ? 'active' : '' }}" href="{{ route('dailySales') }}">
                             Ventas Diarias
                         </a>
                     </div>
+
+                    <!-- Pendientes de Envío -->
+                    <a class="nav-link {{ request()->routeIs('pendingShipments') || request()->routeIs('pendingShipments.update') ? 'active' : '' }}"
+                        href="{{ route('pendingShipments') }}">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12H3l9-9 9 9h-2"/>
+                            <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/>
+                            <path d="M9 21v-6h6v6"/>
+                        </svg>
+                        Envíos Pendientes
+                    </a>
 
                     <a class="nav-link {{ request()->is('dashboard/reviews*') ? 'active' : '' }}"
                         href="{{ route('dashboard.reviews.index') }}">

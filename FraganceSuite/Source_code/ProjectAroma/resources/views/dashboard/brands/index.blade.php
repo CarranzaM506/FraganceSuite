@@ -35,7 +35,7 @@
                         <tr>
                             <td>
                                 @if($brand->logo)
-                                    <img src="{{ Storage::url($brand->logo) }}" style="height: 50px; width: auto;">
+                                    <img src="{{ asset('img-brands/' . $brand->logo) }}" style="height: 50px; width: auto;">
                                 @else
                                     <span class="text-muted">Sin logo</span>
                                 @endif

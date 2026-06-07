@@ -1,4 +1,4 @@
-* {
+﻿* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -11,7 +11,7 @@ body {
 }
 
 body:not(.catalog-body) {
-    padding-top: 70px;
+    padding-top: 0px;
 }
 
 /* ========== HEADER STICKY CON EFECTO SCROLL ========== */
@@ -35,6 +35,14 @@ header.hidden {
     transform: translateY(-100%);
 }
 
+/* El carrusel dentro del header */
+header > .info-carousel {
+    margin: -20px -30px 20px -30px;
+    padding: 12px 0;
+    position: relative;
+    width: calc(100% + 60px);
+}
+
 .header-main {
     display: flex;
     align-items: center;
@@ -44,7 +52,7 @@ header.hidden {
     position: relative;
 }
 
-/* Botón de menú (hamburguesa) */
+/* BotÃ³n de menÃº (hamburguesa) */
 .menu-toggle {
     background: none;
     border: none;
@@ -100,7 +108,7 @@ header.hidden {
     align-items: center;
 }
 
-/* Todos los iconos uniformes - TAMAÑO 15px */
+/* Todos los iconos uniformes - TAMAÃ‘O 15px */
 .icon,
 .search-icon-btn {
     width: 32px;
@@ -128,7 +136,7 @@ header.hidden {
     color: #927a1b;
 }
 
-/* Formulario de búsqueda expandible - VERSIÓN ANTERIOR */
+/* Formulario de bÃºsqueda expandible - VERSIÃ“N ANTERIOR */
 .search-icon-form {
     display: flex;
     align-items: center;
@@ -159,7 +167,7 @@ header.hidden {
     padding: 8px 10px;
 }
 
-/* ========== MENÚ LATERAL ========== */
+/* ========== MENÃš LATERAL - VERSIÃ“N DEFINITIVA ========== */
 .side-menu {
     position: fixed;
     top: 0;
@@ -174,6 +182,8 @@ header.hidden {
     display: flex;
     flex-direction: column;
     overflow-y: auto;
+    scrollbar-width: none; /* Firefox - oculta scrollbar */
+    -ms-overflow-style: none; /* IE/Edge - oculta scrollbar */
 }
 
 .side-menu.open {
@@ -187,6 +197,10 @@ header.hidden {
     padding: 30px 25px;
     border-bottom: 1px solid #f0f0f0;
     background: white;
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 
 .side-menu-logo {
@@ -220,7 +234,7 @@ header.hidden {
 
 .side-menu-nav {
     flex: 1;
-    padding: 20px 0;
+    padding: 20px 0 40px 0;
 }
 
 .side-menu-link {
@@ -300,6 +314,7 @@ header.hidden {
     font-size: 16px;
     font-family: inherit;
     font-weight: 500;
+    padding: 14px 25px;
 }
 
 .menu-overlay {
@@ -320,7 +335,52 @@ header.hidden {
     visibility: visible;
 }
 
-/* ========== ESTILO CONTEMPORÁNEO SUTIL ========== */
+/* Responsive */
+@media (max-width: 768px) {
+    .side-menu {
+        width: 85%;
+        max-width: 300px;
+    }
+    
+    .side-menu-header {
+        padding: 20px 20px;
+    }
+    
+    .side-menu-logo {
+        font-size: 24px;
+    }
+    
+    .side-menu-link {
+        padding: 12px 20px;
+        font-size: 14px;
+    }
+    
+    .side-menu-logout-btn {
+        padding: 12px 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .side-menu {
+        width: 85%;
+        max-width: 280px;
+    }
+    
+    .side-menu-header {
+        padding: 15px 18px;
+    }
+    
+    .side-menu-link {
+        padding: 10px 18px;
+        font-size: 13px;
+    }
+    
+    .side-menu-logout-btn {
+        padding: 10px 18px;
+    }
+}
+
+/* ========== ESTILO CONTEMPORÃNEO SUTIL ========== */
 .split-promo {
     display: flex;
     width: 100%;
@@ -541,7 +601,7 @@ header.hidden {
     }
 }
 
-/* Móviles grandes */
+/* MÃ³viles grandes */
 @media (max-width: 576px) {
     .product-grid {
         grid-template-columns: repeat(2, 1fr);
@@ -553,7 +613,7 @@ header.hidden {
     }
 }
 
-/* Móviles pequeños */
+/* MÃ³viles pequeÃ±os */
 @media (max-width: 400px) {
     .product-grid {
         grid-template-columns: repeat(2, 1fr);
@@ -573,7 +633,7 @@ header.hidden {
     }
 }
 
-/* Asegurar que las imágenes no se deformen */
+/* Asegurar que las imÃ¡genes no se deformen */
 .product-image img {
     width: 100%;
     height: 100%;
@@ -880,7 +940,7 @@ footer {
     font-size: 14px;
 }
 
-/* ========== HERO ESTÁTICO ========== */
+/* ========== HERO ESTÃTICO ========== */
 .hero-static {
     width: 100%;
     height: 500px;
@@ -903,6 +963,51 @@ footer {
     display: block;
 }
 
+/* ========== HERO RESPONSIVE ========== */
+@media (max-width: 992px) {
+    .hero-static {
+        height: 400px;
+    }
+    .hero-image {
+        object-position: center 40%;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-static {
+        height: 320px;
+    }
+    .hero-image {
+        object-position: center 45%;
+    }
+}
+
+@media (max-width: 576px) {
+    .hero-static {
+        height: 280px;
+    }
+    .hero-image {
+        object-position: center 50%;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-static {
+        height: 250px;
+    }
+    .hero-image {
+        object-position: center 55%;
+    }
+}
+
+@media (max-width: 360px) {
+    .hero-static {
+        height: 220px;
+    }
+    .hero-image {
+        object-position: center 60%;
+    }
+}
 .hero-overlay, .hero-content, .hero-title, .hero-subtitle, .hero-btn {
     display: none;
 }
@@ -1134,7 +1239,7 @@ footer {
     }
 }
 
-/* Móviles grandes y tablets pequeñas */
+/* MÃ³viles grandes y tablets pequeÃ±as */
 @media (max-width: 768px) {
     body:not(.catalog-body) {
         padding-top: 60px;
@@ -1235,7 +1340,7 @@ footer {
     }
 }
 
-/* Móviles pequeños */
+/* MÃ³viles pequeÃ±os */
 @media (max-width: 480px) {
     body:not(.catalog-body) {
         padding-top: 55px;
@@ -1372,7 +1477,7 @@ footer {
     }
 }
 
-/* Pantallas muy pequeñas (menos de 360px) */
+/* Pantallas muy pequeÃ±as (menos de 360px) */
 @media (max-width: 360px) {
     .logo {
         font-size: 18px;
@@ -1542,16 +1647,16 @@ footer {
     }
 }
 
-/* ========== MEJORAS PARA MÓVIL ========== */
+/* ========== MEJORAS PARA MÃ“VIL ========== */
 
-/* Logo más grande en móvil */
+/* Logo mÃ¡s grande en mÃ³vil */
 @media (max-width: 768px) {
     .logo {
         font-size: 28px !important;
         letter-spacing: 4px !important;
     }
     
-    /* Todos los iconos del mismo tamaño */
+    /* Todos los iconos del mismo tamaÃ±o */
     .menu-toggle svg,
     .icon svg,
     .search-icon-btn svg,
@@ -1567,7 +1672,7 @@ footer {
         font-size: 15px !important;
     }
     
-    /* En móvil: ocultar input expandible, mostrar botón modal */
+    /* En mÃ³vil: ocultar input expandible, mostrar botÃ³n modal */
     .search-icon-form {
         display: none !important;
     }
@@ -1599,7 +1704,7 @@ footer {
     }
 }
 
-/* Desktop: ocultar botón modal, mostrar input expandible */
+/* Desktop: ocultar botÃ³n modal, mostrar input expandible */
 @media (min-width: 769px) {
     .search-icon-btn#mobileSearchBtn {
         display: none !important;
@@ -1610,7 +1715,7 @@ footer {
     }
 }
 
-/* Modal de búsqueda (solo móvil) */
+/* Modal de bÃºsqueda (solo mÃ³vil) */
 .search-modal {
     display: none;
     position: fixed;
@@ -1699,7 +1804,7 @@ footer {
     gap: 8px;
 }
 
-/* ========== MÁS VENDIDOS DEL MES - MINIMALISTA ========== */
+/* ========== MÃS VENDIDOS DEL MES - MINIMALISTA ========== */
 .bestsellers-section {
     padding: 30px 30px;
     background: transparent;
@@ -1767,7 +1872,7 @@ footer {
     transform: translateX(80px);
 }
 
-/* La animación se activará con JavaScript al hacer scroll */
+/* La animaciÃ³n se activarÃ¡ con JavaScript al hacer scroll */
 .bestseller-card.animate-in {
     animation: slideInFromRight 0.6s ease forwards;
 }
@@ -1782,8 +1887,6 @@ footer {
         transform: translateX(0);
     }
 }
-
-
 
 .bestseller-card:hover {
     transform: translateY(-5px);
@@ -2000,14 +2103,14 @@ footer {
     margin: 0 auto;
 }
 
-/* Responsive para móvil cuando hay 1 producto */
+/* Responsive para mÃ³vil cuando hay 1 producto */
 @media (max-width: 768px) {
     .bestsellers-grid:has(.bestseller-card:only-child) .bestseller-card {
         max-width: 300px;
     }
 }
 
-/* Cuando hay 2 o más productos, se mantiene la grilla original */
+/* Cuando hay 2 o mÃ¡s productos, se mantiene la grilla original */
 @media (max-width: 768px) {
     .bestsellers-grid {
         grid-template-columns: repeat(2, 1fr);
@@ -2021,8 +2124,396 @@ footer {
         gap: 20px;
     }
     
-    /* Si hay 1 producto en móvil, seguimos centrando */
+    /* Si hay 1 producto en mÃ³vil, seguimos centrando */
     .bestsellers-grid:has(.bestseller-card:only-child) {
         grid-template-columns: 1fr;
     }
+}
+
+/* ========== AJUSTES CARRUSEL - ARRIBA DEL HEADER ========== */
+.info-carousel {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+    color: #fff;
+    overflow: hidden;
+    white-space: nowrap;
+    padding: 12px 0;
+    position: relative;
+    z-index: 1002;
+border-bottom: 0.3px solid rgba(255,255,255,0.1);
+}
+
+.info-carousel-track {
+    display: inline-flex;
+    animation: scrollInfo 30s linear infinite;
+}
+
+.info-carousel:hover .info-carousel-track {
+    animation-play-state: paused;
+}
+
+.info-carousel-slide {
+    display: inline-flex;
+    padding: 0 40px;
+}
+
+.info-carousel-content {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.info-carousel-message {
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    font-weight: 400;
+}
+
+.info-carousel-link {
+    color: #927a1b;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 500;
+    transition: color 0.3s;
+    white-space: nowrap;
+}
+
+.info-carousel-link:hover {
+    color: #c9a53b;
+    text-decoration: underline;
+}
+
+@keyframes scrollInfo {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .info-carousel {
+        padding: 10px 0;
+    }
+    .info-carousel-slide {
+        padding: 0 20px;
+    }
+    .info-carousel-message {
+        font-size: 11px;
+    }
+    .info-carousel-link {
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .info-carousel-slide {
+        padding: 0 15px;
+    }
+    .info-carousel-message {
+        font-size: 10px;
+    }
+}
+
+/* ========== COMPENSACIÃ“N PARA EL HEADER FIJO ========== */
+body {
+    padding-top: 100px !important;
+}
+
+.catalog-body {
+    padding-top: 100px !important;
+}
+
+body.default-body {
+    padding-top: 120px !important;
+}
+
+/* El menÃº lateral NO debe tener padding-top extra */
+.side-menu {
+    top: 0;
+    height: 100vh;
+}
+
+/* Asegurar que el contenido del menÃº sea scrolleable */
+.side-menu {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+/* ========== SECCIÃ“N DE VIDEOS ========== */
+.videos-section {
+    padding: 0px 30px;
+    margin: 20px 0;
+    background: #ffffff;
+}
+
+.videos-section .section-title {
+    font-size: 20px;
+    font-weight: 300;
+    color: #000000;
+    margin-bottom: 25px;
+    text-align: center;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    position: relative;
+    padding-bottom: 12px;
+}
+
+.videos-section .section-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 1px;
+    background-color: #927a1b;
+    opacity: 0.5;
+}
+
+/* Desktop: Grid normal para 3 o 4 videos */
+.videos-grid {
+    display: grid;
+    gap: 25px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.videos-grid[data-count="3"] {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.videos-grid[data-count="4"] {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+/* Tarjeta de video desktop */
+.video-card {
+    background: transparent;
+    overflow: hidden;
+}
+
+.video-wrapper {
+    position: relative;
+    width: 100%;
+    background: #f5f5f5;
+    cursor: pointer;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.video-wrapper video {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Overlay de sonido/play */
+.video-overlay {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background: rgba(0,0,0,0.5);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    cursor: pointer;
+    z-index: 5;
+}
+
+.video-wrapper:hover .video-overlay {
+    opacity: 1;
+}
+
+.video-overlay i {
+    font-size: 16px;
+    color: white;
+}
+
+.video-wrapper.playing .video-overlay {
+    opacity: 1;
+}
+
+/* ========== SLIDER PARA MÃ“VIL ========== */
+.videos-slider-mobile {
+    display: none;
+    position: relative;
+}
+
+.videos-slider-container {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+}
+
+.videos-slider-track {
+    display: flex;
+    transition: transform 0.4s ease-in-out;
+    gap: 15px;
+}
+
+.video-slide {
+    flex-shrink: 0;
+    width: calc(50% - 7.5px);
+}
+
+.video-slide .video-wrapper {
+    background: #f5f5f5;
+    border-radius: 8px;
+}
+
+.video-slide video {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Flechas de navegaciÃ³n */
+.video-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0,0,0,0.5);
+    color: white;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+}
+
+.video-arrow-left {
+    left: -10px;
+}
+
+.video-arrow-right {
+    right: -10px;
+}
+
+/* Dots (puntitos) */
+.video-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 15px;
+}
+
+.video-dot {
+    width: 6px;
+    height: 6px;
+    background: #ccc;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.video-dot.active {
+    background: #927a1b;
+    width: 16px;
+    border-radius: 3px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .videos-section {
+        padding: 0px 15px;
+    }
+    
+    .videos-grid {
+        display: none !important;
+    }
+    
+    .videos-slider-mobile {
+        display: block;
+    }
+}
+
+@media (max-width: 480px) {
+    .videos-section {
+        padding: 0 10px;
+    }
+    
+    .video-arrow {
+        width: 28px;
+        height: 28px;
+        font-size: 12px;
+    }
+    
+    .video-arrow-left {
+        left: -5px;
+    }
+    
+    .video-arrow-right {
+        right: -5px;
+    }
+    
+    .video-overlay {
+        width: 28px;
+        height: 28px;
+    }
+    
+    .video-overlay i {
+        font-size: 12px;
+    }
+}
+
+/* ========== PRECIO CON DESCUENTO (TARJETAS DE PRODUCTO - PÁGINA PRINCIPAL) ========== */
+
+.product-card .product-price-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+.product-card .old-price {
+    font-size: 12px;
+    color: #aaa;
+    text-decoration: line-through;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 1.2;
+}
+
+.product-card .new-price {
+    font-size: 15px;
+    color: #222;
+    font-weight: 500;
+    letter-spacing: 0;
+    line-height: 1.2;
+}
+
+.product-card .discount {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    color: #fff;
+    background: #927a1b;
+    padding: 2px 7px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    border-radius: 0;
+    margin-top: 3px;
+}
+
+@media (max-width: 768px) {
+    .product-card .old-price { font-size: 11px; }
+    .product-card .new-price { font-size: 13px; }
+}
+
+@media (max-width: 480px) {
+    .product-card .old-price { font-size: 10px; }
+    .product-card .new-price { font-size: 12px; }
+    .product-card .discount  { font-size: 9px; padding: 1px 5px; }
 }

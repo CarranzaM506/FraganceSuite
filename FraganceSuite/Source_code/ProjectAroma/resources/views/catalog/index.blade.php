@@ -9,12 +9,7 @@
 @endsection
 
 @section('content')
-<!-- Barra negra pegada al header -->
-<nav class="black-navbar">
-    <div class="container">
-        <span class="nav-title">CATÁLOGO</span>
-    </div>
-</nav>
+
 
 <!-- Modal de filtros -->
 <div class="filter-modal" id="filterModal">
@@ -227,7 +222,16 @@
     <div class="product-info">
         <h3 class="product-name">{{ $product->name }}</h3>
         <p class="product-brand">{{ $product->brand }}</p>
-        <p class="product-price">₡{{ number_format($product->price, 2) }}</p>
+        @if($product->discount)
+            @php $discountedPrice = $product->price * (1 - ($product->discount->value / 100)); @endphp
+            <div class="product-price-block">
+                <span class="old-price">₡{{ number_format($product->price, 2) }}</span>
+                <span class="new-price">₡{{ number_format($discountedPrice, 2) }}</span>
+                <span class="discount">{{ $product->discount->value }}% OFF</span>
+            </div>
+        @else
+            <p class="product-price">₡{{ number_format($product->price, 2) }}</p>
+        @endif
     </div>
 </a>
 @endforeach
@@ -267,129 +271,35 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Solo aplicar efectos sticky si estamos en catálogo
-    const body = document.body;
-    const isCatalog = body.classList.contains('catalog-body');
-    
-    if (!isCatalog) return;
-    
-    const header = document.querySelector('header');
-    const blackNavbar = document.querySelector('.black-navbar');
-    let lastScrollTop = 0;
-    
-    // Alturas importantes
-    const headerHeight = header.offsetHeight;
-    const blackNavbarHeight = blackNavbar ? blackNavbar.offsetHeight : 0;
-    const totalFixedHeight = headerHeight + blackNavbarHeight;
-    
-    // Configurar posición inicial
-    if (blackNavbar) {
-        blackNavbar.style.top = headerHeight + 'px';
-        blackNavbar.style.position = 'fixed';
-    }
-    
-    // FUNCIÓN PRINCIPAL DE SCROLL
-    function handleScroll() {
-        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        const scrollingDown = scrollTop > lastScrollTop;
-        
-        // 1. SI ESTAMOS EN LA PARTE SUPERIOR
-        if (scrollTop < 50) {
-            // Mostrar ambos elementos
-            header.classList.remove('hidden');
-            header.classList.add('visible');
-            
-            if (blackNavbar) {
-                blackNavbar.classList.remove('hidden');
-                blackNavbar.classList.add('visible');
-                blackNavbar.style.top = headerHeight + 'px';
-                blackNavbar.style.position = 'fixed';
-            }
-            lastScrollTop = scrollTop;
-            return;
-        }
-        
-        // 2. SCROLL HACIA ABAJO (ocultar)
-        if (scrollingDown) {
-            // Solo ocultar si hemos bajado suficiente
-            if (scrollTop - lastScrollTop > 5) {
-                header.classList.remove('visible');
-                header.classList.add('hidden');
-                
-                if (blackNavbar) {
-                    blackNavbar.classList.remove('visible');
-                    blackNavbar.classList.add('hidden');
-                }
-            }
-        } 
-        // 3. SCROLL HACIA ARRIBA (mostrar)
-        else {
-            header.classList.remove('hidden');
-            header.classList.add('visible');
-            
-            if (blackNavbar) {
-                blackNavbar.classList.remove('hidden');
-                blackNavbar.classList.add('visible');
-                blackNavbar.style.top = headerHeight + 'px';
-                blackNavbar.style.position = 'fixed';
-            }
-        }
-        
-        lastScrollTop = scrollTop;
-    }
-    
-    // FUNCIÓN PARA HEADER STICKY - FIJAR CUANDO HACE SCROLL
-    function handleStickyHeader() {
-        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        
-        // Si hemos bajado más allá del header, fijar la barra negra arriba
-        if (blackNavbar && scrollTop > headerHeight) {
-            // La barra negra se queda fija en top: 0 cuando el header está oculto
-            if (header.classList.contains('hidden')) {
-                blackNavbar.style.top = '0';
-            }
-        }
-    }
-    
-    // Combinar ambas funciones
-    function combinedScrollHandler() {
-        handleScroll();
-        handleStickyHeader();
-    }
-    
-    // Inicializar eventos
-    window.addEventListener('scroll', combinedScrollHandler);
-    
-    // Forzar posición inicial
-    setTimeout(() => {
-        if (blackNavbar) {
-            blackNavbar.style.top = headerHeight + 'px';
-            blackNavbar.style.position = 'fixed';
-        }
-        combinedScrollHandler();
-    }, 100);
-    
-    // Redimensionar ventana - recalcular alturas
-    window.addEventListener('resize', function() {
-        if (blackNavbar) {
-            const newHeaderHeight = header.offsetHeight;
-            blackNavbar.style.top = newHeaderHeight + 'px';
-        }
-    });
-    
-    // ========== SISTEMA DE FILTROS EN TIEMPO REAL ==========
-    
-    // Modal de filtros
+    // ========== MODAL DE FILTROS ==========
     const filterModal = document.getElementById('filterModal');
     const openFilterBtn = document.getElementById('openFilter');
     const closeModalBtn = document.getElementById('closeModal');
     const applyFiltersBtn = document.getElementById('applyFilters');
     const clearFiltersBtn = document.getElementById('clearFilters');
     
-    // Cargar valores actuales en el modal
-    const urlParams = new URLSearchParams(window.location.search);
+    function applyFilters() {
+        const sortBy = document.getElementById('modalSort').value;
+        const category = document.getElementById('modalCategory').value;
+        const brand = document.getElementById('modalBrand').value;
+        const price = document.getElementById('modalPrice').value;
+        const search = document.getElementById('modalSearch').value;
+        
+        const params = new URLSearchParams();
+        if (sortBy !== 'newest') params.append('sort', sortBy);
+        if (category !== 'all') params.append('category', category);
+        if (brand !== 'all') params.append('brand', brand);
+        if (price !== 'all') params.append('price', price);
+        if (search.trim() !== '') params.append('search', search.trim());
+        
+        params.delete('page');
+        
+        const url = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
+        filterModal.classList.remove('active');
+        document.body.style.overflow = '';
+        window.location.href = url;
+    }
     
-    // Abrir modal
     if (openFilterBtn) {
         openFilterBtn.addEventListener('click', function() {
             filterModal.classList.add('active');
@@ -397,7 +307,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Cerrar modal
     if (closeModalBtn) {
         closeModalBtn.addEventListener('click', function() {
             filterModal.classList.remove('active');
@@ -405,7 +314,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Cerrar modal al hacer clic fuera
     if (filterModal) {
         filterModal.addEventListener('click', function(e) {
             if (e.target === filterModal) {
@@ -415,22 +323,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Cerrar con ESC
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && filterModal && filterModal.classList.contains('active')) {
-            filterModal.classList.remove('active');
-            document.body.style.overflow = '';
-        }
-    });
+    if (applyFiltersBtn) applyFiltersBtn.addEventListener('click', applyFilters);
     
-    // Aplicar filtros
-    if (applyFiltersBtn) {
-        applyFiltersBtn.addEventListener('click', function() {
-            applyFilters();
-        });
-    }
-    
-    // Limpiar filtros dentro del modal
     if (clearFiltersBtn) {
         clearFiltersBtn.addEventListener('click', function() {
             document.getElementById('modalSort').value = 'newest';
@@ -441,162 +335,29 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Función para aplicar filtros
-    function applyFilters() {
-        // Obtener valores del modal
-        const sortBy = document.getElementById('modalSort').value;
-        const category = document.getElementById('modalCategory').value;
-        const brand = document.getElementById('modalBrand').value;
-        const price = document.getElementById('modalPrice').value;
-        const search = document.getElementById('modalSearch').value;
-        const isOffers = new URLSearchParams(window.location.search).has('offers');
-        
-        // Construir URL con parámetros
-        const params = new URLSearchParams();
-        
-        // Solo agregar parámetros si no son valores por defecto
-        if (sortBy !== 'newest') params.append('sort', sortBy);
-        if (category !== 'all') params.append('category', category);
-        if (brand !== 'all') params.append('brand', brand);
-        if (price !== 'all') params.append('price', price);
-        if (search.trim() !== '') params.append('search', search.trim());
-        if (isOffers) params.append('offers', '1');
-        
-        // Quitar página actual al filtrar
-        params.delete('page');
-        
-        const queryString = params.toString();
-        const baseUrl = window.location.pathname;
-        const url = baseUrl + (queryString ? '?' + queryString : '');
-        
-        // Cerrar modal y redirigir
-        filterModal.classList.remove('active');
-        document.body.style.overflow = '';
-        window.location.href = url;
-    }
-    
-    // Función para remover un filtro específico
     window.removeFilter = function(filterName) {
         const params = new URLSearchParams(window.location.search);
         params.delete(filterName);
         params.delete('page');
-        
-        const queryString = params.toString();
-        const baseUrl = window.location.pathname;
-        const url = baseUrl + (queryString ? '?' + queryString : '');
-        
+        const url = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
         window.location.href = url;
     }
     
-    // Función para limpiar todos los filtros
     window.clearAllFilters = function() {
         window.location.href = window.location.pathname;
     }
     
-    // ========== FIN SISTEMA DE FILTROS ==========
-    
-    // Animación de entrada de productos
+    // Animación de productos
     const productCards = document.querySelectorAll('.catalog-card');
-    
-    function animateProducts() {
-        productCards.forEach((card, index) => {
-            card.style.opacity = '0';
-            card.style.transform = 'translateY(20px)';
-            card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-            
-            setTimeout(() => {
-                card.style.opacity = '1';
-                card.style.transform = 'translateY(0)';
-            }, index * 100);
-        });
-    }
-    
-    // Iniciar animación
-    setTimeout(animateProducts, 300);
-    
-    // Toast notifications
-    function showToast(message) {
-        const toast = document.createElement('div');
-        toast.className = 'toast-notification';
-        toast.textContent = message;
-        toast.style.cssText = `
-            position: fixed;
-            bottom: 80px;
-            right: 20px;
-            background: #000;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 5px;
-            z-index: 9999;
-            animation: slideInUp 0.3s ease;
-            font-size: 14px;
-        `;
-        
-        document.body.appendChild(toast);
-        
+    productCards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
         setTimeout(() => {
-            toast.style.animation = 'slideOutDown 0.3s ease';
-            setTimeout(() => {
-                document.body.removeChild(toast);
-            }, 300);
-        }, 3000);
-    }
-    
-    // Añadir estilos CSS para toast
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes slideInUp {
-            from { transform: translateY(100px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        @keyframes slideOutDown {
-            from { transform: translateY(0); opacity: 1; }
-            to { transform: translateY(100px); opacity: 0; }
-        }
-        
-        .toast-notification {
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-        
-        .add-cart-icon.adding {
-            animation: pulse 0.3s ease;
-        }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(0.9); }
-            100% { transform: scale(1); }
-        }
-        
-        /* Mejoras para la animación de la barra negra */
-        .black-navbar {
-            transition: transform 0.3s ease-in-out, top 0.3s ease-in-out !important;
-        }
-        
-        /* Estilos para los tags de filtros */
-        .filter-tag {
-            display: inline-flex;
-            align-items: center;
-            padding: 5px 10px;
-            background: #927a1b;
-            color: white;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 500;
-            gap: 5px;
-        }
-        
-        .filter-badge {
-            display: inline-block;
-            width: 6px;
-            height: 6px;
-            background: #ff6b6b;
-            border-radius: 50%;
-            margin-left: 5px;
-            vertical-align: super;
-        }
-    `;
-    document.head.appendChild(style);
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
 });
 </script>
 @endpush

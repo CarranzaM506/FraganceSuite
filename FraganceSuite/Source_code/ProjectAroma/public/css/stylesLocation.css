@@ -2,6 +2,7 @@
 
 .location-body {
     background: white !important;
+    
 }
 
 #aroma-location-page {
@@ -360,3 +361,24 @@
         gap: 10px;
     }
 }
+
+/* ========== FONDO BLANCO PARA LA PÁGINA DE DIRECCIONES ========== */
+
+/* El body usa profile-body, no location-body */
+body.profile-body {
+    background: #ffffff !important;
+}
+
+/* El contenedor principal */
+#aroma-location-page {
+    background: #ffffff !important;
+}
+
+/* Cualquier contenedor padre que pueda tener fondo gris */
+body.profile-body .content-wrap,
+body.profile-body main,
+body.profile-body .container,
+body.profile-body .container-fluid {
+    background: #ffffff !important;
+}
+
