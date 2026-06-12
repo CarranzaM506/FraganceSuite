@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('page-name', 'Mis Direcciones')
+
 @section('title', 'Mis direcciones | AROMA')
 
 @section('body-class', 'profile-body')
@@ -27,8 +29,8 @@
     {{-- Encabezado --}}
     <div class="location-page-header">
         <div class="location-page-header-left">
-            <a href="{{ route('profile.index') }}" class="location-back-btn">
-                ← Volver
+            <a href="{{ route('profile.index') }}" class="location-back-btn" title="Volver">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
             </a>
             <h4>Mis direcciones</h4>
         </div>
@@ -80,10 +82,6 @@
             <div class="location-empty">
                 <i class="fas fa-location-dot"></i>
                 <p>No tienes direcciones registradas</p>
-                <button class="location-empty-btn" onclick="openCreateModal()"
-                    data-bs-toggle="modal" data-bs-target="#addressModal">
-                    Agregar dirección
-                </button>
             </div>
         @endforelse
     </div>

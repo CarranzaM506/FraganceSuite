@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('page-name', 'Pedido Confirmado')
+
 @section('body-class', 'cart-body')
 
 @section('styles')

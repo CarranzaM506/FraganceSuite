@@ -1014,7 +1014,7 @@ footer {
 
 /* ========== PERFIL ========== */
 .profile-body {
-    padding-top: 90px;
+    padding-top: 126px !important;
     background-color: #f8f8f8;
 }
 
@@ -2224,11 +2224,41 @@ body {
 }
 
 .catalog-body {
-    padding-top: 100px !important;
+    padding-top: 126px !important;
 }
 
 body.default-body {
     padding-top: 120px !important;
+}
+
+body.auth-body {
+    padding-top: 80px !important;
+}
+
+body.legal-body {
+    padding-top: 96px !important;
+}
+
+body.favorites-body {
+    padding-top: 126px !important;
+}
+
+@media (max-width: 768px) {
+    body.default-body   { padding-top: 80px !important; }
+    body.auth-body      { padding-top: 65px !important; }
+    body.catalog-body   { padding-top: 104px !important; }
+    body.profile-body   { padding-top: 104px !important; }
+    body.favorites-body { padding-top: 104px !important; }
+    body.legal-body     { padding-top: 70px !important; }
+}
+
+@media (max-width: 480px) {
+    body.default-body   { padding-top: 70px !important; }
+    body.auth-body      { padding-top: 60px !important; }
+    body.catalog-body   { padding-top: 94px !important; }
+    body.profile-body   { padding-top: 94px !important; }
+    body.favorites-body { padding-top: 94px !important; }
+    body.legal-body     { padding-top: 62px !important; }
 }
 
 /* El menÃº lateral NO debe tener padding-top extra */
@@ -2516,4 +2546,68 @@ body.default-body {
     .product-card .old-price { font-size: 10px; }
     .product-card .new-price { font-size: 12px; }
     .product-card .discount  { font-size: 9px; padding: 1px 5px; }
+}
+
+/* ========== BREADCRUMB / INDICADOR DE PÁGINA ========== */
+.page-breadcrumb-bar {
+    padding: 10px 30px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Páginas con body padding-top: 0 necesitan limpiar el header fijo */
+.cart-body .page-breadcrumb-bar {
+    margin-top: 126px;
+}
+
+@media (max-width: 768px) {
+    .cart-body .page-breadcrumb-bar {
+        margin-top: 104px;
+    }
+}
+
+@media (max-width: 480px) {
+    .cart-body .page-breadcrumb-bar {
+        margin-top: 94px;
+    }
+}
+
+.page-breadcrumb-home {
+    display: flex;
+    align-items: center;
+}
+
+.page-breadcrumb-home a {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #aaa;
+    text-decoration: none;
+    transition: color 0.2s;
+    line-height: 1;
+}
+
+.page-breadcrumb-home a:hover {
+    color: #927a1b;
+}
+
+.page-breadcrumb-sep {
+    font-size: 10px;
+    color: #ccc;
+    line-height: 1;
+}
+
+.page-breadcrumb-current {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #555;
+    line-height: 1;
+}
+
+@media (max-width: 768px) {
+    .page-breadcrumb-bar {
+        padding: 8px 20px;
+    }
 }

@@ -52,18 +52,18 @@
 
 /* PÁGINA PRINCIPAL */
 .cart-page {
-    padding: 210px 15px 50px;
+    padding: 20px 15px 50px !important;
     max-width: 1200px;
     margin: 0 auto;
     min-height: 100vh;
 }
 
 @media (max-width: 768px) {
-    .cart-page { padding: 140px 15px 30px; }
+    .cart-page { padding: 15px 15px 30px !important; }
 }
 
 @media (max-width: 480px) {
-    .cart-page { padding: 120px 10px 20px; }
+    .cart-page { padding: 15px 10px 20px !important; }
 }
 
 /* CONTENEDOR PRINCIPAL */

@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('page-name', 'Catálogo')
+
 @section('body-class', 'catalog-body') 
 
 

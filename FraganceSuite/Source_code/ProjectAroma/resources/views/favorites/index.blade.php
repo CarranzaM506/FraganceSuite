@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('page-name', 'Mis Favoritos')
+
 @section('title', 'Mis Favoritos | AROMA')
 
 @section('body-class', 'favorites-body')
@@ -15,15 +17,15 @@
         }
         
         .favorites-body .catalog-grid {
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 28px;
-            justify-items: center;
+            display: grid !important;
+            grid-template-columns: repeat(auto-fill, 220px) !important;
+            justify-content: center !important;
+            gap: 28px !important;
         }
-        
+
         .favorites-body .catalog-card {
             opacity: 1;
             transform: none;
-            max-width: 240px;
             width: 100%;
         }
         
@@ -54,24 +56,25 @@
         /* Desktop */
         @media (min-width: 769px) {
             .favorites-body .catalog-products {
-                padding-top: 120px;
+                padding-top: 20px;
             }
         }
-        
+
         /* Tablet */
         @media (max-width: 768px) {
             .favorites-body .catalog-products {
                 padding: 0 18px;
-                padding-top: 100px !important;
+                padding-top: 15px !important;
             }
-            .favorites-body .product-image { 
-                height: 160px; 
+            .favorites-body .product-image {
+                height: 160px;
             }
             .favorites-body .catalog-grid {
-                gap: 20px;
+                grid-template-columns: repeat(auto-fill, 170px) !important;
+                gap: 20px !important;
             }
             .favorites-body .catalog-card {
-                max-width: 180px;
+                width: 100%;
             }
             .product-name {
                 font-size: 12px;
@@ -88,10 +91,14 @@
         @media (max-width: 600px) {
             .favorites-body .catalog-products {
                 padding: 0 14px;
-                padding-top: 90px !important;
+                padding-top: 15px !important;
             }
-            .favorites-body .catalog-card { 
-                max-width: 160px; 
+            .favorites-body .catalog-grid {
+                grid-template-columns: repeat(auto-fill, 150px) !important;
+                gap: 16px !important;
+            }
+            .favorites-body .catalog-card {
+                width: 160px;
             }
             .favorites-body .product-image { 
                 height: 140px; 
@@ -113,7 +120,10 @@
         /* Móvil muy pequeño */
         @media (max-width: 480px) {
             .favorites-body .catalog-products {
-                padding-top: 85px !important;
+                padding-top: 15px !important;
+            }
+            .favorites-body .catalog-grid {
+                grid-template-columns: repeat(auto-fill, 140px) !important;
             }
             .favorites-body .product-image { 
                 height: 130px; 

@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('page-name', 'Mi Perfil')
+
 @section('title', 'Mi Perfil | AROMA')
 
 @section('body-class', 'profile-body')

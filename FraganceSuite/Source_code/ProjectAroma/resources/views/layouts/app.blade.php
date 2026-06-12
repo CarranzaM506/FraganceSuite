@@ -96,6 +96,13 @@
     </header>
 
     <main>
+        @hasSection('page-name')
+        <div class="page-breadcrumb-bar">
+            <span class="page-breadcrumb-home"><a href="{{ route('mainPage') }}">Inicio</a></span>
+            <span class="page-breadcrumb-sep">/</span>
+            <span class="page-breadcrumb-current">@yield('page-name')</span>
+        </div>
+        @endif
         @yield('content')
     </main>
 
